@@ -2,10 +2,9 @@
 /**
  * <Figure> — a single post image with an optional caption.
  *
- * Replaces the Ghost `<figure class="kg-card kg-image-card …">` markup with
- * clean, semantic Tailwind. Visual parity is preserved: images render full
- * container width and centered (as `.kg-image-card img` did), and captions
- * use the global `figcaption` base style (centered, secondary text).
+ * Emits a `<figure class="image-card [has-caption] [content-wide]">`.
+ * Images render full container width and centered; captions use the global
+ * `figcaption` base style (centered, secondary text).
  *
  * Image handling:
  *   • local image  -> resolved to its optimized asset and rendered via Astro's
@@ -15,7 +14,7 @@
  *   • remote URL   -> passed through as a plain lazy <img> (a couple of posts
  *     embed images hosted elsewhere; nothing to optimize locally).
  *
- * `wide` maps to the old `.kg-width-wide` bleed (grid-column: wide).
+ * `wide` expands to the wider grid column (grid-column: wide via .content-wide).
  */
 import { Image } from 'astro:assets';
 import { resolveImage, isGif } from './images';
@@ -25,7 +24,7 @@ interface Props {
   src: string;
   alt?: string;
   caption?: string;
-  /** Render at the wider grid column (was .kg-width-wide). */
+  /** Render at the wider grid column (grid-column: wide via .content-wide). */
   wide?: boolean;
 }
 

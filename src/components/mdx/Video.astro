@@ -1,12 +1,12 @@
 ---
 /**
- * <Video> — a native HTML5 video player (clean equivalent of the old
- * `<figure class="kg-card kg-video-card"><video …>`).
+ * <Video> — a native HTML5 video player.
  *
- * The mp4 and its poster are imported through the build (hashed /_astro URLs)
- * so no raw /content/media or /content/images literal ships. Controls +
- * metadata preload + playsinline match the original markup; the native player
- * is intentionally kept (no custom JS).
+ * Emits `<figure class="video-card relative"><video …></figure>`. The mp4
+ * and its poster are imported through the build (hashed /_astro URLs) so no
+ * raw /content/media or /content/images literal ships. Controls + metadata
+ * preload + playsinline are set; the native player is intentionally kept
+ * (no custom JS).
  *
  * `poster` accepts an images-tree path (optimized via the image pipeline) or a
  * media-tree thumbnail path; either resolves to a built asset URL.

@@ -1,14 +1,15 @@
 ---
 /**
- * <Instagram> — an Instagram embed (clean equivalent of the old
- * `<figure class="kg-card kg-embed-card"><blockquote class="instagram-media">…`).
+ * <Instagram> — an Instagram embed.
  *
+ * Emits `<figure class="embed-card …"><blockquote class="instagram-media">…`.
  * `.instagram-media` + the data-instgrm-* attributes are required by
  * Instagram's embed.js (injected by the inline embed-loader in [slug].astro
- * only when an embed is present), so they stay — platform attributes, not
- * kg-* chrome. The inline style block is the standard Instagram embed styling
- * (kept verbatim so the placeholder looks right before the script upgrades it).
- * The inner "View this post" / attribution links are passed as children.
+ * only when an embed is present), so they stay — platform attributes for the
+ * third-party script. The inline style block is the standard Instagram embed
+ * styling (kept verbatim so the placeholder looks right before the script
+ * upgrades it). The inner "View this post" / attribution links are passed as
+ * children.
  */
 interface Props {
   /** The instagram permalink (data-instgrm-permalink). */
