@@ -11,11 +11,14 @@
  *   • <SiteFooter />  — React, static (includes the theme-toggle button markup)
  *   • page content    — React, via the default <slot />
  *
- * <html class="theme-dark"> is the default scheme. The inline script applies
- * the stored theme before first paint (no flash), then wires the footer
- * toggle (class swap on <html> + localStorage + sun/moon icon + label) and a
- * prefers-color-scheme fallback. Authoring is React; the only behaviour is
- * this tiny inline script, so the site ships no JS bundle.
+ * Theme resolution: the site has NO forced default — it follows the visitor's
+ * OS prefers-color-scheme. A persisted choice (localStorage['theme']) always
+ * wins. The inline head script runs before first paint (no flash): it applies
+ * theme-dark/theme-light from localStorage if set, otherwise from the system
+ * preference. The footer toggle flips the class + persists the choice; once
+ * persisted it wins on every return visit. A prefers-color-scheme listener
+ * only applies while no choice is stored. The only behaviour is these tiny
+ * inline scripts, so the site ships no JS bundle.
  */
 import Head from '../components/Head';
 import SiteHeader from '../components/SiteHeader';
@@ -36,24 +39,27 @@ interface Props {
 const { head, bodyClass, isHome = false, isPost = false } = Astro.props;
 ---
 <!DOCTYPE html>
-<html class="theme-dark" lang={SITE.lang}>
+<html lang={SITE.lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <Head {...(head as any)} />
-    {/* Apply the stored theme before first paint — no flash of wrong theme. */}
+    {/* Resolve the theme before first paint (no flash): a persisted choice
+        wins; otherwise follow the OS prefers-color-scheme. The explicit
+        class is always set so the toggle icon/label + CSS stay consistent. */}
     <script is:inline>
       (function () {
         try {
-          var t = localStorage.getItem('theme');
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
           var html = document.documentElement;
-          if (t === 'light') {
-            html.classList.remove('theme-dark');
-            html.classList.add('theme-light');
-          } else if (t === 'dark') {
-            html.classList.remove('theme-light');
-            html.classList.add('theme-dark');
-          }
+          html.classList.remove('theme-dark', 'theme-light');
+          html.classList.add(theme === 'dark' ? 'theme-dark' : 'theme-light');
         } catch (e) {}
       })();
     </script>
@@ -72,9 +78,11 @@ const { head, bodyClass, isHome = false, isPost = false } = Astro.props;
     <slot name="after" />
 
     {/* Theme toggle behaviour — flips .theme-dark / .theme-light on <html>,
-        persists to localStorage, swaps the sun/moon icon + label, and follows
-        prefers-color-scheme only when no choice is stored. Kept as a tiny
-        inline script so the toggle ships no JS bundle. */}
+        swaps the sun/moon icon + label, and PERSISTS only on an explicit click
+        (so first-time visitors keep following the OS preference until they
+        choose). A prefers-color-scheme listener updates the UI only while no
+        choice is stored. Kept as a tiny inline script so the toggle ships no
+        JS bundle. */}
     <script is:inline>
       document.addEventListener('DOMContentLoaded', function () {
         const themeToggle = document.getElementById('theme-toggle');
@@ -85,15 +93,9 @@ const { head, bodyClass, isHome = false, isPost = false } = Astro.props;
         const moonIcon =
           '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>';
 
-        function getInitialTheme() {
-          const savedTheme = localStorage.getItem('theme');
-          if (savedTheme) return savedTheme;
-          if (html.classList.contains('theme-dark')) return 'dark';
-          if (html.classList.contains('theme-light')) return 'light';
-          return 'dark';
-        }
-
-        function setTheme(theme) {
+        // Apply a theme to <html> + the toggle UI. `persist` is true only for
+        // an explicit user click — first paint / system changes don't persist.
+        function setTheme(theme, persist) {
           const themeText = document.getElementById('theme-text');
           html.classList.remove('theme-dark', 'theme-light');
           if (theme === 'dark') {
@@ -107,20 +109,25 @@ const { head, bodyClass, isHome = false, isPost = false } = Astro.props;
             if (themeToggle) themeToggle.setAttribute('aria-label', 'Switch to dark mode');
             if (themeText) themeText.textContent = 'Light Mode';
           }
-          localStorage.setItem('theme', theme);
+          if (persist) localStorage.setItem('theme', theme);
         }
 
-        setTheme(getInitialTheme());
+        // Sync the toggle icon/label to whatever the no-flash head script
+        // already applied (localStorage choice or OS preference). Do NOT
+        // persist here — that would freeze a first-time visitor's theme.
+        const current = html.classList.contains('theme-light') ? 'light' : 'dark';
+        setTheme(current, false);
 
         if (themeToggle) {
           themeToggle.addEventListener('click', function () {
             const newTheme = html.classList.contains('theme-dark') ? 'light' : 'dark';
-            setTheme(newTheme);
+            setTheme(newTheme, true);
           });
         }
 
+        // Follow live OS changes only until the visitor makes a choice.
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
-          if (!localStorage.getItem('theme')) setTheme(e.matches ? 'dark' : 'light');
+          if (!localStorage.getItem('theme')) setTheme(e.matches ? 'dark' : 'light', false);
         });
       });
     </script>
