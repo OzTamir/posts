@@ -14,9 +14,9 @@
  *   </div>
  *
  * The rendered Markdown is passed in as `children` (Astro forwards the route's
- * <Content /> as the default slot). The PhotoSwipe markup + the EmbedLoader
- * island are mounted by the route via BaseLayout's `after` slot, so this
- * component stays fully static (no client JS).
+ * <Content /> as the default slot). The social-embed loader script is mounted
+ * by the route via BaseLayout's `after` slot, so this component stays fully
+ * static (no client JS).
  *
  * The `.single-*` header/footer styling is parity-critical responsive layout
  * kept in @layer components; the meta separators use the `.single-meta-item`

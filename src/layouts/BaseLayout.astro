@@ -73,8 +73,8 @@ const { head, bodyClass, isHome = false, isPost = false } = Astro.props;
       <SiteFooter isPost={isPost} />
     </div>
 
-    {/* Sibling-of-.site content (e.g. PostLayout's PhotoSwipe markup +
-        the embed-loader script), rendered after .site. */}
+    {/* Sibling-of-.site content (e.g. the post route's embed-loader script),
+        rendered after .site. */}
     <slot name="after" />
 
     {/* Theme toggle behaviour — flips .theme-dark / .theme-light on <html>,
