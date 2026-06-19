@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# local scratch / QA artifacts (agent temp output, never committed)
+scratchpad/
+
+# Ghost export — large; local only, not committed.
+ghost-export.json
+
+# cloudflare / wrangler
+.wrangler/
+.dev.vars
+
+# env
+.env
+.env.*
+
+# os / editor
+.DS_Store
+.DS_STORE
+*.log
