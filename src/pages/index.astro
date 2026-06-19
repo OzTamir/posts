@@ -4,11 +4,14 @@
  *   <div class="home-content"> cover · post-feed · pagination </div>
  * The header is absent (home uses the Cover component instead).
  * Body class = "home-template".
+ *
+ * Thin Astro shell: loads content + builds the <head> props, then renders the
+ * React components (Cover / PostCard / Pagination) inside BaseLayout.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Cover from '../components/Cover.astro';
-import PostCard from '../components/PostCard.astro';
-import Pagination from '../components/Pagination.astro';
+import Cover from '../components/Cover';
+import PostCard from '../components/PostCard';
+import Pagination from '../components/Pagination';
 import { getSortedPosts } from '../utils/posts';
 import { SITE } from '../config';
 

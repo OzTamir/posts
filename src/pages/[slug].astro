@@ -1,8 +1,16 @@
 ---
 /**
  * Single post — /<slug>/ (param = post.id = the filename stem).
- * Renders the Markdown body through PostLayout and builds the per-post
- * <head> (canonical, Open Graph, Twitter card, JSON-LD Article).
+ * Renders the Markdown body through the React PostLayout and builds the
+ * per-post <head> (canonical, Open Graph, Twitter card, JSON-LD Article).
+ *
+ * Markdown rendering: `render(post)` yields the Astro <Content /> component;
+ * it is passed as the default slot to the React <PostLayout>, which Astro
+ * forwards as that component's `children`. PostLayout stays static. A tiny
+ * inline embed-loader script (Twitter / Instagram widgets) is mounted in
+ * BaseLayout's `after` slot alongside the dormant PhotoSwipe lightbox markup;
+ * it injects the widget scripts only when the body contains the embeds, so
+ * the page itself ships no JS bundle.
  *
  * SEO precedence (per-post overrides → sensible defaults):
  *   title        = metaTitle  ?? title
@@ -14,7 +22,8 @@
  */
 import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
-import PostLayout from '../layouts/PostLayout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostLayout from '../layouts/PostLayout';
 import { getSortedPosts, getRelated } from '../utils/posts';
 import { getImageDimensions } from '../utils/imageSize';
 import { AUTHORS, DEFAULT_AUTHOR } from '../data/authors';
@@ -48,6 +57,9 @@ const ogImage = d.ogImage ?? d.featureImage ?? null;
 const twitterImage = d.twitterImage ?? d.featureImage ?? null;
 const ogDims = ogImage ? getImageDimensions(ogImage) : null;
 
+// Body template class: "post-template tag-<primaryTag>".
+const bodyClass = `post-template ${primaryTag ? `tag-${primaryTag.slug}` : ''}`.trim();
+
 const head = {
   type: 'post',
   title: d.metaTitle ?? d.title, // <title> = post title (no site suffix)
@@ -68,6 +80,66 @@ const head = {
   authorSlug: author.slug,
 };
 ---
-<PostLayout post={post} readingTime={readingTime} related={related} head={head}>
-  <Content />
-</PostLayout>
+<BaseLayout head={head} bodyClass={bodyClass} isPost={true}>
+  <PostLayout post={post} readingTime={readingTime} related={related}>
+    <Content />
+  </PostLayout>
+
+  {/* PhotoSwipe lightbox container — dormant markup (no lightbox JS ships),
+      kept 1:1 for parity. Rendered as a sibling of .site. */}
+  <div slot="after" class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+    <div class="pswp__scroll-wrap">
+      <div class="pswp__container">
+        <div class="pswp__item"></div>
+        <div class="pswp__item"></div>
+        <div class="pswp__item"></div>
+      </div>
+      <div class="pswp__ui pswp__ui--hidden">
+        <div class="pswp__top-bar">
+          <div class="pswp__counter"></div>
+          <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+          <button class="pswp__button pswp__button--share" title="Share"></button>
+          <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+          <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+          <div class="pswp__preloader">
+            <div class="pswp__preloader__icn">
+              <div class="pswp__preloader__cut">
+                <div class="pswp__preloader__donut"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+          <div class="pswp__share-tooltip"></div>
+        </div>
+        <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+        <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+        <div class="pswp__caption">
+          <div class="pswp__caption__center"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Social-embed loader — injects widgets.js / embed.js only when the post
+      body contains .twitter-tweet / .instagram-media. Tiny inline script, so
+      the page ships no JS bundle. */}
+  <script slot="after" is:inline>
+    (function () {
+      if (document.querySelector('.twitter-tweet')) {
+        var s = document.createElement('script');
+        s.src = 'https://platform.twitter.com/widgets.js';
+        s.async = true;
+        s.setAttribute('charset', 'utf-8');
+        document.body.appendChild(s);
+      }
+      if (document.querySelector('.instagram-media')) {
+        var i = document.createElement('script');
+        i.src = 'https://www.instagram.com/embed.js';
+        i.async = true;
+        document.body.appendChild(i);
+      }
+    })();
+  </script>
+</BaseLayout>

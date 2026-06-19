@@ -10,9 +10,9 @@
  */
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import AuthorCard from '../../../components/AuthorCard.astro';
-import PostCard from '../../../components/PostCard.astro';
-import Pagination from '../../../components/Pagination.astro';
+import AuthorCard from '../../../components/AuthorCard';
+import PostCard from '../../../components/PostCard';
+import Pagination from '../../../components/Pagination';
 import { getSortedPosts, filterByAuthor } from '../../../utils/posts';
 import { AUTHORS } from '../../../data/authors';
 import { SITE } from '../../../config';
