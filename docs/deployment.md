@@ -4,8 +4,8 @@ The site ships as **static assets on Cloudflare Workers** (Workers Static Assets
 is **no Worker script** — Cloudflare serves the prerendered files in `./dist` directly,
 so there's no server runtime and asset requests don't count as Worker invocations.
 
-Deploys are driven by the **Cloudflare Workers ↔ GitHub (Git) integration**: push to the
-repo, Cloudflare builds it and deploys.
+Deploys are driven by the **Cloudflare Workers ↔ GitHub (Git) integration**: push to
+`main`, Cloudflare builds it and deploys.
 
 ## `wrangler.jsonc`
 
@@ -23,7 +23,7 @@ repo, Cloudflare builds it and deploys.
 ```
 
 - `not_found_handling: "404-page"` serves the prerendered `404.html` with a real 404
-  status. (Switch to `"single-page-application"` only if the site ever becomes an SPA.)
+  status.
 - `html_handling: "auto-trailing-slash"` pairs with Astro's `trailingSlash: "always"` so
   every URL canonicalises to a trailing slash.
 
@@ -32,10 +32,10 @@ repo, Cloudflare builds it and deploys.
 | Setting | Value |
 | --- | --- |
 | Build command | `npm run build` |
-| Output | `./dist` (via `assets.directory` — no separate "output dir" field needed) |
+| Output | `./dist` (via `assets.directory`) |
 | Production deploy command | `npx wrangler deploy` |
 | Preview (non-prod) deploy command | `npx wrangler versions upload` |
-| Node version | 20+ |
+| Node version | 22+ |
 
 ## First-time setup: connect the GitHub repo
 
@@ -48,8 +48,7 @@ repo, Cloudflare builds it and deploys.
    default `npx wrangler deploy`. Root directory: blank.
 4. **Production branch:** `main` (Settings → Build → Branch control).
 5. **Preview deployments (optional):** enable "Builds for non-production branches" to get
-   a preview URL + PR comment for every non-`main` push (deployed via
-   `wrangler versions upload`).
+   a preview URL + PR comment for every non-`main` push.
 6. **Custom domain:** Worker → **Settings → Domains & Routes → Add → Custom domain** →
    `posts.oztamir.com`. Cloudflare creates the DNS record and TLS cert automatically (the
    `oztamir.com` zone must be active on Cloudflare). Equivalent in config:
@@ -60,36 +59,75 @@ repo, Cloudflare builds it and deploys.
    (`SITE.url`) — update both if the domain ever changes (they drive canonical URLs,
    OpenGraph, sitemaps, and RSS).
 
-After that, every push to `main` triggers: install → `npm run build` → `wrangler deploy`.
+After setup, every push to `main` triggers: install → `npm run build` → `wrangler deploy`.
+
+## CI — `.github/workflows/ci.yml`
+
+CI runs on every push and PR. It does **not** deploy — Cloudflare handles that.
+
+```
+push / PR → CI job:
+  1. npm ci
+  2. npm run check        (astro check — TS + .astro type errors; must be 0)
+  3. npm run build        (full static build to ./dist)
+  4. npm run check:links  (scripts/check-links.mjs — internal broken-link scan)
+  5. npm run lhci         (Lighthouse budget against ./dist)
+```
+
+### Lighthouse budget (`.lighthouserc.json`)
+
+Audits four representative pages (home, a post, tag archive, author archive) in desktop
+mode against `./dist`. Minimum scores:
+
+| Category | Threshold |
+| --- | --- |
+| Performance | ≥ 0.9 (error) |
+| Accessibility | ≥ 0.9 (error) |
+| Best practices | ≥ 0.9 (warn) |
+| SEO | ≥ 0.9 (error) |
+
+Reports are saved to `.lighthouseci/reports/`.
 
 ## Redirects — `public/_redirects`
 
-Files in `public/` are copied verbatim into `dist/`. Workers Static Assets honors
+Files in `public/` are copied verbatim into `dist/`. Workers Static Assets honours
 `_redirects`:
 
 ```
-/rss/                       /rss.xml               301   # legacy feed URL → /rss.xml endpoint
+/rss/                       /rss.xml               301   # legacy feed URL; kept forever
 /page/1/                    /                      301
 /tag/:tag/page/1/           /tag/:tag/             301
 /author/:author/page/1/     /author/:author/       301
 ```
 
-(The RSS endpoint emits `/rss.xml`; the `<link rel="alternate">` and footer still point at
-`/rss/`, so existing subscribers are 301'd through.)
+The `/rss/ → /rss.xml` redirect is **permanent and must not be removed** — old feed
+subscribers rely on it.
 
 ## Cache headers — `public/_headers`
 
 ```
-/content/images/*   Cache-Control: public, max-age=31536000, immutable
-/content/media/*    Cache-Control: public, max-age=31536000, immutable
-/fonts/*            Cache-Control: public, max-age=31536000, immutable
-/_astro/*           Cache-Control: public, max-age=31536000, immutable
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
 ```
 
-HTML is intentionally left to Cloudflare's defaults so content updates are picked up.
+All post images and other build assets are fingerprinted and served under `/_astro/*`
+(a content change yields a new hash), so they are safe to cache indefinitely.
+HTML pages are intentionally not long-cached so content updates are picked up immediately.
 
-> Note: `_redirects`/`_headers` apply to static-asset responses. They'd be bypassed only
-> if a Worker script (`main`) were added later — there isn't one.
+## Sitemaps
+
+`@astrojs/sitemap` auto-generates `/sitemap-index.xml` and `/sitemap-0.xml` at build
+time. `robots.txt` (generated by `src/pages/robots.txt.ts`) points crawlers at
+`/sitemap-index.xml`. There are no hand-rolled sitemap endpoints.
+
+## RSS feed
+
+The feed is served at `/rss.xml` (generated by `src/pages/rss.xml.ts`). It includes the
+15 most recent posts with full-HTML `<content:encoded>` bodies. The `<head>` and footer
+link to `/rss.xml`; `/rss/` redirects to `/rss.xml` permanently.
 
 ## Rollback
 
@@ -108,4 +146,5 @@ npm run build && npm run preview   # serves ./dist exactly as it will be served 
 
 ## What is NOT deployed
 
-Only `./dist` is uploaded — the prerendered HTML, CSS, JS, and public assets.
+Only `./dist` is uploaded — the prerendered HTML, CSS, hashed JS/image assets, fonts,
+and `public/` files. Source files, `node_modules`, and scripts are not included.

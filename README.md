@@ -2,7 +2,7 @@
 
 The source for **0xZ**, a personal blog (`# cat /dev/brain >> posts`). Fully static
 **Astro** site deployed on **Cloudflare Workers Static Assets** — prerendered HTML,
-no server runtime.
+no server runtime, zero client JS.
 
 ## Quick start
 
@@ -19,7 +19,7 @@ npm run preview    # http://localhost:4321
 - **[docs/design-system.md](./docs/design-system.md)** — design system as Tailwind
   tokens: fonts, colors, dark mode, components, how to extend.
 - **[docs/deployment.md](./docs/deployment.md)** — Cloudflare Workers deploy via the
-  GitHub integration, `wrangler.jsonc`, redirects/headers, rollback.
+  GitHub integration, `wrangler.jsonc`, redirects/headers, CI, rollback.
 - **[AGENTS.md](./AGENTS.md)** — conventions for anyone (incl. AI agents) editing the repo.
 
 ## At a glance
@@ -27,7 +27,9 @@ npm run preview    # http://localhost:4321
 | | |
 | --- | --- |
 | Framework | Astro 6 (`output: "static"`) |
-| Styling | Tailwind v4 + custom theme CSS |
-| Content | Markdown content collections (`src/content/posts/`) |
+| UI | React `.tsx` components (static, no hydration) |
+| Styling | Tailwind v4 (`@theme` tokens) + `@tailwindcss/typography` |
+| Content | MDX content collections (`src/content/posts/*.mdx`) |
+| Images | Astro asset pipeline (`src/assets/content/images/**` → WebP + srcset; GIFs preserved) |
 | Hosting | Cloudflare Workers Static Assets (`./dist`) |
-| Posts | 41 · single author · trailing-slash URLs |
+| Posts | Single author · trailing-slash URLs · Shiki `nord` code highlighting |
