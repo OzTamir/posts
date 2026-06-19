@@ -4,7 +4,8 @@
  * Serves the 15 most recent posts (change RSS_LIMIT to Infinity for all posts).
  * Uses `post.rendered.html` for full-HTML <content:encoded>.
  *
- * Channel extras: <image> favicon block, <atom:link> self-link, <ttl>60</ttl>.
+ * Channel extras: <image> icon block (optimized /_astro asset, made absolute),
+ * <atom:link> self-link, <ttl>60</ttl>.
  * Per-item extras: <dc:creator>, <media:content> (feature image), <category> tags.
  */
 
@@ -12,6 +13,7 @@ import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { SITE } from '../config';
 import { AUTHORS } from '../data/authors';
+import { SITE_IMAGES } from '../data/site-images';
 import { socialImageUrl } from '../utils/images';
 
 // Feed limit — 15 most recent posts.
@@ -27,6 +29,10 @@ export async function GET(context: { site: URL }) {
 
   const siteUrl = SITE.url;
 
+  // Channel <image> points at the real optimized icon (a hashed /_astro asset)
+  // made absolute — the site has no static favicon file in public/.
+  const channelIconUrl = `${siteUrl}${SITE_IMAGES.icon.src}`;
+
   return rss({
     title: SITE.title,
     description: SITE.description,
@@ -39,7 +45,7 @@ export async function GET(context: { site: URL }) {
     },
     // Channel-level extras that @astrojs/rss doesn't have first-class support for
     customData: [
-      `<image><url>${siteUrl}/favicon.png</url><title>${SITE.title}</title><link>${siteUrl}/</link></image>`,
+      `<image><url>${channelIconUrl}</url><title>${SITE.title}</title><link>${siteUrl}/</link></image>`,
       `<atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml"/>`,
       `<ttl>60</ttl>`,
     ].join(''),
