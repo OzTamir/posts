@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
+import pruneUnusedJs from './src/integrations/prune-unused-js.mjs';
 
 // Fully static output served from Cloudflare Workers Static Assets.
 export default defineConfig({
@@ -34,6 +35,9 @@ export default defineConfig({
     // the hand-rolled sitemap*.xml.ts endpoints. It inherits the site's
     // trailingSlash:"always" from the top-level config, so URLs stay canonical.
     sitemap(),
+    // Drop the orphaned React client-runtime chunk: nothing hydrates, so it's
+    // never referenced and never loads — this keeps the deploy free of dead JS.
+    pruneUnusedJs(),
   ],
   // Code blocks highlighted by Shiki with the Nord theme.
   markdown: {
