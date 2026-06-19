@@ -23,17 +23,12 @@ export const SITE = {
   twitterDescription:
     'Shitposts about cybersecurity, home automation, DIY, AI, and everything else in the world.',
 
-  /**
-   * Brand imagery. Centralised here so `Head` (favicon, publisher logo,
-   * Open Graph / Twitter image) derives from config rather than hardcoding
-   * `/content/...` literals. The optimized variants are imported from
-   * `src/data/site-images.ts`; these public paths are the raw originals used
-   * for the `<head>` favicon link and the absolute social-image URLs.
-   */
-  logo: '/content/images/2024/07/android-chrome-512x512-1.png',
-  icon: '/content/images/2024/07/android-chrome-512x512.png',
-  ogImage: '/content/images/2020/07/android-chrome-512x512.png',
-  twitterImage: '/content/images/2024/07/android-chrome-512x512-1.png',
+  // Brand imagery (favicon, publisher logo, home Open Graph / Twitter image)
+  // lives in ONE place: `src/data/site-images.ts`, where the PNGs are imported
+  // through Astro's asset pipeline. Consumers read the optimized assets from
+  // `SITE_IMAGES` (favicon + cover in components, publisher logo in Head's
+  // JSON-LD, home OG/Twitter in the index routes) — no `/content/...` literals
+  // ship and there is no duplicated path config here.
 
   /**
    * Single source of truth for social / identity links.

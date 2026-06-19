@@ -12,6 +12,7 @@
  * (no per-post import churn).
  */
 import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import { resolveImage, isGif } from '../components/mdx/images';
 
 export interface OptimizedImage {
@@ -58,15 +59,23 @@ export async function optimizeFeatureImage(
  * Resolve a feature/content image to a single absolute optimized URL for use
  * as an Open Graph / Twitter / JSON-LD image (social scrapers want one image,
  * not a srcset). Returns the absolute https URL, or null.
+ *
+ * Accepts either a path string (frontmatter "/content/images/..." or
+ * tree-relative — resolved through the asset glob) OR an already-imported
+ * `ImageMetadata` (e.g. `SITE_IMAGES.ogDefault`), so brand imagery can stay a
+ * single imported source instead of a duplicated path literal.
  */
 export async function socialImageUrl(
   siteUrl: string,
-  path?: string | null,
+  source?: string | ImageMetadata | null,
 ): Promise<{ url: string; width: number; height: number } | null> {
-  if (!path) return null;
-  if (/^https?:\/\//.test(path)) return { url: path, width: 0, height: 0 };
+  if (!source) return null;
+  if (typeof source === 'string' && /^https?:\/\//.test(source)) {
+    return { url: source, width: 0, height: 0 };
+  }
 
-  const asset = resolveImage(path);
+  // String paths go through the asset glob; an ImageMetadata is used as-is.
+  const asset = typeof source === 'string' ? resolveImage(source) : source;
   // GIFs: use the hashed original; otherwise a single large WebP.
   const optimized = isGif(asset)
     ? { src: asset.src }

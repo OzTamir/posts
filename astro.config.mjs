@@ -45,8 +45,7 @@ export default defineConfig({
       theme: 'nord',
     },
   },
-  // Images are served verbatim from /public/content/images/** to preserve
-  // animated GIFs and keep image URLs stable; astro:assets is not used.
+  // Tailwind v4 via its Vite plugin (single CSS entry: src/styles/global.css).
   vite: {
     plugins: [tailwindcss()],
   },

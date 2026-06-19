@@ -13,6 +13,7 @@ import Pagination from '../../components/Pagination';
 import { getSortedPosts, paginatePosts, pageCount } from '../../utils/posts';
 import { socialImageUrl } from '../../utils/images';
 import { SITE } from '../../config';
+import { SITE_IMAGES } from '../../data/site-images';
 
 export const getStaticPaths = (async () => {
   const all = await getSortedPosts();
@@ -30,8 +31,9 @@ const { page } = Astro.props;
 const all = await getSortedPosts();
 const { pagePosts, nextUrl, prevUrl } = paginatePosts(all, page, SITE.postsPerPage, '');
 
-const ogImg = await socialImageUrl(SITE.url, SITE.ogImage);
-const twImg = await socialImageUrl(SITE.url, SITE.twitterImage);
+// Home social images derive from the single SITE_IMAGES source (imported assets).
+const ogImg = await socialImageUrl(SITE.url, SITE_IMAGES.ogDefault);
+const twImg = await socialImageUrl(SITE.url, SITE_IMAGES.logo);
 
 const canonical = `${SITE.url}/page/${page}/`;
 
