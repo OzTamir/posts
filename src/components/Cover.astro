@@ -1,0 +1,26 @@
+---
+/**
+ * Cover.astro — the home-page hero (ported from partials/cover.hbs).
+ * Renders the site icon + the site description inside a <code> element
+ * (the description is "# cat /dev/brain >> posts").
+ *
+ * The members "Subscribe / Login" CTA from the original partial is
+ * DROPPED (members/subscriptions are not part of the static site).
+ */
+import { SITE } from '../config';
+---
+<div class="cover gh-outer">
+  <div class="cover-content gh-inner">
+    {SITE.icon && (
+      <div class="cover-icon">
+        <img class="cover-icon-image" src={SITE.icon} alt={SITE.title} />
+      </div>
+    )}
+
+    {SITE.description && (
+      <div class="cover-description">
+        <code>{SITE.description}</code>
+      </div>
+    )}
+  </div>
+</div>

@@ -1,0 +1,33 @@
+---
+/**
+ * SiteHeader.astro — the `#gh-head` header, rendered on every template
+ * EXCEPT the home page (Ghost's default.hbs wraps it in {{^is "home"}}).
+ *
+ * Ported from default.hbs (left-logo layout, the configured
+ * navigation_layout). Navigation menus are empty (SITE.navigation = [])
+ * so only the logo shows.
+ *
+ * DROPPED vs. live: the two search buttons (`.gh-search`, opening Ghost's
+ * sodo-search overlay) are removed — server-side search is not part of
+ * the static site. The empty <nav class="gh-head-menu"> and
+ * <div class="gh-head-actions"> are kept for layout parity (the grid
+ * columns rely on them).
+ */
+import { SITE } from '../config';
+---
+<header id="gh-head" class="gh-head gh-outer">
+  <div class="gh-head-inner gh-inner">
+    <div class="gh-head-brand">
+      <div class="gh-head-brand-wrapper">
+        <a class="gh-head-logo" href={`${SITE.url}/`}>
+          {/* Single logo image — matches live (white_logo_for_dark_mode unset). */}
+          <img src={SITE.logo} alt={SITE.title} />
+        </a>
+      </div>
+    </div>
+
+    <nav class="gh-head-menu"></nav>
+
+    <div class="gh-head-actions"></div>
+  </div>
+</header>

@@ -1,0 +1,748 @@
+/* CSS @import rules must precede all other rules — keep the remote font import
+   first, before Tailwind's import expands into rules. */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
+@import "tailwindcss";
+@import "./content.css";
+
+/* =====================================================================
+   FONTS — loaded identically to the live posts.oztamir.com site.
+   Mulish (sans) + Lora (serif) self-hosted from /public/fonts.
+   IBM Plex Mono (code) from Google Fonts (imported above); Literata
+   Variable + Press Start 2P (used by specific posts) from jsDelivr
+   fontsource — all as on the live site (see live-screen.css).
+   ===================================================================== */
+
+@font-face { font-family: Mulish; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/mulish-v10-latin-regular.woff2") format("woff2"), url("/fonts/mulish-v10-latin-regular.woff") format("woff"); }
+@font-face { font-family: Mulish; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/mulish-v10-latin-700.woff2") format("woff2"), url("/fonts/mulish-v10-latin-700.woff") format("woff"); }
+@font-face { font-family: Mulish; font-style: normal; font-weight: 800; font-display: swap; src: url("/fonts/mulish-v10-latin-800.woff2") format("woff2"), url("/fonts/mulish-v10-latin-800.woff") format("woff"); }
+@font-face { font-family: Mulish; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/mulish-v10-latin-italic.woff2") format("woff2"), url("/fonts/mulish-v10-latin-italic.woff") format("woff"); }
+@font-face { font-family: Mulish; font-style: italic; font-weight: 700; font-display: swap; src: url("/fonts/mulish-v10-latin-700italic.woff2") format("woff2"), url("/fonts/mulish-v10-latin-700italic.woff") format("woff"); }
+@font-face { font-family: Lora; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/lora-v23-latin-regular.woff2") format("woff2"), url("/fonts/lora-v23-latin-regular.woff") format("woff"); }
+@font-face { font-family: Lora; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/lora-v23-latin-700.woff2") format("woff2"), url("/fonts/lora-v23-latin-700.woff") format("woff"); }
+@font-face { font-family: Lora; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/lora-v23-latin-italic.woff2") format("woff2"), url("/fonts/lora-v23-latin-italic.woff") format("woff"); }
+@font-face { font-family: Lora; font-style: italic; font-weight: 700; font-display: swap; src: url("/fonts/lora-v23-latin-700italic.woff2") format("woff2"), url("/fonts/lora-v23-latin-700italic.woff") format("woff"); }
+@font-face { font-display: swap; font-family: "Literata Variable"; font-style: normal; font-weight: 200 900; src: url("https://cdn.jsdelivr.net/fontsource/fonts/literata:vf@latest/latin-opsz-normal.woff2") format("woff2-variations"); unicode-range: u+00??, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc, u+0304, u+0308, u+0329, u+2000-206f, u+20ac, u+2122, u+2191, u+2193, u+2212, u+2215, u+feff, u+fffd; }
+@font-face { font-display: swap; font-family: "press-start-2p"; font-style: normal; font-weight: 400; src: url("https://cdn.jsdelivr.net/fontsource/fonts/press-start-2p@latest/latin-400-normal.woff2") format("woff2"), url("https://cdn.jsdelivr.net/fontsource/fonts/press-start-2p@latest/latin-400-normal.woff") format("woff"); unicode-range: u+00??, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc, u+0304, u+0308, u+0329, u+2000-206f, u+20ac, u+2122, u+2191, u+2193, u+2212, u+2215, u+feff, u+fffd; }
+
+/* =====================================================================
+   DESIGN TOKENS (Tailwind v4 @theme).
+   These mirror the LIGHT-theme custom properties from the live theme's
+   :root block (live-screen.css). They expose Tailwind utilities
+   (bg-bg, text-primary, font-mono, …) AND emit the matching CSS custom
+   properties. Dark mode is handled below by the Ghost `.theme-dark` /
+   `.theme-light` class mechanism, which re-points the runtime
+   --*-color variables the ported component CSS actually consumes.
+   ===================================================================== */
+@theme {
+  /* Font stacks — exactly as live (--font-sans / --font-serif / --font-mono). */
+  --font-sans: Mulish, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-serif: Lora, Times, serif;
+  --font-mono: "IBM Plex Mono", "SF Mono", Monaco, Inconsolata, "Roboto Mono", "Courier New", monospace;
+
+  /* Brand / accent (light theme baseline). */
+  --color-accent: #997700;
+  --color-accent-hover: #8b6914;
+  --color-accent-light: #fff4b3;
+
+  /* Light theme palette (live :root values). */
+  --color-bg: #ffffff;
+  --color-primary-text: #1a1a1a;
+  --color-secondary-text: #666666;
+  --color-lighter-gray: #f8f8f8;
+  --color-light-gray: #e8e8e8;
+  --color-mid-gray: #b3b3b3;
+  --color-dark-gray: #4d4d4d;
+  --color-darker-gray: #1a1a1a;
+  --color-black: #000000;
+  --color-green: #28a745;
+  --color-orange: #ffc107;
+  --color-red: #dc3545;
+
+  /* Social brand colors (live values). */
+  --color-facebook: #3b5998;
+  --color-twitter: #1da1f2;
+  --color-linkedin: #0b66c3;
+  --color-bluesky: #1185fe;
+  --color-threads: #000000;
+  --color-mastodon: #6364ff;
+  --color-tiktok: #000000;
+  --color-youtube: #ff0000;
+  --color-instagram: #000000;
+  --color-rss: #f26522;
+}
+
+/* =====================================================================
+   RUNTIME THEME VARIABLES + DARK MODE
+   Ported verbatim from the live compiled theme (live-screen.css). The
+   component CSS below reads these `--*-color` custom properties. The
+   site ships `<html class="theme-dark">` by default; the footer toggle
+   swaps `.theme-dark`/`.theme-light` on <html> (see BaseLayout script),
+   and a prefers-color-scheme fallback applies when no class is forced.
+   --ghost-accent-color is injected per-page in <head> (= #ffd102).
+   ===================================================================== */
+:root {
+  --brand-color: var(--ghost-accent-color, #997700);
+  --accent-color: #997700;
+  --accent-color-hover: #8b6914;
+  --accent-color-light: #fff4b3;
+  --primary-text-color: #1a1a1a;
+  --secondary-text-color: #666;
+  --white-color: #fff;
+  --color-white: #fff;
+  --lighter-gray-color: #f8f8f8;
+  --color-lighter-gray: #f8f8f8;
+  --light-gray-color: #e8e8e8;
+  --color-light-gray: #e8e8e8;
+  --mid-gray-color: #b3b3b3;
+  --color-mid-gray: #b3b3b3;
+  --dark-gray-color: #4d4d4d;
+  --color-dark-gray: #4d4d4d;
+  --darker-gray-color: #1a1a1a;
+  --color-darker-gray: #1a1a1a;
+  --black-color: #000;
+  --green-color: #28a745;
+  --orange-color: #ffc107;
+  --red-color: #dc3545;
+  --facebook-color: #3b5998;
+  --twitter-color: #1da1f2;
+  --linkedin-color: #0b66c3;
+  --bluesky-color: #1185fe;
+  --threads-color: #000;
+  --mastodon-color: #6364ff;
+  --tiktok-color: #000;
+  --youtube-color: red;
+  --instagram-color: #000;
+  --rss-color: #f26522;
+  --animation-base: ease-in-out;
+  --navbar-height: 80px;
+  --content-font-size: 1.7rem;
+  --header-spacing: 60px;
+  color-scheme: light dark;
+}
+
+@media (max-width: 767px) {
+  :root { --header-spacing: 30px; }
+}
+
+/* Light mode — explicit class override (live values). */
+.theme-light:root,
+html.theme-light:root {
+  --brand-color: #e3b900 !important;
+  --accent-color: #e3b900 !important;
+  --accent-color-hover: #8b6914 !important;
+  --accent-color-light: #fff4b3 !important;
+  --ghost-accent-color: #970 !important;
+}
+
+/* Dark mode — explicit class (the site default), live values. */
+.theme-dark:root {
+  --brand-color: var(--ghost-accent-color, #ffd102);
+  --accent-color: #ffd102;
+  --accent-color-hover: #fd3;
+  --accent-color-light: #650;
+  --primary-text-color: #e8e8e8;
+  --secondary-text-color: #a0a0a0;
+  --white-color: #1a1a1a;
+  --color-white: #1a1a1a;
+  --lighter-gray-color: #252525;
+  --color-lighter-gray: #252525;
+  --light-gray-color: #333;
+  --color-light-gray: #333;
+  --color-light-color: #333;
+  --mid-gray-color: #666;
+  --color-mid-gray: #666;
+  --dark-gray-color: #d0d0d0;
+  --color-dark-gray: #d0d0d0;
+  --darker-gray-color: #fff;
+  --color-darker-gray: #fff;
+  --black-color: #0f0f0f;
+}
+
+.theme-dark .gh-head-logo img:first-child:not(:only-child) { opacity: 0; }
+.theme-dark .gh-head-logo img + img { opacity: 1; }
+.theme-dark .share-link { background-color: var(--darker-gray-color); }
+.theme-dark .share-link-facebook { color: var(--facebook-color); }
+.theme-dark .share-link-twitter { color: var(--twitter-color); }
+.theme-dark .share-link-linkedin { color: var(--linkedin-color); }
+.theme-dark .share-link-bluesky { color: var(--bluesky-color); }
+.theme-dark .share-link-threads { color: var(--threads-color); }
+.theme-dark .share-link-mastodon { color: var(--mastodon-color); }
+.theme-dark .share-link-tiktok { color: var(--tiktok-color); }
+.theme-dark .share-link-youtube { color: var(--youtube-color); }
+.theme-dark .share-link-instagram { color: var(--instagram-color); }
+
+/* Dark mode — system-preference fallback when no class is forced. */
+@media (prefers-color-scheme: dark) {
+  html:not(.theme-light):root {
+    --brand-color: var(--ghost-accent-color, #ffd102);
+    --accent-color: #ffd102;
+    --accent-color-hover: #fd3;
+    --accent-color-light: #650;
+    --primary-text-color: #e8e8e8;
+    --secondary-text-color: #a0a0a0;
+    --white-color: #1a1a1a;
+    --color-white: #1a1a1a;
+    --lighter-gray-color: #252525;
+    --light-gray-color: #333;
+    --mid-gray-color: #666;
+    --dark-gray-color: #d0d0d0;
+    --darker-gray-color: #fff;
+    --color-darker-gray: #fff;
+    --black-color: #0f0f0f;
+  }
+  html:not(.theme-light) .gh-head-logo img:first-child:not(:only-child) { opacity: 0; }
+  html:not(.theme-light) .gh-head-logo img + img { opacity: 1; }
+  html:not(.theme-light) .share-link { background-color: var(--darker-gray-color); }
+  html:not(.theme-light) .share-link-facebook { color: var(--facebook-color); }
+  html:not(.theme-light) .share-link-twitter { color: var(--twitter-color); }
+  html:not(.theme-light) .share-link-linkedin { color: var(--linkedin-color); }
+}
+
+/* =====================================================================
+   BASE / RESET  (ported from live-screen.css "basics" reset + body type)
+   Note: html font-size:62.5% so 1rem = 10px, and all rem values below
+   follow the live theme's 10px-rem scale.
+   ===================================================================== */
+*, *::after, *::before { box-sizing: border-box; }
+blockquote, body, dd, dl, figure, h1, h2, h3, h4, h5, h6, p { margin: 0; }
+ol[role="list"], ul[role="list"] { list-style: none; }
+html:focus-within { scroll-behavior: smooth; }
+a:not([class]) { -webkit-text-decoration-skip: ink; text-decoration-skip-ink: auto; }
+img, picture { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within { scroll-behavior: auto; }
+  *, *::after, *::before {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+html { font-size: 62.5%; }
+
+body {
+  background-color: var(--white-color);
+  color: var(--primary-text-color);
+  font-family: var(--gh-font-body, var(--font-sans));
+  font-size: 1.6rem;
+  line-height: 1.6;
+  min-height: 100vh;
+  text-rendering: optimizespeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img { height: auto; }
+
+a {
+  color: var(--darker-gray-color);
+  text-decoration: none;
+  transition: color .2s var(--animation-base);
+}
+a:hover { color: var(--brand-color); opacity: .8; }
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--darker-gray-color);
+  font-family: var(--gh-font-heading, var(--font-sans));
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.15;
+}
+h1 { font-size: var(--h1-size, 4.6rem); }
+h2 { font-size: 2.8rem; }
+h3 { font-size: 2.4rem; }
+h4 { font-size: 2.2rem; }
+h5 { font-size: 2rem; }
+h6 { font-size: 1.8rem; }
+
+hr { background-color: var(--light-gray-color); border: 0; height: 1px; width: 100%; }
+
+blockquote:not([class]) { border-left: 4px solid var(--ghost-accent-color); padding-left: 2rem; }
+
+/* Global code styling (live Ghost base + theme override). Applies to the
+   home cover's <code> and the "FIN" divider <code> as well as content. */
+pre {
+  background-color: var(--lighter-gray-color);
+  hyphens: none;
+  line-height: 1.5;
+  overflow-x: auto;
+  padding: 1.6rem 2.4rem;
+  white-space: pre;
+  -webkit-overflow-scrolling: touch;
+}
+code { font-family: var(--font-mono); font-size: .9em; }
+:not(pre) > code {
+  background-color: var(--lighter-gray-color) !important;
+  border-radius: 3px !important;
+  color: var(--darker-gray-color) !important;
+  font-family: var(--font-mono);
+  font-size: .9em;
+  padding: .2rem .4rem !important;
+}
+
+figcaption {
+  color: var(--secondary-text-color);
+  font-size: 1.4rem;
+  line-height: 1.4;
+  margin-top: 1.6rem;
+  text-align: center;
+}
+
+iframe { border: 0; display: block; overflow: hidden; width: 100%; }
+
+@media (max-width: 767px) {
+  h2 { font-size: 2.4rem; }
+  h3 { font-size: 2.1rem; }
+}
+
+/* =====================================================================
+   LAYOUT  (site shell, gh-outer / gh-inner / gh-canvas grid)
+   Ported from live-screen.css (layout.css). The site uses a 10px rem.
+   ===================================================================== */
+:root { --gap: 3.6rem; --h1-size: 4.6rem; }
+@media (max-width: 767px) {
+  :root { --h1-size: 3.2rem !important; --gap: 2rem; }
+}
+
+.site { display: flex; flex-direction: column; min-height: 100vh; }
+
+.home-template .home-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.site-content { flex-grow: 1; padding: 6rem 0 1rem; }
+@media (max-width: 767px) { .site-content { padding: 3rem 0; } }
+
+.gh-outer { padding-left: var(--gap); padding-right: var(--gap); }
+.gh-inner { margin: 0 auto; max-width: var(--container-width, 1200px); }
+
+/* The Ghost named-grid system: full / wide / main columns. */
+.gh-canvas {
+  --main: min(var(--content-width, 720px), 100% - var(--gap) * 2);
+  --wide: minmax(0, calc((var(--container-width, 1200px) - var(--content-width, 720px)) / 2));
+  --full: minmax(var(--gap), 1fr);
+  display: grid;
+  grid-template-columns:
+    [full-start] var(--full)
+    [wide-start] var(--wide)
+    [main-start] var(--main) [main-end]
+    var(--wide) [wide-end]
+    var(--full) [full-end];
+}
+.gh-canvas > * { grid-column: main; }
+.kg-width-wide { grid-column: wide; }
+.kg-width-full { grid-column: full; }
+.kg-width-full img { width: 100%; }
+
+/* =====================================================================
+   SITE HEADER  (gh-head). Shown on every template EXCEPT home.
+   Ported from live-screen.css (header.css) — left-logo layout only,
+   which is the configured navigation_layout (is-head-left-logo).
+   ===================================================================== */
+.gh-head { background-color: var(--color-white); height: 100px; }
+.gh-head-inner {
+  align-items: center;
+  column-gap: var(--head-nav-gap, 2.8rem);
+  display: grid;
+  grid-auto-flow: row dense;
+  grid-template-columns: 1fr auto auto;
+  height: 100%;
+}
+.gh-head-brand { line-height: 1; }
+.gh-head-brand-wrapper { align-items: center; display: flex; }
+.gh-head-logo {
+  font-family: var(--gh-font-heading, var(--font-sans));
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  position: relative;
+}
+.gh-head-logo img { max-height: 40px; }
+.gh-head-logo img:nth-child(2) { left: 0; opacity: 0; position: absolute; top: 0; }
+.gh-head-menu { display: flex; align-items: center; gap: var(--head-nav-gap, 2.8rem); font-size: 1.5rem; font-weight: 700; }
+.gh-head-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--head-nav-gap, 2.8rem);
+  justify-content: flex-end;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.gh-search { margin-left: -6px; margin-right: -6px; }
+.gh-search:hover { opacity: .9; }
+.gh-head-brand .gh-search { margin-right: 8px; }
+
+.is-head-left-logo .gh-head-inner { grid-template-columns: auto 1fr auto; }
+@media (min-width: 992px) {
+  .is-head-left-logo .gh-head-menu { margin-left: 16px; margin-right: 64px; }
+}
+
+.gh-icon-btn {
+  align-items: center;
+  background-color: transparent;
+  border: 0;
+  color: var(--darker-gray-color);
+  cursor: pointer;
+  display: inline-flex;
+  height: 30px;
+  justify-content: center;
+  outline: none;
+  padding: 0;
+  width: 30px;
+}
+.gh-icon-btn svg { height: 20px; width: 20px; }
+
+@media (min-width: 768px) {
+  .gh-head-brand .gh-search { display: none; }
+}
+@media (max-width: 767px) {
+  .gh-head-actions .gh-search { display: none; }
+  #gh-head { height: 64px; }
+  #gh-head .gh-head-inner {
+    gap: 48px;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+  }
+  #gh-head .gh-head-brand {
+    align-items: center;
+    display: grid;
+    grid-column-start: 1;
+    grid-template-columns: 1fr auto auto;
+    height: 64px;
+  }
+  #gh-head .gh-head-logo { font-size: 2.2rem; }
+}
+
+/* =====================================================================
+   COVER  (home hero). Ported from live-screen.css (cover.css).
+   ===================================================================== */
+.cover { margin-top: 48px; }
+.cover-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  max-width: 520px;
+  text-align: center;
+}
+.cover-icon { margin-bottom: 32px; position: relative; }
+.cover-icon-image { width: 120px; }
+.cover-description { font-size: 1.7rem; }
+.cover-cta { display: flex; margin-top: 2rem; }
+.cover-cta .button { margin: 0 .5rem; }
+
+/* =====================================================================
+   FEED  (post cards on home / tag / author / related).
+   Ported from live-screen.css (feed.css). Monospace IBM Plex Mono.
+   NOTE: the live theme references var(--text-color) which is never
+   defined, so it resolves to inherited color (primary text) and the
+   border falls back to currentColor — reproduced here 1:1.
+   ===================================================================== */
+.feed {
+  display: grid;
+  font-family: "IBM Plex Mono", monospace;
+  grid-template-areas: "content metadata";
+  grid-template-columns: 3fr 1fr;
+  overflow: hidden;
+  padding: 2rem 0;
+  position: relative;
+}
+.feed + .feed { border-top: 1px solid var(--light-gray-color); }
+.feed + .feed.feed-paged { border-top: 0; margin-top: 3rem; }
+.feed-content { grid-area: content; }
+.feed-title {
+  border-bottom: 2px solid var(--text-color);
+  color: var(--text-color);
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 .8rem;
+  padding-bottom: .3rem;
+}
+.feed-description {
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.4;
+  margin: 0;
+}
+.feed-metadata {
+  align-items: flex-end;
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  font-size: 1rem;
+  font-weight: 400;
+  grid-area: metadata;
+  justify-content: flex-start;
+  margin: 0;
+  padding-left: 1rem;
+}
+.feed-date { color: var(--brand-color) !important; font-size: 1rem; font-weight: 400; }
+.feed-reading-time { font-size: 1rem; font-weight: 400; margin-top: .2rem; }
+
+.post-feed.gh-feed.gh-canvas {
+  --gap: 120px;
+  --content-width: 720px;
+  --container-width: 1200px;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 6rem 4rem 0;
+}
+.post-feed .feed-title { font-size: 1.8rem; }
+.post-feed .feed-description { font-size: 1.1rem; }
+.post-feed .feed-metadata { font-size: 1rem; }
+
+@media (min-width: 1200px) {
+  .post-feed.gh-feed.gh-canvas {
+    --gap: 120px;
+    --content-width: 900px;
+    --container-width: 1400px;
+    max-width: 1400px;
+    padding: 6rem 6rem 0;
+  }
+  .post-feed .feed-title { font-size: 2.2rem; }
+  .post-feed .feed-description { font-size: 1.3rem; }
+  .post-feed .feed-date,
+  .post-feed .feed-metadata,
+  .post-feed .feed-reading-time { font-size: 1.1rem; }
+}
+@media (min-width: 1600px) {
+  .post-feed.gh-feed.gh-canvas {
+    --gap: 120px;
+    --content-width: 1000px;
+    --container-width: 1600px;
+    max-width: 1600px;
+    padding: 6rem 8rem 0;
+  }
+  .post-feed .feed-title { font-size: 2.6rem; }
+  .post-feed .feed-description { font-size: 1.5rem; }
+  .post-feed .feed-metadata { font-size: 1.2rem; }
+  .post-feed .feed-date,
+  .post-feed .feed-reading-time { font-size: 1.5rem; }
+}
+@media (max-width: 768px) {
+  .post-feed.gh-feed.gh-canvas {
+    --gap: 2rem;
+    --content-width: 100%;
+    --container-width: 100%;
+    max-width: 100%;
+    padding: 3rem 2rem 0;
+  }
+  .feed { display: flex; flex-direction: column; }
+  .feed-content { grid-area: unset; }
+  .feed-description { margin: 0 0 1rem; }
+  .feed-metadata {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    grid-area: unset;
+    justify-content: space-between;
+    padding-left: 0;
+  }
+  .feed-reading-time { margin-top: 0; }
+}
+
+.load-more { display: flex; justify-content: center; margin-top: 48px; }
+
+/* =====================================================================
+   BUTTONS  (only the secondary/“Load more” style is used in the static
+   site; the live "Load more" is a no-op button kept for visual parity).
+   Ported from live-screen.css (button.css).
+   ===================================================================== */
+.button {
+  align-items: center;
+  background-color: var(--white-color);
+  border: 1px solid var(--light-gray-color);
+  border-radius: 3px;
+  color: var(--brand-color);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 800;
+  height: 36px;
+  justify-content: center;
+  letter-spacing: .5px;
+  outline: none;
+  padding: 0 15px;
+  text-transform: uppercase;
+}
+.button:hover { border-color: var(--brand-color); color: var(--brand-color); opacity: 1; }
+.button-secondary { color: var(--darker-gray-color); }
+
+/* =====================================================================
+   SINGLE POST  (article header + footer/author).
+   Ported from live-screen.css (single.css).
+   ===================================================================== */
+.single-header { margin-bottom: 4.5rem; text-align: center; }
+.single-meta {
+  color: var(--secondary-text-color);
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+.single-meta-item + .single-meta-item::before {
+  content: "\02022";
+  font-family: serif;
+  padding: 0 .3rem;
+}
+.single-meta-tag .post-tag { color: var(--brand-color); }
+.single-title {
+  font-size: 4rem;
+  letter-spacing: -.1rem;
+  line-height: 1.2;
+  margin-bottom: 0;
+  word-break: break-word;
+}
+.single-excerpt { font-size: 1.8rem; margin-top: 2rem; word-break: break-word; }
+.single-media { margin-top: 4.5rem; }
+
+.single-footer { margin-top: 4.5rem; }
+.single-footer-divider { border: 0; border-top: 1px solid var(--light-gray-color); margin: 0 0 2rem; width: 100%; }
+.single-footer-author { align-items: flex-start; display: flex; gap: 3rem; padding-top: 1.25rem; }
+.author-image-column { align-items: center; display: flex; flex: 0 0 33.333%; justify-content: center; }
+.single-footer-author .author-image-column .author-image-placeholder {
+  border-radius: 50%;
+  flex-shrink: 0;
+  height: 120px;
+  margin: 0;
+  overflow: hidden;
+  width: 120px;
+}
+.single-footer-author .author-image-column .author-image { height: 100%; object-fit: cover; width: 100%; }
+.author-content-column { display: flex; flex: 0 0 66.666%; flex-direction: column; gap: 1rem; text-align: left; }
+.single-footer-title { font-size: 1.8rem; font-weight: 800; margin: 0; }
+.author-bio { color: var(--secondary-text-color); font-size: 1.5rem; line-height: 1.6; margin: 0; }
+.single-footer-bottom { margin-top: 2rem; }
+
+@media (max-width: 991px) {
+  .single-footer-author { gap: 2rem; }
+  .author-image-column { flex: 0 0 30%; }
+  .author-content-column { flex: 0 0 70%; }
+}
+@media (max-width: 767px) {
+  .single-header { margin-bottom: 3rem; }
+  .single-title { font-size: 2.6rem; }
+  .single-excerpt { font-size: 1.7rem; }
+  .single-media { margin-top: 3rem; }
+  .single-footer-author { align-items: center; flex-direction: column; gap: 2rem; }
+  .author-image-column { flex: 0 0 auto; justify-content: center; width: 100%; }
+  .single-footer-author .author-image-column .author-image-placeholder { height: 100px; width: 100px; }
+  .author-content-column { flex: 1 1 100%; text-align: center; width: 100%; }
+  .single-footer-title { font-size: 1.6rem; }
+  .author-bio { font-size: 1.4rem; }
+}
+
+/* =====================================================================
+   AUTHOR ARCHIVE  (author.css) + SHARE links (share.css)
+   ===================================================================== */
+.author { align-items: center; display: flex; flex-direction: column; margin-bottom: 4.5rem; text-align: center; }
+.author-image-placeholder { border-radius: 50%; flex-shrink: 0; margin-bottom: 2rem; overflow: hidden; width: 70px; }
+.author-name { font-size: 2.4rem; margin-bottom: 0; }
+.author-meta { color: var(--secondary-text-color); font-size: 1.2rem; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
+.author .author-bio { margin-top: 16px; max-width: 520px; }
+.author-social { margin-top: 2rem; }
+
+.share { display: flex; gap: .4rem; }
+.share-link {
+  align-items: center;
+  border-radius: 3px;
+  color: var(--white-color);
+  display: flex;
+  font-size: 1.1rem;
+  font-weight: 800;
+  height: 2.6rem;
+  letter-spacing: .04rem;
+  line-height: 1;
+  margin: 0 .6rem;
+  padding: 0 .8rem;
+  text-transform: uppercase;
+}
+.share-link .icon { height: 14px; width: 14px; }
+.share-link-facebook { background-color: var(--facebook-color); }
+.share-link-twitter { background-color: var(--twitter-color); }
+.share-link-linkedin { background-color: var(--linkedin-color); }
+.share-link-bluesky { background-color: var(--bluesky-color); }
+.share-link-threads { background-color: var(--threads-color); }
+.share-link-mastodon { background-color: var(--mastodon-color); }
+.share-link-tiktok { background-color: var(--tiktok-color); }
+.share-link-youtube { background-color: var(--youtube-color); }
+.share-link-instagram { background-color: var(--instagram-color); }
+.share-link-rss { background-color: var(--rss-color); }
+
+/* =====================================================================
+   TAG ARCHIVE  (tag.css)
+   ===================================================================== */
+.tag { margin-bottom: 4.5rem; text-align: center; }
+.tag .tag-name { color: var(--brand-color); font-size: 3rem; margin-bottom: 0; }
+.tag .tag-name::before { content: "#"; }
+.tag .tag-description { margin: 16px auto 0; max-width: 520px; }
+.tag .tag-media { margin-top: 4.5rem; }
+@media (max-width: 767px) {
+  .tag { margin-bottom: 2.5rem; }
+  .tag .tag-media { margin-top: 3rem; }
+}
+
+/* =====================================================================
+   RELATED POSTS  (related.css)
+   ===================================================================== */
+.related-wrapper { background-color: var(--lighter-gray-color); margin-top: 40px; padding: 56px 0 32px; }
+.related-title { font-size: 2.1rem; margin-bottom: 20px; }
+
+/* =====================================================================
+   FOOTER  (gh-foot). Ported from live-screen.css (layout.css footer
+   overrides). The static site keeps the social links + theme toggle.
+   ===================================================================== */
+.gh-foot {
+  color: var(--secondary-text-color);
+  margin-top: auto;
+  padding: 2rem 0 !important;
+  white-space: nowrap;
+}
+.gh-foot-inner { padding: 0 !important; }
+.no-menu .gh-foot-inner { align-items: center; display: flex; flex-direction: column; gap: 24px; }
+.gh-foot a { color: var(--secondary-text-color); }
+.gh-foot a:hover { color: var(--darker-gray-color); opacity: 1; }
+.gh-foot-social { display: flex; gap: 1rem; justify-content: center; }
+.gh-foot-social-link { align-items: center; color: var(--secondary-text-color); display: inline-flex; transition: color .2s ease; }
+.gh-foot-social-link:hover { color: var(--primary-text-color); }
+.gh-foot-social-link .icon { height: 25px; width: 25px; }
+.gh-foot-bottom { align-items: center; display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+.gh-foot-divider { background: var(--light-gray-color); border-radius: 1px; display: block; height: 2px; margin-bottom: .5rem; width: 400px; }
+.gh-copyright { color: var(--secondary-text-color); font-size: 1.4rem; }
+.gh-theme-toggle-wrapper {
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  gap: .5rem;
+  padding: 0;
+  transition: opacity .2s ease;
+}
+.gh-foot .gh-theme-toggle-wrapper:hover { opacity: .7; }
+.gh-foot .gh-theme-toggle-wrapper .gh-theme-icon { align-items: center; display: inline-flex; }
+.gh-foot .gh-theme-toggle-wrapper .gh-theme-icon .icon { color: var(--secondary-text-color); height: 20px; width: 20px; }
+.gh-foot .gh-theme-text { color: var(--secondary-text-color); font-size: 1.4rem; }
+
+/* =====================================================================
+   UTILITIES  (utils.css) — placeholders + object-fit + permalink
+   ===================================================================== */
+.u-permalink { bottom: 0; left: 0; outline: none; position: absolute; right: 0; top: 0; z-index: 50; }
+.u-placeholder { background-color: var(--lighter-gray-color); position: relative; z-index: 10; }
+.u-placeholder::before { content: ""; display: block; }
+.u-placeholder.horizontal::before { padding-bottom: 50%; }
+.u-placeholder.rectangle::before { padding-bottom: 62.5%; }
+.u-placeholder.square::before { padding-bottom: 100%; }
+.u-object-fit { height: 100%; left: 0; object-fit: cover; position: absolute; top: 0; width: 100%; }
+
+.icon { height: 20px; width: 20px; }

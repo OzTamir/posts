@@ -1,0 +1,49 @@
+---
+/**
+ * SiteFooter.astro — the `.gh-foot` footer (ported from partials/footer.hbs).
+ *
+ * Shows: Twitter, LinkedIn, RSS social links + the dark/light theme
+ * toggle. The `gh-foot-divider` appears only on post pages (matches the
+ * live `{{#if post}}` guard). Secondary navigation is empty so the footer
+ * always carries the `no-menu` modifier.
+ *
+ * The theme-toggle markup is identical to the live theme; the toggle
+ * behaviour (localStorage + class swap on <html>) lives in BaseLayout's
+ * inline script, exactly as the live site wires it up.
+ */
+import { SITE } from '../config';
+import Twitter from './icons/Twitter.astro';
+import Linkedin from './icons/Linkedin.astro';
+import Rss from './icons/Rss.astro';
+import Sun from './icons/Sun.astro';
+
+interface Props {
+  /** Render the top divider (live theme shows it only on single posts). */
+  isPost?: boolean;
+}
+const { isPost = false } = Astro.props;
+---
+<footer class="gh-foot no-menu gh-outer">
+  <div class="gh-foot-inner gh-inner">
+    <div class="gh-foot-bottom">
+      {isPost && <div class="gh-foot-divider"></div>}
+      <div class="gh-foot-social">
+        {SITE.twitter && (
+          <a class="gh-foot-social-link" href={SITE.twitterUrl} target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+            <Twitter />
+          </a>
+        )}
+        <a class="gh-foot-social-link" href="https://www.linkedin.com/in/oz-tamir-7179b185" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <Linkedin />
+        </a>
+        <a class="gh-foot-social-link" href={`${SITE.url}/rss/`} target="_blank" rel="noopener noreferrer" aria-label="RSS Feed">
+          <Rss />
+        </a>
+      </div>
+      <button class="gh-theme-toggle-wrapper gh-theme-toggle" aria-label="Toggle theme" id="theme-toggle">
+        <span class="gh-theme-icon"><Sun /></span>
+        <span class="gh-theme-text" id="theme-text">Dark Mode</span>
+      </button>
+    </div>
+  </div>
+</footer>

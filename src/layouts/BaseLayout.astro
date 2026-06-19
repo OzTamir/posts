@@ -1,0 +1,104 @@
+---
+/**
+ * BaseLayout.astro — the html/head/body shell shared by every route.
+ * Ports Ghost's default.hbs:
+ *   • <html class="theme-dark"> (the site's configured default scheme)
+ *   • <body class="<template> is-head-left-logo"> (body_class + layout)
+ *   • <header id="gh-head"> on every page EXCEPT home (cover replaces it)
+ *   • <footer class="gh-foot">
+ *   • the dark/light theme-toggle inline script (verbatim from the theme),
+ *     persisting the choice in localStorage and swapping .theme-dark /
+ *     .theme-light on <html>, plus the sun/moon icon swap.
+ *
+ * Pages pass their <head> props through `head` and supply their own
+ * <body> contents via the default slot. The wrapping `<div class="site">`
+ * and footer are rendered here so individual pages only emit their main.
+ */
+import Head from '../components/Head.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE } from '../config';
+import '../styles/global.css';
+
+interface Props {
+  /** Props forwarded to Head.astro. */
+  head: Record<string, unknown>;
+  /** Space-separated body template classes, e.g. "post-template tag-thoughts". */
+  bodyClass: string;
+  /** Whether this is the home template (home hides the header + uses cover). */
+  isHome?: boolean;
+  /** Render the footer divider (single posts only). */
+  isPost?: boolean;
+}
+const { head, bodyClass, isHome = false, isPost = false } = Astro.props;
+---
+<!DOCTYPE html>
+<html class="theme-dark" lang={SITE.lang}>
+  <head>
+    <Head {...(head as any)} />
+  </head>
+  <body class={`${bodyClass} is-head-left-logo`}>
+    <div class="site">
+      {!isHome && <SiteHeader />}
+
+      <slot />
+
+      <SiteFooter isPost={isPost} />
+    </div>
+
+    {/* Sibling-of-.site content (e.g. the PostLayout PhotoSwipe markup +
+        embed loader), matching Ghost's pswp placement after .site. */}
+    <slot name="after" />
+
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Theme toggle — ported verbatim from the live Ghost theme.
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+
+        const themeIcon = themeToggle ? themeToggle.querySelector('.gh-theme-icon') : null;
+        const sunIcon = themeIcon ? themeIcon.innerHTML : '';
+        const moonIcon =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>';
+
+        function getInitialTheme() {
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme) return savedTheme;
+          if (html.classList.contains('theme-dark')) return 'dark';
+          if (html.classList.contains('theme-light')) return 'light';
+          return 'dark';
+        }
+
+        function setTheme(theme) {
+          const themeText = document.getElementById('theme-text');
+          html.classList.remove('theme-dark', 'theme-light');
+          if (theme === 'dark') {
+            html.classList.add('theme-dark');
+            if (themeIcon) themeIcon.innerHTML = sunIcon;
+            if (themeToggle) themeToggle.setAttribute('aria-label', 'Switch to light mode');
+            if (themeText) themeText.textContent = 'Dark Mode';
+          } else {
+            html.classList.add('theme-light');
+            if (themeIcon) themeIcon.innerHTML = moonIcon;
+            if (themeToggle) themeToggle.setAttribute('aria-label', 'Switch to dark mode');
+            if (themeText) themeText.textContent = 'Light Mode';
+          }
+          localStorage.setItem('theme', theme);
+        }
+
+        setTheme(getInitialTheme());
+
+        if (themeToggle) {
+          themeToggle.addEventListener('click', function () {
+            const newTheme = html.classList.contains('theme-dark') ? 'light' : 'dark';
+            setTheme(newTheme);
+          });
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+          if (!localStorage.getItem('theme')) setTheme(e.matches ? 'dark' : 'light');
+        });
+      });
+    </script>
+  </body>
+</html>

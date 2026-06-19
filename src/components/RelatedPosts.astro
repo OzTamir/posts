@@ -1,0 +1,33 @@
+---
+/**
+ * RelatedPosts.astro — the "Hungry for more?" section after a post
+ * (ported from partials/related-posts.hbs). Shows up to 5 posts that
+ * share at least one tag with the current post, excluding the current
+ * post, rendered with the same feed PostCard markup.
+ *
+ * The set is computed by the route ([slug].astro) — Ghost resolves this
+ * with a `{{#get "posts" filter="tags:[…]+id:-current"}}` query; we do
+ * the equivalent in the page and pass the results in (with reading times).
+ */
+import type { CollectionEntry } from 'astro:content';
+import PostCard from './PostCard.astro';
+
+interface RelatedItem {
+  post: CollectionEntry<'posts'>;
+  readingTime: number;
+}
+interface Props {
+  related: RelatedItem[];
+}
+const { related } = Astro.props;
+---
+{related.length > 0 && (
+  <section class="related-wrapper gh-canvas">
+    <h3 class="related-title">Hungry for more?</h3>
+    <div class="related-feed">
+      {related.map(({ post, readingTime }) => (
+        <PostCard post={post} readingTime={readingTime} />
+      ))}
+    </div>
+  </section>
+)}

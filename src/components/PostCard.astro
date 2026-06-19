@@ -1,0 +1,42 @@
+---
+/**
+ * PostCard.astro — a single feed item (ported from partials/loop.hbs).
+ * Used on the home feed, tag/author archives, and the related list.
+ *
+ * Markup matches the live `<article class="feed public post …">` exactly:
+ *   feed-content (title + description) | feed-metadata (date + reading time)
+ *   + a full-card overlay <a class="u-permalink">.
+ *
+ * The article's tag classes (tag-<slug> …) are reproduced from the post's
+ * tags, like Ghost's {{post_class}}, so any `.tag-*` styling still applies.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { formatFeedDate } from '../utils/format';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  /** Reading time in minutes (computed by the route from the body). */
+  readingTime: number;
+}
+const { post, readingTime } = Astro.props;
+const { title, excerpt, pubDate, tags } = post.data;
+
+// Reproduce Ghost {{post_class}}: "post" + tag-<slug> for each tag.
+const tagClasses = (tags ?? []).map((t) => `tag-${t.slug}`).join(' ');
+const href = `/${post.id}/`;
+---
+<article class={`feed public post ${tagClasses}`.trim()}>
+  <div class="feed-content">
+    <h2 class="feed-title">{title}</h2>
+    <div class="feed-description">
+      {excerpt}
+    </div>
+  </div>
+
+  <div class="feed-metadata">
+    <div class="feed-date">{formatFeedDate(pubDate)}</div>
+    <div class="feed-reading-time">{readingTime} min read</div>
+  </div>
+
+  <a class="u-permalink" href={href} aria-label={title}></a>
+</article>
