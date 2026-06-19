@@ -21,9 +21,15 @@ interface Props {
   poster?: string;
   /** Accessible label (used as aria-label on the player). */
   title?: string;
+  /**
+   * GIF-like playback: muted, looping, inline autoplay with no controls. Used
+   * for short silent clips converted from animated GIFs so they keep the
+   * original auto-playing look while shipping as a far smaller MP4.
+   */
+  autoplay?: boolean;
 }
 
-const { src, poster, title } = Astro.props;
+const { src, poster, title, autoplay = false } = Astro.props;
 
 const videoUrl = resolveVideo(src);
 
@@ -44,7 +50,10 @@ if (poster) {
   <video
     src={videoUrl}
     poster={posterUrl}
-    controls
+    controls={!autoplay}
+    autoplay={autoplay}
+    loop={autoplay}
+    muted={autoplay}
     preload="metadata"
     playsinline
     aria-label={title}

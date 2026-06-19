@@ -16,6 +16,7 @@ featureImage: /content/images/2022/06/Screen-Shot-2022-06-26-at-23.10.25.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
+import Video from '../../components/mdx/Video.astro';
 
 I’ve always been a big fan of home automation and the smart home movement. The idea that you could have your house - the space you live in - do stuff for you, even without you telling it to - was [magical to me](https://en.wikipedia.org/wiki/Clarke%27s_three_laws). It was the very definition of “the future” in my eyes.
 
@@ -133,7 +134,7 @@ mode: single
 
 And it worked (this is a linear potentiometer, which isn’t round but works the same way):
 
-<Figure src="2022/06/ezgif-2-43f2526a7f-2.gif" alt="" />
+<Video src="2022/06/ezgif-2-43f2526a7f-2.mp4" poster="2022/06/ezgif-2-43f2526a7f-2_thumb.jpg" autoplay />
 
   
 You might notice the black frame around the slider - I’ve found out that ADC on the ESP32 dev kit is [non-linear](https://randomnerdtutorials.com/esp32-adc-analog-read-arduino-ide/) - which means that in the areas I’ve blocked, the current won’t change even though the slider is moved. But this is just a tidbit, and it isn’t the reason why choosing a potentiometer was the wrong choice.
@@ -235,7 +236,7 @@ sensor:
 
 I’ve pushed the configuration to the ESP, and voila! Let there be light:
 
-<Figure src="2022/06/ezgif-5-05499f9ec4.gif" alt="" />
+<Video src="2022/06/ezgif-5-05499f9ec4.mp4" poster="2022/06/ezgif-5-05499f9ec4_thumb.jpg" autoplay />
 
 Now that the ESP part was finished, it was time for the final touches. I’ve made a quick [model for a case](https://www.printables.com/model/232326-lumos-project-case):
 
@@ -247,7 +248,7 @@ Printed it:
 
 And finally, my new light dimmer - which I called “[Lumos](https://harrypotter.fandom.com/wiki/Wand-Lighting_Charm)” -  was operational!
 
-<Figure src="2022/06/ezgif-2-55693d8317-3.gif" alt="" />
+<Video src="2022/06/ezgif-2-55693d8317-3.mp4" poster="2022/06/ezgif-2-55693d8317-3_thumb.jpg" autoplay />
 
 # Conclusion
 

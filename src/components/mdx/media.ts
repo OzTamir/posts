@@ -8,27 +8,30 @@
  *
  * Returns a URL string (the default export of a non-image asset import).
  */
+import type { ImageMetadata } from 'astro';
+
 const videoModules = import.meta.glob<{ default: string }>(
   '/src/assets/content/media/**/*.{mp4,MP4,webm,WEBM,mov,MOV}',
   { eager: true },
 );
 
 // Posters that live in the media dir (jpg thumbnails alongside the videos).
-const posterModules = import.meta.glob<{ default: string }>(
+// Images import as ImageMetadata (not a bare URL), so we read `.src`.
+const posterModules = import.meta.glob<{ default: ImageMetadata }>(
   '/src/assets/content/media/**/*.{jpg,JPG,jpeg,JPEG,png,PNG}',
   { eager: true },
 );
 
-function buildMap(modules: Record<string, { default: string }>) {
+function buildMap<T>(modules: Record<string, { default: T }>, pick: (mod: T) => string) {
   const map = new Map<string, string>();
   for (const [key, mod] of Object.entries(modules)) {
-    map.set(key.replace('/src/assets/content/media/', ''), mod.default);
+    map.set(key.replace('/src/assets/content/media/', ''), pick(mod.default));
   }
   return map;
 }
 
-const videos = buildMap(videoModules);
-const posters = buildMap(posterModules);
+const videos = buildMap(videoModules, (url) => url);
+const posters = buildMap(posterModules, (img) => img.src);
 
 function toRelPath(path: string): string {
   return path
