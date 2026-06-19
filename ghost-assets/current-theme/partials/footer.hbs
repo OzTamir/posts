@@ -1,0 +1,27 @@
+<footer class="gh-foot{{#unless @site.secondary_navigation}} no-menu{{/unless}} gh-outer">
+    <div class="gh-foot-inner gh-inner">
+        <div class="gh-foot-bottom">
+            {{#if post}}
+            <div class="gh-foot-divider"></div>
+            {{/if}}
+            <div class="gh-foot-social">
+                {{#if @site.twitter}}
+                    <a class="gh-foot-social-link" href="{{@site.twitter}}" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                        {{> "icons/twitter"}}
+                    </a>
+                {{/if}}
+                <a class="gh-foot-social-link" href="https://www.linkedin.com/in/oz-tamir-7179b185" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                    {{> "icons/linkedin"}}
+                </a>
+                <a class="gh-foot-social-link" href="{{@site.url}}/rss/" target="_blank" rel="noopener noreferrer" aria-label="RSS Feed">
+                    {{> "icons/rss"}}
+                </a>
+            </div>
+            <button class="gh-theme-toggle-wrapper gh-theme-toggle" aria-label="Toggle theme" id="theme-toggle">
+                <span class="gh-theme-icon">{{> "icons/sun"}}</span>
+                <span class="gh-theme-text" id="theme-text">{{#match @custom.color_scheme "Light"}}Light Mode{{else}}Dark Mode{{/match}}</span>
+            </button>
+        </div>
+    </div>
+</footer>
+

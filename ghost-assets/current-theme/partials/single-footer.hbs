@@ -1,0 +1,32 @@
+<div class="gh-canvas">
+  <footer class="single-footer">
+    {{#if @custom.show_author}}
+      <div class="single-footer-author">
+        <div class="author-image-column">
+          {{#foreach authors}}
+            <div class="author-image-placeholder u-placeholder square">
+              <a href="{{url}}" title="{{name}}">
+                <img
+                  class="author-image u-object-fit"
+                  src="{{img_url profile_image size="xs"}}"
+                  alt="{{name}}"
+                  loading="lazy"
+                />
+              </a>
+            </div>
+          {{/foreach}}
+        </div>
+        <div class="author-content-column">
+          <h3 class="single-footer-title">About Me</h3>
+          {{#foreach authors}}
+            {{#if bio}}
+              <div class="author-bio">
+                {{bio}}
+              </div>
+            {{/if}}
+          {{/foreach}}
+        </div>
+      </div>
+    {{/if}}
+  </footer>
+</div>

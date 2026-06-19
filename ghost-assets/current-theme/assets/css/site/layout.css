@@ -1,0 +1,116 @@
+.site {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.home-template .home-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.site-content {
+  flex-grow: 1;
+  padding: 6rem 0;
+  padding-bottom: 1rem;
+}
+
+.page-template .site-content {
+  padding-block: 0;
+}
+
+/* Footer */
+.gh-foot {
+  padding: 2rem 0 !important;
+  margin-top: auto;
+}
+
+.gh-foot-inner {
+  padding: 0 !important;
+}
+
+/* Footer social links */
+.gh-foot-social {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.gh-foot-social-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--secondary-text-color);
+  transition: color 0.2s ease;
+}
+
+.gh-foot-social-link:hover {
+  color: var(--primary-text-color);
+}
+
+.gh-foot-social-link .icon {
+  width: 25px;
+  height: 25px;
+}
+
+/* Footer bottom section */
+.gh-foot-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.gh-foot-divider {
+  display: block;
+  width: 400px;
+  height: 2px;
+  background: var(--light-gray-color);
+  border-radius: 1px;
+  margin-bottom: 0.5rem;
+}
+
+.gh-copyright {
+  color: var(--secondary-text-color);
+  font-size: 1.4rem;
+}
+
+/* Theme toggle button in footer */
+.gh-theme-toggle-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.gh-foot .gh-theme-toggle-wrapper:hover {
+  opacity: 0.7;
+}
+
+.gh-foot .gh-theme-toggle-wrapper .gh-theme-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.gh-foot .gh-theme-toggle-wrapper .gh-theme-icon .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--secondary-text-color);
+}
+
+.gh-foot .gh-theme-text {
+  color: var(--secondary-text-color);
+  font-size: 1.4rem;
+}
+
+@media (max-width: 767px) {
+  .site-content {
+    padding: 3rem 0;
+  }
+}
