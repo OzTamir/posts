@@ -1,25 +1,30 @@
 ---
 /**
- * BaseLayout.astro — the html/head/body shell shared by every route.
- *   • <html class="theme-dark"> (the default scheme)
- *   • <body class="<template> is-head-left-logo"> (body_class + layout)
- *   • <header id="gh-head"> on every page EXCEPT home (cover replaces it)
- *   • <footer class="gh-foot">
- *   • dark/light theme-toggle inline script: persists choice in localStorage,
- *     swaps .theme-dark / .theme-light on <html>, swaps sun/moon icon.
+ * BaseLayout.astro — the thin html/head/body shell shared by every route.
  *
- * Pages pass their <head> props through `head` and supply their own
- * <body> contents via the default slot. The wrapping `<div class="site">`
- * and footer are rendered here so individual pages only emit their main.
+ * This stays a (thin) .astro shell because it owns inherently Astro-level
+ * concerns: the <html>/<head> document and the inline theme script (which
+ * must run before paint to avoid a flash of the wrong theme). Everything
+ * visual is authored in React and rendered to static HTML (zero client JS):
+ *   • <Head />        — React, un-hydrated (static <head>)
+ *   • <SiteHeader />  — React, static (hidden on home)
+ *   • <SiteFooter />  — React, static (includes the theme-toggle button markup)
+ *   • page content    — React, via the default <slot />
+ *
+ * <html class="theme-dark"> is the default scheme. The inline script applies
+ * the stored theme before first paint (no flash), then wires the footer
+ * toggle (class swap on <html> + localStorage + sun/moon icon + label) and a
+ * prefers-color-scheme fallback. Authoring is React; the only behaviour is
+ * this tiny inline script, so the site ships no JS bundle.
  */
-import Head from '../components/Head.astro';
-import SiteHeader from '../components/SiteHeader.astro';
-import SiteFooter from '../components/SiteFooter.astro';
+import Head from '../components/Head';
+import SiteHeader from '../components/SiteHeader';
+import SiteFooter from '../components/SiteFooter';
 import { SITE } from '../config';
 import '../styles/global.css';
 
 interface Props {
-  /** Props forwarded to Head.astro. */
+  /** Props forwarded to the React Head component. */
   head: Record<string, unknown>;
   /** Space-separated body template classes, e.g. "post-template tag-thoughts". */
   bodyClass: string;
@@ -33,7 +38,25 @@ const { head, bodyClass, isHome = false, isPost = false } = Astro.props;
 <!DOCTYPE html>
 <html class="theme-dark" lang={SITE.lang}>
   <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <Head {...(head as any)} />
+    {/* Apply the stored theme before first paint — no flash of wrong theme. */}
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          var html = document.documentElement;
+          if (t === 'light') {
+            html.classList.remove('theme-dark');
+            html.classList.add('theme-light');
+          } else if (t === 'dark') {
+            html.classList.remove('theme-light');
+            html.classList.add('theme-dark');
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body class={`${bodyClass} is-head-left-logo`}>
     <div class="site">
@@ -45,12 +68,15 @@ const { head, bodyClass, isHome = false, isPost = false } = Astro.props;
     </div>
 
     {/* Sibling-of-.site content (e.g. PostLayout's PhotoSwipe markup +
-        embed loader scripts), rendered after .site. */}
+        the embed-loader script), rendered after .site. */}
     <slot name="after" />
 
+    {/* Theme toggle behaviour — flips .theme-dark / .theme-light on <html>,
+        persists to localStorage, swaps the sun/moon icon + label, and follows
+        prefers-color-scheme only when no choice is stored. Kept as a tiny
+        inline script so the toggle ships no JS bundle. */}
     <script is:inline>
       document.addEventListener('DOMContentLoaded', function () {
-        // Theme toggle.
         const themeToggle = document.getElementById('theme-toggle');
         const html = document.documentElement;
 
