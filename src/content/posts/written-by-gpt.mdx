@@ -1,0 +1,114 @@
+---
+title: Written by GPT
+pubDate: "2023-03-29T06:18:23.000Z"
+updatedDate: "2026-06-18T23:45:54.000Z"
+tags:
+  - slug: chatgpt
+    name: Chatgpt
+  - slug: ai
+    name: ai
+  - slug: writing
+    name: Writing
+author: oz
+featured: false
+excerpt: ChatGPT wrote my previous post. This time around, I wrote about it.
+featureImage: /content/images/2023/03/0xZ_a_robot_writing_a_blog_post_unsplash_stock_image_realistic__a224f825-b08c-4926-8fc8-70a796f816f2.png
+---
+
+import Figure from '../../components/mdx/Figure.astro';
+import Video from '../../components/mdx/Video.astro';
+
+When I’m working on a project, I often like to write a post for this blog about it. Part of the joy of creating for me is sharing my creations with the world - and since writing posts about it is both an act of creation and an act of sharing, it becomes a no-brainer to write.
+
+Sometimes, however, I don’t do it. I hate it when I don’t do it - it often feels like a chance wasted. Whenever I tried to write about a project after finishing it, I always failed to find the right words - and the post remained forever in my `Drafts` graveyard.
+
+An excellent example of this is my Bedroom LEDs project. It was a project I was very proud of - I invested a significant portion of my time in making it happen and was very proud of the result. It combined a few of my favorite crafts - 3D printing, electronics, and home automation.
+
+<Figure src="2023/03/res-2.png" alt="" />
+
+But somehow, I missed my chance and didn’t write about it. For over half a year, it stayed a draft.
+
+Until this week.
+
+You see, earlier this week, I made a change to this project - after hearing a comment from my roommate, who said she thinks it’d be cool if the lights were reactive to sound - I was sent into the [WLED-SR](https://github.com/atuline/WLED/) rabbit hole. I posted my results to my Instagram account - again, sharing my creations is a joy for me - and again, felt I might want to write about it, but couldn't find the time and missed the momentum.
+
+But then it got traction. A few people asked me, “Could you explain how you made this work? I want to do the same!”. One wrote, “I looked in your blog but couldn’t find a corresponding post 😥“.  
+  
+I felt like now I had to write something - but as I’ve mentioned, often when I’m not in the heat of the moment, I can’t seem to find the words - I couldn’t write!
+
+## My Ghostwriter
+
+But then it occurred to me - maybe _I_ don’t _need_ to write.
+
+Perhaps, writing this post can become an opportunity for another project. For a while now, I have been dabbling and playing with the new wave of AI tools - [Midjourney](https://www.midjourney.com/), [DALL-E 2](https://openai.com/product/dall-e-2), and, most importantly - [ChatGPT](https://openai.com/product/gpt-4). And another idea I was playing with was the notion of using ChatGPT to assist me in writing. But what if _I_ helped _it_ write instead?
+
+<Figure src="2023/03/0xZ_a_robot_writing_a_blog_post_unsplash_stock_-1.png" alt="" />
+
+The thought was too exciting for me to pass. And so, I opened up the UI and gave it the following prompt:
+
+> I want you to help me write an article for my blog. The article is a walkthrough of how I created a LED strip that goes across my bedroom ceiling and is also sound-reactive (I am using WLED).  
+>   
+> The steps I had were like this:  
+> 1\. I found out about WLED  
+> 2\. Ordered WS2812b light strip  
+> 3\. Bought plastic tubes from an everything-in-a-dollar store  
+> 4\. 3D printed connectors for the tubes to be one long tube  
+> 5\. Glued everything to my ceiling  
+> 6\. Flashed WLED on an ESP32  
+> 7\. Later - found out that there is a fork of WLED that supports audio input, and added a microphone (max4466)  
+>   
+> To write this article, my next two messages are previously written articles. I want you to mimic the writing style. Reply “ok” if you understand your assignment and the fact that my next two messages are your style input.
+
+<Figure src="2023/03/DraggedImage-5.png" alt="" />
+
+Next, I gave it two posts I wrote to let it know my writing style. Since this was meant to be a technical “walkthrough” style article - explaining how I did something - I thought it will be better to give it similar spirited posts - so I gave it the text for the [Lumos post](/lumos-adventures-with-esp32-and-home-assistant/) and the post detailing my [Fastmail setup](/ive-got-mail/).
+
+Or rather, that was the plan - You see, even though it said it understood that I was about to send two posts, immediately after sending the first post, it began writing the WLED post:
+
+<Figure src="2023/03/DraggedImage-1-1.png" alt="" />
+
+The post it wrote was OK - not great, but not wrong, either. I tried my prompt again and fed it the other post - and again, it didn’t wait for me to send two posts and spewed an article right after I sent the first post:
+
+<Figure src="2023/03/DraggedImage-2-1.png" alt="" />
+
+So there I was, with two different blog posts written by ChatGPT, my ghost writer. I could, of course, post either of them - and that would be it.
+
+But I thought I could still do better.
+
+I opened a new chat and gave it the following prompt:
+
+<Figure src="2023/03/DraggedImage-3-1.png" alt="" />
+
+And, just like magic, it did exactly what it was told - took both versions and made a better third cut. This version was better. Way better. And it was this version that was published as my [previous post](/a-symphony-of-lights/) in this blog - almost.
+
+## It wasn't good enough
+
+You see, after reading and re-reading it repeatedly, I just felt that something was missing. While ChatGPT knows what to write to make the text sound excellent and reasonable, it still lacks the essential fundamental experience that makes for the ground of a good writeup.
+
+It _knows_ I got plastic tubes and connected them - but it doesn’t _know_ how my experience was and why it is worth mentioning that all of the tubes I used were originally used as sticks for dustpans.
+
+Here’s what it originally wrote about this experience:
+
+<Figure src="2023/03/Screenshot-2023-03-29-at-9.02.05.png" alt="" />
+
+Here’s what I wrote about it:
+
+<Video src="2023/03/what_i_wrote.mp4" poster="2023/03/media-thumbnail-ember273.jpg" />
+
+Maybe it’s just me, but I feel that ChatGPT here does what it knows best - generalize the experiences we expect it to describe. It shouldn’t be a surprise, either - this is not a “real” AI, just an LLM - a model that is very good at predicting what output will please the user.
+
+I could, of course, ask it to write about it in a more detailed way - but no matter how I tried, none of the outputs I got came close to describing _my_ experience, and as such - it wasn’t a good fit after all.
+
+In Hebrew, we have a saying that goes something like, “The surgery was a success, yet the patient is dead.” This felt like the opposite - my experiment failed; but I was happy non-the-less.
+
+While I couldn’t feel OK with what ChatGPT wrote - it’s just not good enough right now for this purpose (of course, maybe I could get to a better result with more tries - but this was just an experiment) - and while I had to re-write almost everything it wrote, in the end I ended up with two new posts - so was it a failure? 🙂
+
+Another good thing that came out of the ChatGPT text is that it served as a good base for the final post - saving me the need to come up with a text structure and allowing me to focus on the details themselves. All in all, I think that while ChatGPT isn’t ready to write full posts for me, I did find it useful as a writing tool - not a ghostwriter, but maybe a ghost editor.
+
+## Conclusion
+
+This was a fun exercise for me - it is always fun to engage in prompt engineering, and it has taught me a great deal about ways I _can_ use ChatGPT in my writing - be it for structure construction, phrasing, and “prototyping” ideas. At my day job, I mostly use ChatGPT to write code - and it was refreshing to use it for writing _English_.
+
+On the other hand, as I said at the beginning of this post, I like writing - it is an essential aspect of my motivation cycle and a joy on its own. I don’t think I will be using ChatGPT to write any more posts soon because it’s a craft I enjoy too much to let a machine take it from me - and this is why this post was written entirely by me, Oz.
+
+Or was it?

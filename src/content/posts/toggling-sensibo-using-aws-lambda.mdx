@@ -1,0 +1,198 @@
+---
+title: Toggling Sensibo using AWS Lambda
+pubDate: "2022-10-01T12:57:24.000Z"
+updatedDate: "2026-06-18T23:45:55.000Z"
+tags:
+  - slug: aws
+    name: AWS
+  - slug: ios
+    name: ios
+  - slug: home-automation
+    name: home-automation
+  - slug: shortcuts
+    name: Shortcuts
+  - slug: sensibo
+    name: Sensibo
+  - slug: lambda
+    name: Lambda
+  - slug: serverless
+    name: Serverless
+author: oz
+featured: false
+excerpt: How I used AWS Lambda To Toggle my Air Conditioner
+featureImage: /content/images/2022/10/LambdaSensibo2.png
+---
+
+import Figure from '../../components/mdx/Figure.astro';
+
+With the recent launch of iOS 16, a most welcomed addition to my life was introduced - the Lock Screen widgets.
+
+<Figure src="2022/10/IMG_D4CF81AB6759-1.jpeg" alt="" />
+
+These little widgets make access to data and actions much more accessible.
+
+Not only that - they significantly boost productivity! Now, instead of having to open up my phone, find an app, and do whatever it is that I want to do, I can glance at my phone to get the information I need, and I am just one tap away from quick actions that help me throughout the day.
+
+## Toggling as a Shortcut
+
+One use case that I found particularly interesting for me is the ability (Which, for some reason, isn’t native and requires you to use apps such as [LockFlow](https://apps.apple.com/us/app/lockflow-lock-screen-shortcuts/id1641012054)) to add [Shortcuts](https://support.apple.com/en-il/guide/shortcuts/welcome/ios) as widgets to your Lock Screen.
+
+For example, I’ve used [this shortcut](https://www.icloud.com/shortcuts/4b44e5b3b8874fe1b4c23b98e0571b8c) by Reddit user [/u/Rockster160](https://www.reddit.com/r/shortcuts/comments/hejgv5/comment/fvrqio2/?utm_source=share&utm_medium=web2x&context=3) to add a quick LIFX smart lights toggle to my Lock Screen. Now, It is just one quick tap away when I want to turn my lights on or off.
+
+Naturally, I was pretty excited by this shortcut. So much happy that I wanted another one just like it - but instead of toggling my lights, I wanted it to toggle my AC, which is controlled via a [Sensibo device](https://sensibo.com/products/sensibo-sky).
+
+Alas, this wasn’t as trivial as it might seem to be. If we looked at the LIFX shortcut I’ve linked to, we would see that it is a simple one - it uses a LIFX API endpoint named [/toggle](https://api.developer.lifx.com/reference/toggle-power) - which doesn’t require you to embed logic (no need to check if the lights are on or off - it does it all for you).
+
+[Sensibo’s API](https://sensibo.github.io/), on the other hand, does not provide such an endpoint ☹️
+
+<Figure src="2022/10/DraggedImage.png" alt="" />
+
+Now, this is a problem that can be solved in many different ways. I could write a shortcut to query the device’s current status and trigger the correct call in response. I could use Home Assistant to run this as a Script for me. There are many solutions, and most would be more straightforward than what I’ve chosen.
+
+You see, I’ve decided to go Serverless.
+
+## Serverless Computing
+
+What is Serverless computing? As Cloudflare [defines it](https://www.cloudflare.com/learning/serverless/what-is-serverless/):
+
+> Serverless computing is a method of providing backend services on an as-used basis. A serverless provider allows users to write and deploy code without the hassle of worrying about the underlying infrastructure. A company that gets backend services from a serverless vendor is charged based on their computation and do not have to reserve and pay for a fixed amount of bandwidth or number of servers, as the service is auto-scaling. Note that despite the name serverless, physical servers are still used but developers do not need to be aware of them.
+
+<Figure src="2022/10/DALL-E-2022-10-01-12.25.10---serverless.png" alt="serverless computing, medival era art, digital art, 4k (DALL-E 2)" caption="serverless computing, medival era art, digital art, 4k (DALL-E 2)" />
+
+What does this have to do with my problem? While this might not be the perfect solution for this scenario, I was always fascinated by this technology, and I’ve long sought an opportunity to try it. And when this problem has risen, I thought - "Hey, why not?"
+
+The plan is simple:
+
+1.  I will write a simple Python script to run the toggle logic - query the current status and decide what action to run.
+2.  Create a Serverless function that will run my script.
+3.  Create a Shortcut to trigger the function.
+4.  ???
+5.  Profit!
+
+## Writing the function logic
+
+So let’s start by writing the function's logic. The first thing to do is get an API key from [your account](https://home.sensibo.com/login?next=/me/api).
+
+Next, I’ve used the API [example code from the docs](https://github.com/Sensibo/sensibo-python-sdk/) as a basis for my script. That was the easy part - there wasn’t a lot of logic here, and it mainly was gluing Sensibo’s API endpoint together:
+
+```python
+import requests
+import json
+
+_SERVER = 'https://home.sensibo.com/api/v2'
+
+class SensiboClientAPI(object):
+    def __init__(self, api_key):
+        self._api_key = api_key
+
+    def _get(self, path, ** params):
+        params['apiKey'] = self._api_key
+        response = requests.get(_SERVER + path, params = params)
+        response.raise_for_status()
+        return response.json()
+
+    def _patch(self, path, data, ** params):
+        params['apiKey'] = self._api_key
+        response = requests.patch(_SERVER + path, params = params, data = data)
+        response.raise_for_status()
+        return response.json()
+
+    def devices(self):
+        result = self._get("/users/me/pods", fields="id,room")
+        return {x['room']['name']: x['id'] for x in result['result']}
+
+    def pod_ac_state(self, podUid):
+        result = self._get("/pods/%s/acStates" % podUid, limit = 2, fields="acState")
+        return result['result'][0]['acState']
+
+    def pod_change_ac_state(self, podUid, currentAcState, propertyToChange, newValue):
+        self._patch("/pods/%s/acStates/%s" % (podUid, propertyToChange),
+                json.dumps({'currentAcState': currentAcState, 'newValue': newValue}))
+
+def toggle_ac(sensibo_client):
+    device_uid = client.devices()[device_name]
+    ac_state = client.pod_ac_state(device_uid)
+    client.pod_change_ac_state(device_uid, ac_state, "on", not ac_state['on'])
+
+if __name__ == "__main__":
+    api_key = 'API_KEY'
+    device_name = 'SENSIBO_DEVICE_NAME'
+
+    client = SensiboClientAPI(api_key)
+    toggle_ac(client)
+```
+
+This simple code works, and it is good enough as a basis for what’s next.
+
+## AWS Lambda
+
+The service I choose to use for the Serverless function is AWS’s Lambda, as it is the most familiar one.
+
+After signing up, you need to create a lambda function in the [Lambda Console](https://console.aws.amazon.com/lambda):
+
+<Figure src="2022/10/Screen-Shot-2022-10-01-at-14.28.30.png" alt="" />
+
+Notice that I chose to make my function public, as I later wanted to use it straight from the Shortcut app without the need to authenticate - I am not sure this is the ideal choice, but I decided to roll with it.
+
+Next, we will add our script to the code editor, but now we will retrieve the parameters from the request:
+
+<Figure src="2022/10/DraggedImage-1.png" alt="" />
+
+This is where I’ve hit an unexpected (or very much expected, depending on your point of view) - The HTTP package I’ve used, requests, is not natively available on Lambda.
+
+<Figure src="2022/10/3-1.jpg" alt="" />
+
+To use it, one must add it as another layer to the function - I’ve used [this tutorial](https://www.gcptutorials.com/article/how-to-use-requests-module-in-aws-lambda) to do so, and it worked!
+
+<Figure src="2022/10/DraggedImage-2.png" alt="" />
+
+Now, let’s expose the function using a regular HTTP request. To do so, we would need to create a trigger using AWS API Gateway:
+
+<Figure src="2022/10/Screen-Shot-2022-10-01-at-15.05.49.png" alt="" />
+
+And finally, we would need to change our code to get the parameters as GET query string params:
+
+```python
+def lambda_handler(event, context):
+    try:
+        event_data = event['queryStringParameters']
+        client = SensiboClientAPI(event_data['api_key'])
+        toggle_ac(client, event_data['device_name'])
+        return {'statusCode': 200, 'body': 'OK'}
+    except Exception as e:
+        return {'statusCode': 500, 'body': json.dumps(str(e))}
+```
+
+Let’s test it! Here I am using [Postman](https://www.postman.com/) for easy debugging, but this is just a simple GET request behind the scenes:
+
+<Figure src="2022/10/2.jpg" alt="" />
+
+It works! Making this HTTP request toggles the AC!
+
+## Creating the Shortcut
+
+Now I can finally create the shortcut!
+
+Because this is wrapped behind an API, all I need to do in the shortcut is to trigger the URL:
+
+<Figure src="2022/10/3.jpg" alt="" />
+
+And sure enough:
+
+<Figure src="2022/10/4.jpg" alt="" />
+
+Now, I’ll add it to the Lock Screen:
+
+<Figure src="2022/10/IMG_5350.jpg" alt="" />
+
+Success!
+
+## Conclusion
+
+Before I summarize, another thing that is very important to note is - Be very careful with AWS charges. The internet is full of stories about people who misconfigured their services and got charged with giant bills. [Be safe](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/checklistforunwantedcharges.html).
+
+This was an excellent introduction to the idea of having code stateless and serverless. The final code is available [here](https://github.com/OzTamir/SensiboToggle).
+
+While this is probably not the best solution to my problem, it was a great lesson, and I’ve learned a lot. Having new technologies come out is the way of life, and using those to perform small tasks such as this one is my favorite way to learn. I hope that sharing my experience encourages you to do the same.
+
+And now - I’m off to set AWS budget limits!
