@@ -1,6 +1,6 @@
 # Cloudflare Workers Static Assets custom response headers
 # Long cache for immutable static assets. Astro fingerprints /_astro/* assets,
-# content images are never overwritten in Ghost convention (new paths for new images),
+# content images use stable paths (a new image gets a new path),
 # and fonts are stable. HTML is intentionally NOT cached long-term here.
 
 /content/images/*
