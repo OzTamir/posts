@@ -253,7 +253,9 @@ export default function Head(props: HeadProps) {
       )}
 
       <meta name="generator" content="Astro" />
-      <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss/" />
+      {/* Point the feed-discovery link at /rss.xml directly. The /rss/ -> /rss.xml
+          301 in public/_redirects keeps old feed links resolving forever. */}
+      <link rel="alternate" type="application/rss+xml" title={SITE.title} href={SITE.social.rss.url} />
 
       {/* Plausible analytics. */}
       <script defer data-domain={SITE.plausibleDomain} src="https://plausible.io/js/plausible.js"></script>
