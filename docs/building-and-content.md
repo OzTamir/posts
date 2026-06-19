@@ -136,14 +136,9 @@ Frontmatter fields (all but `title`/`pubDate` optional):
    ---
    ```
 
-3. Import the MDX component kit at the top of the file body (after the frontmatter fence):
-
-   ```mdx
-   import Figure from '../../components/mdx/Figure.astro';
-   import Video from '../../components/mdx/Video.astro';
-   import Tweet from '../../components/mdx/Tweet.astro';
-   import Instagram from '../../components/mdx/Instagram.astro';
-   ```
+3. The MDX component kit (`Figure`, `Video`, `Tweet`, `Instagram`) is **auto-registered**
+   for every post by the route (`src/pages/[slug].astro` passes it via the `<Content>`
+   `components` prop). Use the tags directly — **no per-post `import` lines**.
 
 4. Write the body in Markdown + MDX. Use the component kit for media:
 

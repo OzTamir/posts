@@ -15,8 +15,6 @@ excerpt: The story of how I abused the Auth0's /authorize endpoint to pass param
 featureImage: /content/images/2023/11/Screenshot-2023-11-14-at-17.01.20-1.png
 ---
 
-import Figure from '../../components/mdx/Figure.astro';
-
 Recently, I was tasked with a small utility task at my job - we wanted to get a Slack message for every login event in any of our SaaS applications. Our login system uses Auth0, and since we didn't want to pay extra for another Log stream, we decided that we could achieve the same task by using Auth0 actions - after all, a Slack bot is [their example](https://auth0.com/docs/customize/actions/write-your-first-action#add-custom-logic) of an action!
 
 ## The Problem

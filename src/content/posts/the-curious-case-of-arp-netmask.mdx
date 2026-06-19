@@ -15,8 +15,6 @@ excerpt: Why would an ARP entry conatin a netmask?
 featureImage: /content/images/2021/08/Screen-Shot-2021-08-19-at-23.42.24-1.png
 ---
 
-import Figure from '../../components/mdx/Figure.astro';
-
 Earlier today, while working on a project at my workplace, I came along with a need - parsing the ARP table on a Linux host using C++.
 
 The task was easy enough: On linux systems, the virtual filesystem mounted under `/proc` contains the path `/proc/net/arp` which tells you everything you need to know - all you have to do is read this path as a file in which each line is an entry, and you’re pretty much done.

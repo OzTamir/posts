@@ -43,8 +43,10 @@ Full docs: [`docs/building-and-content.md`](./docs/building-and-content.md),
 2. Frontmatter must satisfy `src/content.config.ts` (`title`, `pubDate` required;
    `excerpt`, `tags: [{slug,name}]`, `author: oz`, `featureImage`, SEO overrides optional).
    `tags[0]` is the primary tag (shown on cards + OpenGraph).
-3. Body is **MDX** (Markdown + JSX). Import the component kit at the top of the file:
-   `Figure`, `Video`, `Tweet`, `Instagram` from `../../components/mdx/*.astro`.
+3. Body is **MDX** (Markdown + JSX). The component kit — `Figure`, `Video`, `Tweet`,
+   `Instagram` — is **auto-registered** by the route (`src/pages/[slug].astro` forwards it
+   via the `<Content>` `components` prop), so use the tags directly with **no `import`
+   lines** per post.
 4. Put images under `src/assets/content/images/<year>/<file>` (same tree the optimizer
    globs). Reference them by tree-relative path (`"2024/01/x.png"`) in `<Figure src="…">`.
    The build converts non-GIFs to WebP with a responsive `srcset`; GIFs are preserved.
@@ -65,12 +67,8 @@ featureImage: /content/images/2026/07/cover.png
 featureImageAlt: "A screenshot showing the tool in action"
 ---
 
-import Figure from '../../components/mdx/Figure.astro';
-import Video from '../../components/mdx/Video.astro';
-import Tweet from '../../components/mdx/Tweet.astro';
-import Instagram from '../../components/mdx/Instagram.astro';
-
-Introductory paragraph in plain Markdown.
+Introductory paragraph in plain Markdown. The Figure/Video/Tweet/Instagram kit is
+auto-registered — use the tags directly, no import lines needed.
 
 <Figure
   src="2026/07/demo.png"

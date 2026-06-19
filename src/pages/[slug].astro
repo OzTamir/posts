@@ -4,9 +4,11 @@
  * Renders the Markdown body through the React PostLayout and builds the
  * per-post <head> (canonical, Open Graph, Twitter card, JSON-LD Article).
  *
- * Markdown rendering: `render(post)` yields the Astro <Content /> component;
- * it is passed as the default slot to the React <PostLayout>, which Astro
- * forwards as that component's `children`. PostLayout stays static. A tiny
+ * Markdown rendering: `render(post)` yields the Astro <Content /> component.
+ * The MDX component kit (Figure/Video/Tweet/Instagram) is forwarded via its
+ * `components` prop, so posts use those tags WITHOUT per-file import lines.
+ * <Content /> is passed as the default slot to the React <PostLayout>, which
+ * Astro forwards as that component's `children`. PostLayout stays static. A tiny
  * inline embed-loader script (Twitter / Instagram widgets) is mounted in
  * BaseLayout's `after` slot alongside the dormant PhotoSwipe lightbox markup;
  * it injects the widget scripts only when the body contains the embeds, so
@@ -28,6 +30,15 @@ import { getSortedPosts, getRelated } from '../utils/posts';
 import { optimizeFeatureImage, socialImageUrl } from '../utils/images';
 import { AUTHORS, DEFAULT_AUTHOR } from '../data/authors';
 import { SITE } from '../config';
+// The MDX component kit, auto-registered for every post via the <Content>
+// `components` prop below — so posts use bare <Figure>/<Video>/<Tweet>/
+// <Instagram> with no per-file import lines.
+import Figure from '../components/mdx/Figure.astro';
+import Video from '../components/mdx/Video.astro';
+import Tweet from '../components/mdx/Tweet.astro';
+import Instagram from '../components/mdx/Instagram.astro';
+
+const mdxComponents = { Figure, Video, Tweet, Instagram };
 
 export const getStaticPaths = (async () => {
   const all = await getSortedPosts();
@@ -85,7 +96,7 @@ const head = {
 ---
 <BaseLayout head={head} bodyClass={bodyClass} isPost={true}>
   <PostLayout post={post} readingTime={readingTime} related={related} feature={feature}>
-    <Content />
+    <Content components={mdxComponents} />
   </PostLayout>
 
   {/* PhotoSwipe lightbox container — dormant markup (no lightbox JS ships),

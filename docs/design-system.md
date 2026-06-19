@@ -106,8 +106,9 @@ Dark/light values live in `global.css` under `.theme-dark:root` and `.theme-ligh
 
 ## MDX component kit (post-body embeds)
 
-These Astro components live in `src/components/mdx/` and are imported at the top of each
-`.mdx` post that needs them.
+These Astro components live in `src/components/mdx/` and are auto-registered for every
+post by `src/pages/[slug].astro` (via the `<Content>` `components` prop), so posts use the
+tags directly without per-post `import` lines.
 
 | Component | Props | Behavior |
 | --- | --- | --- |
