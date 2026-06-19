@@ -5,6 +5,9 @@ node_modules/
 dist/
 .astro/
 
+# Lighthouse CI output
+.lighthouseci/
+
 # local scratch / QA artifacts (agent temp output, never committed)
 scratchpad/
 
