@@ -1,0 +1,50 @@
+---
+/**
+ * Home page (page 1) — cover hero + newest `postsPerPage` posts + pager.
+ *   <div class="home-content"> cover · post-feed · pagination </div>
+ * The header is absent (home uses the Cover component instead).
+ * Body class = "home-template".
+ *
+ * Thin Astro shell: loads content + builds the <head> props, then renders the
+ * React components (Cover / PostCard / Pagination) inside BaseLayout.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Cover from '../components/Cover';
+import PostFeed from '../components/PostFeed';
+import Pagination from '../components/Pagination';
+import { getSortedPosts, paginatePosts } from '../utils/posts';
+import { socialImageUrl } from '../utils/images';
+import { SITE } from '../config';
+
+const all = await getSortedPosts();
+const { pagePosts, nextUrl } = paginatePosts(all, 1, SITE.postsPerPage, '');
+
+// Home social images become optimized /_astro assets (absolute URLs).
+const ogImg = await socialImageUrl(SITE.url, SITE.ogImage);
+const twImg = await socialImageUrl(SITE.url, SITE.twitterImage);
+
+const head = {
+  type: 'home',
+  title: SITE.metaTitle, // <title> = "0xZ | Posts"
+  description: SITE.metaDescription,
+  // Home OG/Twitter titles.
+  ogTitle: SITE.ogTitle, // "Read posts from 0xZ"
+  ogDescription: SITE.ogDescription,
+  twitterTitle: SITE.twitterTitle, // "Read posts from 0xZ"
+  twitterDescription: SITE.twitterDescription,
+  canonical: `${SITE.url}/`,
+  next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
+  ogType: 'website',
+  ogImage: ogImg?.url,
+  twitterImage: twImg?.url,
+};
+---
+<BaseLayout head={head} bodyClass="home-template" isHome={true}>
+  <div class="home-content">
+    <Cover />
+
+    <PostFeed posts={pagePosts} />
+
+    <Pagination nextUrl={nextUrl} />
+  </div>
+</BaseLayout>

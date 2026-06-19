@@ -1,0 +1,60 @@
+---
+/**
+ * Home pagination — pages 2..N only (page 1 is index.astro; /page/1/ is
+ * intentionally not emitted — a redirect handles it).
+ *
+ * Paginated index pages show the SITE HEADER (not the cover), an empty
+ * `.site-content`, then the post-feed + pager. Body class = "home-template paged".
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostFeed from '../../components/PostFeed';
+import Pagination from '../../components/Pagination';
+import { getSortedPosts, paginatePosts, pageCount } from '../../utils/posts';
+import { socialImageUrl } from '../../utils/images';
+import { SITE } from '../../config';
+
+export const getStaticPaths = (async () => {
+  const all = await getSortedPosts();
+  const totalPages = pageCount(all.length, SITE.postsPerPage);
+
+  const paths = [];
+  // Pages 2..N (skip page 1 → that is index.astro).
+  for (let page = 2; page <= totalPages; page++) {
+    paths.push({ params: { page: String(page) }, props: { page } });
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const all = await getSortedPosts();
+const { pagePosts, nextUrl, prevUrl } = paginatePosts(all, page, SITE.postsPerPage, '');
+
+const ogImg = await socialImageUrl(SITE.url, SITE.ogImage);
+const twImg = await socialImageUrl(SITE.url, SITE.twitterImage);
+
+const canonical = `${SITE.url}/page/${page}/`;
+
+const head = {
+  type: 'home',
+  title: SITE.metaTitle,
+  description: SITE.metaDescription,
+  ogTitle: SITE.ogTitle,
+  ogDescription: SITE.ogDescription,
+  twitterTitle: SITE.twitterTitle,
+  twitterDescription: SITE.twitterDescription,
+  canonical,
+  next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
+  prev: prevUrl ? `${SITE.url}${prevUrl}` : undefined, // page 2 → "/", page N → "/page/N-1/"
+  ogType: 'website',
+  ogImage: ogImg?.url,
+  twitterImage: twImg?.url,
+};
+---
+<BaseLayout head={head} bodyClass="home-template paged" isHome={false}>
+  <div class="site-content"></div>
+
+  <PostFeed posts={pagePosts} />
+
+  <Pagination nextUrl={nextUrl} />
+</BaseLayout>

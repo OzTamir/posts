@@ -1,0 +1,32 @@
+---
+/**
+ * 404 page — Astro emits this as 404.html.
+ * Minimal error page using the shared shell (header + footer) and the
+ * existing typography. Body class "error-template".
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config';
+
+const head = {
+  type: 'default',
+  title: `Error - ${SITE.title}`,
+  description: 'Page not found',
+  canonical: `${SITE.url}/404/`,
+  ogType: 'website',
+  twitterCard: 'summary',
+};
+---
+<BaseLayout head={head} bodyClass="error-template" isHome={false}>
+  <div class="site-content">
+    <main class="site-main">
+      <section class="tag">
+        <div class="gh-canvas text-center">
+          <h1 class="mb-0 text-[3rem] text-brand">404</h1>
+          <p class="mt-[1.6rem] text-secondary-text">
+            Page not found. <a href="/" class="text-brand">Head home</a>.
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+</BaseLayout>

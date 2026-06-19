@@ -1,0 +1,139 @@
+---
+title: Avoiding cold showers with Switcher and Home Assistant
+pubDate: "2022-01-17T21:39:10.000Z"
+updatedDate: "2026-06-18T23:45:52.000Z"
+tags:
+  - slug: automation
+    name: automation
+  - slug: raspberrypi
+    name: RaspberryPi
+  - slug: home-assistant-2
+    name: Home Assistant
+author: oz
+featured: false
+excerpt: It's 2022, why should I have to remember to turn on the water heater when I go on a workout?
+featureImage: /content/images/2022/01/IMG_3134-1.jpg
+---
+
+import Figure from '../../components/mdx/Figure.astro';
+
+There are only a handful of things I can think of that are worst than coming home after a long day, getting in the shower, and finding out that there are no more hot water left.
+
+These cold showers are especially bad when you can’t put off the shower and let the boiler heat some water for you - sometimes you need to shower ASAP, and if you didn’t remember to heat some water - a cold shower is your punishment (and while those [can be beneficial](https://www.healthline.com/health/cold-shower-benefits) - they are not fun when unplanned!).
+
+An example of such a scenario is workouts - I’ve been working out at a local gym for the past few months, and while in the summer hot water was not an issue (my apartment’s water heater is both solar and electricity powered), in these cold winter days one must remember to turn on the water heater before going to the gym if one wishes to be able to take a warm shower upon returning home.
+
+<Figure src="2022/01/IMG_3087.jpg" alt="My latest time at the gym" caption="My latest time at the gym" />
+
+I, for one, am quite forgetful.
+
+And as such, I would often find myself showering in frozen water, which made me very unhappy. A solution was needed.
+
+## Switcher
+
+Fortunately, we live in the year 2022 - and a smart home isn’t a sci-fi concept anymore. After a quick Google search, I’ve found a product to solve my unhappiness - [Switcher](https://switcher.co.il).
+
+<Figure src="2022/01/Screen-Shot-2022-01-17-at-21.56.11.png" alt="" />
+
+Switcher is an Israeli product designed to solve the problem of old, stupid water heater controls. After setting it up, it allows the user to control the water heater state and schedule turning it on and off. As a product, it seemed like it could help me in my cold water woes.
+
+<Figure src="2022/01/tempImagegIJHJT.gif" alt="" />
+
+So I went ahead and purchased one of these, and after setting it up mysel- I mean, after **getting a certified electrician** to hook it up - I was ready to give it a go.
+
+It worked.
+
+I programmed in some schedules, and for the most time I had hot water when I needed it. When I would go out to the gym, I would set a timer that would turn on the heater for about an hour - guaranteeing me hot water when I get back. Problem solved, right?
+
+Wrong. As I said - I am a forgetful person.
+
+While the schedules helped a lot, my workout schedule isn’t set in stone - I meet with my trainer on different days each week, and not always in the same hour - which means that I would often have to remember to turn it on manually - or face the dread of the frozen shower.
+
+Obviously, it's the remembering-to-turn-it-on part where I often fail - otherwise I wouldn't have been in this problem to begin with!
+
+So while the Switcher, with its scheduling capability, did made things easier to control - it didn’t solve the root problem. I needed something else.
+
+## Home Assistant
+
+It was obvious to me that this is a problem that can be solved with home automation. I was about to start writing Python scripts to solve this, but then I came across **Home Assistant**.
+
+From Wikipedia:
+
+> Home Assistant is a free and open-source software for home automation that is designed to be the central control system for smart home devices with focus on local control and privacy.
+
+That sounded great!
+
+I took an rPi that I had around, and installed HaSS.IO - an Home Assistant based linux distribution for Raspberry Pi. Once I had it running, I started messing around with it, learning it and figuring out how to use it for my needs.
+
+<Figure src="2022/01/DraggedImage.png" alt="" />
+
+Knowing that HA is based on a great open source community, I quickly found the [Switcher integration](https://www.home-assistant.io/integrations/switcher_kis/) and easily configured it. Once configured, and combined with a set of other HA integration, I could quickly create automations that are way smarter!
+
+As an example, consider the following automation, which turns on the water heater when I get home only if it wasn’t active in the last two hours and if I’ve been out of the house for more than 3 hours:
+
+<Figure src="2022/01/Screen-Shot-2022-01-17-at-22.19.46.png" alt="" />
+
+<Figure src="2022/01/Screen-Shot-2022-01-17-at-22.20.03.png" alt="" />
+
+While this is just an example, it was obvious to me that I can leverage HA’s integrations to do even more.
+
+## Adding Calendar Integration
+
+So I tried to think about how to tell the system when I go on a workout. I could use Geofencing on my phone to trigger automations when my phone gets in the area of the gym, but as the gym is located somewhat near my apartment I feared that it might trigger some false alarms. What else?
+
+And then it occurred to me - calendar! As I’ve said before - I AM FORGETFUL! And what do I do to avoid forgetting my appointments with my trainer? I put it in the schedule! If I would connect my calendar as a HA integration, I could automatically turn on the heater right on time!
+
+I searched a bit, and found the [Google Calendar integration](https://www.home-assistant.io/integrations/google/) . While the installation instructions were quite cumbersome:
+
+<Figure src="2022/01/DraggedImage-1.png" alt="" />
+
+I managed to setup the Google App required to run this and added the integration in the `configuration.yaml` file:
+
+<Figure src="2022/01/Screen-Shot-2022-01-17-at-22.39.01.png" alt="" />
+
+And viola! I have my (Google) calendar inside HA’s interface!
+
+<Figure src="2022/01/DraggedImage-2.png" alt="" />
+
+At this point I was a bit confused, as I tried to create a new automation with the calendar as a sensor and couldn’t find it. However, after going back to the wiki page I found the [following section](https://www.home-assistant.io/integrations/google/#calendar-configuration):
+
+<Figure src="2022/01/Screen-Shot-2022-01-17-at-22.45.44.png" alt="" />
+
+Which made me realize that all I have to do is to create a sensor that would only be set to true if the current event matches the way I name my workout events:
+
+<Figure src="2022/01/DraggedImage-3.png" alt="" />
+
+And once that was configured, all I had left was to create the automation:
+
+```yaml
+alias: Turn on Switcher when I have a workout
+description: ''
+trigger:
+  - platform: state
+    entity_id: calendar.currently_working_out
+    to: 'on'
+condition: []
+action:
+  - service: switcher_kis.turn_on_with_timer
+    target:
+      entity_id: switch.switcher
+    data:
+      timer_minutes: 60
+mode: single
+```
+
+And that’s it! Now, whenever I have a workout scheduled in my calendar, HA will automatically turn on the switcher for 60 minutes, assuring that when I finish my workout and get home I will, with the highest level of certainty possible, have enough hot water to take the hot shower I earned.
+
+## Conclusion
+
+Yet again, this is an example of a first world problem that can be solved by technology and that, while having very little effect on my life as a whole, will most certainly make my life a bit better every time I get home and don’t have to worry about hot water.
+
+<Figure src="2022/01/kevin-baquerizo-lJewNo29uf0-unsplash.jpg" alt="Image by Kevin Baquerizo, Unsplash" caption="Image by Kevin Baquerizo, Unsplash" />
+
+Is this cool? Yes.
+
+Would I be better off just remembering to turn on the godamn water heater before I go to the gym?
+
+Probably.
+
+But where’s the fun in that?

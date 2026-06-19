@@ -1,0 +1,31 @@
+// Cloudflare Workers Static Assets config for oz-blog (Astro static site).
+//
+// PURE STATIC — no Worker script. All traffic is served directly from the
+// assets bundle. No `main` field needed or present.
+//
+// Git integration build settings (configure once in the Cloudflare dashboard
+// under Workers & Pages → oz-blog → Settings → Builds → Connect):
+//   Build command:    npm run build
+//   Deploy command:   npx wrangler deploy          (production branch)
+//   Non-prod deploy:  npx wrangler versions upload  (preview branches)
+//   Root directory:   (leave blank)
+//   Output dir:       handled automatically via assets.directory below
+//
+// Custom domain: add posts.oztamir.com under Settings → Domains & Routes.
+// The oztamir.com zone must be active on Cloudflare for the cert to auto-issue.
+{
+  "name": "oz-blog",
+  "compatibility_date": "2026-06-19",
+  // NO "main" field — purely static, no Worker script required.
+  // Assets are served directly without counting as Worker invocations.
+  "assets": {
+    // Astro writes the static build output here.
+    "directory": "./dist",
+    // Return the nearest 404.html with HTTP 404 for unmatched routes.
+    // Use "single-page-application" instead if/when the site moves to SPA mode.
+    "not_found_handling": "404-page",
+    // Redirect /slug → /slug/ when /slug/index.html exists (Astro format: 'directory').
+    // Pairs with Astro's trailingSlash:"always" so every URL ends with a slash.
+    "html_handling": "auto-trailing-slash"
+  }
+}

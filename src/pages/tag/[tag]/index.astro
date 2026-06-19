@@ -1,0 +1,57 @@
+---
+/**
+ * Tag archive page 1 — /tag/<slug>/ (generated for every tag with ≥1 post).
+ * Ports tag.hbs: a `.tag` section with the tag NAME as <h1 class="tag-name">
+ * (the CSS prepends a "#"), followed by the post-feed + pager.
+ * Structure + body class match live-tag-technical.html
+ * ("tag-template tag-<slug>").
+ *
+ * Title format: "<TagName> - 0xZ"; og:type=website; twitter card=summary.
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostFeed from '../../../components/PostFeed';
+import Pagination from '../../../components/Pagination';
+import { getSortedPosts, filterByTag, paginatePosts } from '../../../utils/posts';
+import { getAllTags } from '../../../utils/tags';
+import { SITE } from '../../../config';
+
+export const getStaticPaths = (async () => {
+  const all = await getSortedPosts();
+  return getAllTags(all).map((tag) => ({ params: { tag: tag.slug }, props: { tag } }));
+}) satisfies GetStaticPaths;
+
+const { tag } = Astro.props;
+const all = await getSortedPosts();
+const posts = filterByTag(all, tag.slug);
+const { pagePosts, nextUrl } = paginatePosts(posts, 1, SITE.postsPerPage, `/tag/${tag.slug}`);
+
+const canonical = `${SITE.url}/tag/${tag.slug}/`;
+const title = `${tag.name} - ${SITE.title}`;
+
+const head = {
+  type: 'tag',
+  title,
+  description: SITE.metaDescription,
+  canonical,
+  next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
+  ogType: 'website',
+  twitterCard: 'summary',
+  primaryTag: tag.name,
+};
+---
+<BaseLayout head={head} bodyClass={`tag-template tag-${tag.slug}`} isHome={false}>
+  <div class="site-content">
+    <main class="site-main">
+      <section class="tag">
+        <div class="gh-canvas">
+          <h1 class="tag-name">{tag.name}</h1>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <PostFeed posts={pagePosts} />
+
+  <Pagination nextUrl={nextUrl} />
+</BaseLayout>

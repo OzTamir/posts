@@ -1,0 +1,56 @@
+---
+/**
+ * Author archive page 1 — /author/<slug>/ (one author: "oz").
+ * Ports author.hbs: an AuthorCard header (avatar, name, location, bio,
+ * social links) followed by the post-feed + pager. Structure + body class
+ * match live-author-oz.html ("author-template author-<slug>").
+ *
+ * Title: "<Author> - 0xZ"; og:type=profile; description = bio;
+ * twitter card = summary.
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AuthorCard from '../../../components/AuthorCard';
+import PostFeed from '../../../components/PostFeed';
+import Pagination from '../../../components/Pagination';
+import { getSortedPosts, filterByAuthor, paginatePosts } from '../../../utils/posts';
+import { AUTHORS } from '../../../data/authors';
+import { SITE } from '../../../config';
+
+export const getStaticPaths = (async () => {
+  return Object.values(AUTHORS).map((author) => ({
+    params: { author: author.slug },
+    props: { author },
+  }));
+}) satisfies GetStaticPaths;
+
+const { author } = Astro.props;
+const all = await getSortedPosts();
+const posts = filterByAuthor(all, author.slug);
+const { pagePosts, nextUrl } = paginatePosts(posts, 1, SITE.postsPerPage, `/author/${author.slug}`);
+
+const canonical = `${SITE.url}/author/${author.slug}/`;
+const title = `${author.name} - ${SITE.title}`;
+
+const head = {
+  type: 'author',
+  title,
+  description: author.bio,
+  canonical,
+  next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
+  ogType: 'profile',
+  twitterCard: 'summary',
+  authorSlug: author.slug,
+};
+---
+<BaseLayout head={head} bodyClass={`author-template author-${author.slug}`} isHome={false}>
+  <div class="site-content">
+    <main class="site-main">
+      <AuthorCard author={author} />
+    </main>
+  </div>
+
+  <PostFeed posts={pagePosts} />
+
+  <Pagination nextUrl={nextUrl} />
+</BaseLayout>

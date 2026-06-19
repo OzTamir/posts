@@ -1,0 +1,35 @@
+# 0xZ — posts.oztamir.com
+
+The source for **0xZ**, a personal blog (`# cat /dev/brain >> posts`). Fully static
+**Astro** site deployed on **Cloudflare Workers Static Assets** — prerendered HTML,
+no server runtime, zero client JS.
+
+## Quick start
+
+```bash
+npm install
+npm run build      # → ./dist
+npm run preview    # http://localhost:4321
+```
+
+## Docs
+
+- **[docs/building-and-content.md](./docs/building-and-content.md)** — stack, project
+  structure, content schema, how to add/edit posts, routes, commands.
+- **[docs/design-system.md](./docs/design-system.md)** — design system as Tailwind
+  tokens: fonts, colors, dark mode, components, how to extend.
+- **[docs/deployment.md](./docs/deployment.md)** — Cloudflare Workers deploy via the
+  GitHub integration, `wrangler.jsonc`, redirects/headers, CI, rollback.
+- **[AGENTS.md](./AGENTS.md)** — conventions for anyone (incl. AI agents) editing the repo.
+
+## At a glance
+
+| | |
+| --- | --- |
+| Framework | Astro 6 (`output: "static"`) |
+| UI | React `.tsx` components (static, no hydration) |
+| Styling | Tailwind v4 (`@theme` tokens) + `@tailwindcss/typography` |
+| Content | MDX content collections (`src/content/posts/*.mdx`) |
+| Images | Astro asset pipeline (`src/assets/content/images/**` → WebP + srcset; GIFs preserved) |
+| Hosting | Cloudflare Workers Static Assets (`./dist`) |
+| Posts | Single author · trailing-slash URLs · Shiki `nord` code highlighting |

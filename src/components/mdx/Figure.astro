@@ -1,0 +1,62 @@
+---
+/**
+ * <Figure> — a single post image with an optional caption.
+ *
+ * Emits a `<figure class="image-card [has-caption] [content-wide]">`.
+ * Images render full container width and centered; captions use the global
+ * `figcaption` base style (centered, secondary text).
+ *
+ * Image handling:
+ *   • local image  -> resolved to its optimized asset and rendered via Astro's
+ *     <Image> (WebP + responsive srcset + lazy), `constrained` layout default.
+ *   • animated GIF -> imported (hashed /_astro URL) but rendered with a plain
+ *     <img src={asset.src}> so the animation is NOT re-encoded away.
+ *   • remote URL   -> passed through as a plain lazy <img> (a couple of posts
+ *     embed images hosted elsewhere; nothing to optimize locally).
+ *
+ * `wide` expands to the wider grid column (grid-column: wide via .content-wide).
+ */
+import { Image } from 'astro:assets';
+import { resolveImage, isGif } from './images';
+
+interface Props {
+  /** Tree-relative ("2023/03/x.png") or legacy ("/content/images/…") path, or a remote URL. */
+  src: string;
+  alt?: string;
+  caption?: string;
+  /** Render at the wider grid column (grid-column: wide via .content-wide). */
+  wide?: boolean;
+}
+
+const { src, alt = '', caption, wide = false } = Astro.props;
+
+const isRemote = /^https?:\/\//.test(src);
+const figureClass = ['image-card', caption ? 'has-caption' : '', wide ? 'content-wide' : '']
+  .filter(Boolean)
+  .join(' ');
+const imgClass = 'mx-auto block w-full';
+
+const asset = isRemote ? null : resolveImage(src);
+const gif = asset ? isGif(asset) : false;
+---
+<figure class={figureClass}>
+  {
+    isRemote ? (
+      <img src={src} alt={alt} loading="lazy" decoding="async" class={imgClass} />
+    ) : gif ? (
+      // GIF: keep the original (no re-encode) so animation is preserved.
+      <img
+        src={asset!.src}
+        alt={alt}
+        width={asset!.width}
+        height={asset!.height}
+        loading="lazy"
+        decoding="async"
+        class={imgClass}
+      />
+    ) : (
+      <Image src={asset!} alt={alt} loading="lazy" decoding="async" class={imgClass} />
+    )
+  }
+  {caption && <figcaption set:html={caption} />}
+</figure>

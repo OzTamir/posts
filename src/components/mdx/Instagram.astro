@@ -1,0 +1,34 @@
+---
+/**
+ * <Instagram> — an Instagram embed.
+ *
+ * Emits `<figure class="embed-card …"><blockquote class="instagram-media">…`.
+ * `.instagram-media` + the data-instgrm-* attributes are required by
+ * Instagram's embed.js (injected by the inline embed-loader in [slug].astro
+ * only when an embed is present), so they stay — platform attributes for the
+ * third-party script. The inline style block is the standard Instagram embed
+ * styling (kept verbatim so the placeholder looks right before the script
+ * upgrades it). The inner "View this post" / attribution links are passed as
+ * children.
+ */
+interface Props {
+  /** The instagram permalink (data-instgrm-permalink). */
+  permalink: string;
+  /** Whether the embed is captioned (data-instgrm-captioned). */
+  captioned?: boolean;
+  version?: string;
+}
+const { permalink, captioned = true, version = '14' } = Astro.props;
+const embedStyle =
+  'background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin:1px; max-width:540px; min-width:326px; padding:0; width:calc(100% - 2px);';
+---
+<figure class="embed-card flex w-full flex-col items-center">
+  <blockquote
+    class="instagram-media"
+    data-instgrm-captioned={captioned ? '' : undefined}
+    data-instgrm-permalink={permalink}
+    data-instgrm-version={version}
+    style={embedStyle}>
+    <slot />
+  </blockquote>
+</figure>

@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# Lighthouse CI output
+.lighthouseci/
+
+# local scratch / QA artifacts (agent temp output, never committed)
+scratchpad/
+
+# cloudflare / wrangler
+.wrangler/
+.dev.vars
+
+# env
+.env
+.env.*
+
+# os / editor
+.DS_Store
+.DS_STORE
+*.log

@@ -1,0 +1,76 @@
+---
+title: Using EIP-6963 for Marketing
+pubDate: "2024-10-19T21:08:00.000Z"
+updatedDate: "2026-06-18T23:46:00.000Z"
+tags: []
+author: oz
+featured: false
+excerpt: EIP-6963 isn’t just another Ethereum standard—it’s a powerful tool for building trust. We used it for social proof.
+featureImage: /content/images/2025/02/eip6963.png
+---
+
+import Figure from '../../components/mdx/Figure.astro';
+
+Working in a Web3 centered [company](https://blockaid.io), a lot of my online attention is spent on Twitter (X) - after all, this is where a lot of the people in the community are.
+
+A few days ago, I was browsing the feed when I came across the impressive work that [Zerion](https://zerion.io/) is doing with their [UnblockCrypto](https://www.unblockcrypto.org/) campaign.
+
+This campaign aims to promote the adoption of a new Ethereum standard, EIP-6963.
+
+## EIP-6963
+
+For those unfamiliar, [EIP-6963 (Multi Injected Provider Discovery)](https://eips.ethereum.org/EIPS/eip-6963) is a community-driven standard that introduces an alternative discovery mechanism to `window.ethereum`.
+
+As written in the EIP document:
+
+> Currently, Wallet Provider that offer browser extensions must inject their Ethereum providers (EIP-1193) into the same window object window.ethereum; however, this creates conflicts for users that may install more than one browser extension.
+
+> This results not only in a degraded user experience but also increases the barrier to entry for new browser extensions as users are forced to only install one browser extension at a time.
+
+> In this proposal, we present a solution that focuses on optimizing the interoperability of multiple Wallet Providers. This solution aims to foster fairer competition by reducing the barriers to entry for new Wallet Providers, along with enhancing the user experience on Ethereum networks.
+
+> This is achieved by introducing a set of window events to provide a two-way communication protocol between Ethereum libraries and injected scripts provided by browser extensions thus enabling users to select their wallet of choice.
+
+## Realizing the Potential
+
+Upon learning about this standard, I immediately saw an opportunity. At Blockaid, we pride ourselves on partnerships with major players like [Metamask](https://www.blockaid.io/blog/blockaid-metamask-securing-web3-users-while-preserving-privacy), [Coinbase Wallet](https://www.blockaid.io/blog/coinbase-wallet-powered-by-blockaid), [Rainbow](https://www.blockaid.io/blog/rainbow-wallet-mobile-app-and-browser-extension-powered-by-blockaid), and [Zerion](https://www.blockaid.io/blog/zerion-phishing-defense-powered-by-blockaid).
+
+My idea? Use EIP-6963 to provide social proof to our website visitors.
+
+By highlighting that the wallets they use are likely already compatible with Blockaid, we can build trust and assure them of their choice of us as their security provider—the same idea that is powering our messaging around the Blockaid Network.
+
+<Figure src="2025/02/Network-2.png" alt="" />
+
+## The Integration Process
+
+Integrating support for this standard was surprisingly easy. The injected providers that support EIP-6963 publish a window event with a simple interface providing necessary information, including the provider's name and icon.
+
+<Figure src="2025/02/interface-2.png" alt="" />
+
+With this interface, the integration is very straightforward - all you need to do is to listen for window events that contain a provider announcement, make sure that the announced provider is one of our supported providers (list of our customers that integrated EIP-6963 into their extension), and set the state of the banner:
+
+```js
+// Listener for wallet provider announcements
+window.addEventListener("eip6963:announceProvider", (event) => {
+    const {name, icon} = event.detail.info;
+    if (Object.keys(supportedProviders).includes(name)) {
+      setProvider(supportedProviders[name]);
+    }
+});
+```
+
+As you can see, the code listens for provider announcements and updates our website to reflect the connected provider, offering a seamless user experience. And the result? Stunning.
+
+<Figure src="https://pbs.twimg.com/media/GOFY8oJXIAAcPKE?format=jpg&name=large" alt="Image" />
+
+# Conclusion
+
+EIP-6963 is more than just a technical improvement—it’s a trust signal, a marketing asset, and a way to reduce friction for users navigating the Web3 ecosystem.
+
+By showcasing compatibility with this standard, we’re not just improving UX; we’re reinforcing security, credibility, and seamless integration with the wallets users already trust.
+
+For any crypto project looking to boost adoption, leveraging new standards like EIP-6963 isn’t just a technical decision—it’s a strategic one.
+
+And in an industry where trust is everything, small details like these can make a big difference.
+
+_A special mention to_ [_this Metamask repository_](https://github.com/MetaMask/vite-react-ts-eip-6963) _for being an invaluable resource during this process._

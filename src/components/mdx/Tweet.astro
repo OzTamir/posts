@@ -1,0 +1,22 @@
+---
+/**
+ * <Tweet> — a Twitter/X embed.
+ *
+ * Emits `<figure class="embed-card …"><blockquote class="twitter-tweet">…`.
+ * The `.twitter-tweet` class is required by Twitter's widgets.js (injected by
+ * the inline embed-loader in [slug].astro only when a tweet is present), so it
+ * stays — a platform class for the third-party script. The tweet's inner markup
+ * (the <p> + the "— author <a>…</a>" attribution) is passed as children,
+ * verbatim from the original blockquote, so the rendered widget is identical.
+ */
+interface Props {
+  /** Optional data-width passed through to widgets.js (e.g. "550"). */
+  width?: string;
+}
+const { width } = Astro.props;
+---
+<figure class="embed-card flex w-full flex-col items-center">
+  <blockquote class="twitter-tweet" data-width={width}>
+    <slot />
+  </blockquote>
+</figure>
