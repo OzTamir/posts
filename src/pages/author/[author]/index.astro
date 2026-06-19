@@ -11,34 +11,25 @@
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import AuthorCard from '../../../components/AuthorCard';
-import PostCard from '../../../components/PostCard';
+import PostFeed from '../../../components/PostFeed';
 import Pagination from '../../../components/Pagination';
-import { getSortedPosts, filterByAuthor } from '../../../utils/posts';
+import { getSortedPosts, filterByAuthor, paginatePosts } from '../../../utils/posts';
 import { AUTHORS } from '../../../data/authors';
 import { SITE } from '../../../config';
 
 export const getStaticPaths = (async () => {
-  const all = await getSortedPosts();
-  const perPage = SITE.postsPerPage;
-
-  return Object.values(AUTHORS).map((author) => {
-    const posts = filterByAuthor(all, author.slug);
-    const totalPages = Math.max(1, Math.ceil(posts.length / perPage));
-    return {
-      params: { author: author.slug },
-      props: {
-        author,
-        pagePosts: posts.slice(0, perPage),
-        totalPages,
-      },
-    };
-  });
+  return Object.values(AUTHORS).map((author) => ({
+    params: { author: author.slug },
+    props: { author },
+  }));
 }) satisfies GetStaticPaths;
 
-const { author, pagePosts, totalPages } = Astro.props;
+const { author } = Astro.props;
+const all = await getSortedPosts();
+const posts = filterByAuthor(all, author.slug);
+const { pagePosts, nextUrl } = paginatePosts(posts, 1, SITE.postsPerPage, `/author/${author.slug}`);
 
 const canonical = `${SITE.url}/author/${author.slug}/`;
-const nextUrl = totalPages > 1 ? `/author/${author.slug}/page/2/` : undefined;
 const title = `${author.name} - ${SITE.title}`;
 
 const head = {
@@ -59,11 +50,7 @@ const head = {
     </main>
   </div>
 
-  <div class="post-feed gh-feed gh-canvas">
-    {pagePosts.map(({ post, readingTime }) => (
-      <PostCard post={post} readingTime={readingTime} />
-    ))}
-  </div>
+  <PostFeed posts={pagePosts} />
 
   <Pagination nextUrl={nextUrl} />
 </BaseLayout>

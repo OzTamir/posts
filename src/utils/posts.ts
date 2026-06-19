@@ -33,6 +33,49 @@ export function filterByAuthor(all: PostWithMeta[], authorSlug: string): PostWit
   return all.filter(({ post }) => (post.data.author ?? 'oz') === authorSlug);
 }
 
+/** Total number of pages for `count` items at `perPage` (minimum 1). */
+export function pageCount(count: number, perPage: number): number {
+  return Math.max(1, Math.ceil(count / perPage));
+}
+
+export interface FeedPage {
+  /** Posts on this page (already sliced for the page number). */
+  pagePosts: PostWithMeta[];
+  /** Total pages across the whole filtered list. */
+  totalPages: number;
+  /** Root-relative URL of the next page, or undefined on the last page. */
+  nextUrl?: string;
+  /** Root-relative URL of the previous page, or undefined on page 1. */
+  prevUrl?: string;
+}
+
+/**
+ * Shared feed pagination for the home / tag / author views (and their
+ * /page/N/ pages), so the slice + next/prev URL logic lives in one place.
+ *
+ * `basePath` is the section root WITHOUT a trailing slash: '' for home
+ * (URLs like /page/2/), '/tag/<slug>' or '/author/<slug>' for archives.
+ * Page 1's prev is the base ('/'+basePath+'/'); /page/1/ is never emitted
+ * (a redirect canonicalises it).
+ */
+export function paginatePosts(
+  all: PostWithMeta[],
+  page: number,
+  perPage: number,
+  basePath: string,
+): FeedPage {
+  const totalPages = pageCount(all.length, perPage);
+  const start = (page - 1) * perPage;
+  const pagePosts = all.slice(start, start + perPage);
+  const base = `${basePath}/`; // '/', '/tag/<slug>/', '/author/<slug>/'
+
+  const nextUrl = page < totalPages ? `${basePath}/page/${page + 1}/` : undefined;
+  const prevUrl =
+    page <= 1 ? undefined : page === 2 ? base : `${basePath}/page/${page - 1}/`;
+
+  return { pagePosts, totalPages, nextUrl, prevUrl };
+}
+
 /**
  * Related posts for a single post: up to `limit` other posts that share
  * at least one tag with the current post, newest-first, excluding itself.

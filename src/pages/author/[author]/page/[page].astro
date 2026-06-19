@@ -9,43 +9,30 @@
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import AuthorCard from '../../../../components/AuthorCard';
-import PostCard from '../../../../components/PostCard';
+import PostFeed from '../../../../components/PostFeed';
 import Pagination from '../../../../components/Pagination';
-import { getSortedPosts, filterByAuthor } from '../../../../utils/posts';
+import { getSortedPosts, filterByAuthor, paginatePosts, pageCount } from '../../../../utils/posts';
 import { AUTHORS } from '../../../../data/authors';
 import { SITE } from '../../../../config';
 
 export const getStaticPaths = (async () => {
   const all = await getSortedPosts();
-  const perPage = SITE.postsPerPage;
   const paths = [];
-
   for (const author of Object.values(AUTHORS)) {
-    const posts = filterByAuthor(all, author.slug);
-    const totalPages = Math.max(1, Math.ceil(posts.length / perPage));
+    const totalPages = pageCount(filterByAuthor(all, author.slug).length, SITE.postsPerPage);
     for (let page = 2; page <= totalPages; page++) {
-      const start = (page - 1) * perPage;
-      paths.push({
-        params: { author: author.slug, page: String(page) },
-        props: {
-          author,
-          pagePosts: posts.slice(start, start + perPage),
-          page,
-          totalPages,
-        },
-      });
+      paths.push({ params: { author: author.slug, page: String(page) }, props: { author, page } });
     }
   }
   return paths;
 }) satisfies GetStaticPaths;
 
-const { author, pagePosts, page, totalPages } = Astro.props;
+const { author, page } = Astro.props;
+const all = await getSortedPosts();
+const posts = filterByAuthor(all, author.slug);
+const { pagePosts, nextUrl, prevUrl } = paginatePosts(posts, page, SITE.postsPerPage, `/author/${author.slug}`);
 
 const canonical = `${SITE.url}/author/${author.slug}/page/${page}/`;
-const nextUrl =
-  page < totalPages ? `/author/${author.slug}/page/${page + 1}/` : undefined;
-const prevUrl =
-  page > 2 ? `/author/${author.slug}/page/${page - 1}/` : `/author/${author.slug}/`;
 const title = `${author.name} - ${SITE.title}`;
 
 const head = {
@@ -54,7 +41,7 @@ const head = {
   description: author.bio,
   canonical,
   next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
-  prev: `${SITE.url}${prevUrl}`,
+  prev: prevUrl ? `${SITE.url}${prevUrl}` : undefined,
   ogType: 'profile',
   twitterCard: 'summary',
   authorSlug: author.slug,
@@ -67,11 +54,7 @@ const head = {
     </main>
   </div>
 
-  <div class="post-feed gh-feed gh-canvas">
-    {pagePosts.map(({ post, readingTime }) => (
-      <PostCard post={post} readingTime={readingTime} />
-    ))}
-  </div>
+  <PostFeed posts={pagePosts} />
 
   <Pagination nextUrl={nextUrl} />
 </BaseLayout>

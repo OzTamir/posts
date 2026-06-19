@@ -10,35 +10,23 @@
  */
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import PostCard from '../../../components/PostCard';
+import PostFeed from '../../../components/PostFeed';
 import Pagination from '../../../components/Pagination';
-import { getSortedPosts, filterByTag } from '../../../utils/posts';
+import { getSortedPosts, filterByTag, paginatePosts } from '../../../utils/posts';
 import { getAllTags } from '../../../utils/tags';
 import { SITE } from '../../../config';
 
 export const getStaticPaths = (async () => {
   const all = await getSortedPosts();
-  const tags = getAllTags(all);
-  const perPage = SITE.postsPerPage;
-
-  return tags.map((tag) => {
-    const posts = filterByTag(all, tag.slug);
-    const totalPages = Math.max(1, Math.ceil(posts.length / perPage));
-    return {
-      params: { tag: tag.slug },
-      props: {
-        tag,
-        pagePosts: posts.slice(0, perPage),
-        totalPages,
-      },
-    };
-  });
+  return getAllTags(all).map((tag) => ({ params: { tag: tag.slug }, props: { tag } }));
 }) satisfies GetStaticPaths;
 
-const { tag, pagePosts, totalPages } = Astro.props;
+const { tag } = Astro.props;
+const all = await getSortedPosts();
+const posts = filterByTag(all, tag.slug);
+const { pagePosts, nextUrl } = paginatePosts(posts, 1, SITE.postsPerPage, `/tag/${tag.slug}`);
 
 const canonical = `${SITE.url}/tag/${tag.slug}/`;
-const nextUrl = totalPages > 1 ? `/tag/${tag.slug}/page/2/` : undefined;
 const title = `${tag.name} - ${SITE.title}`;
 
 const head = {
@@ -63,11 +51,7 @@ const head = {
     </main>
   </div>
 
-  <div class="post-feed gh-feed gh-canvas">
-    {pagePosts.map(({ post, readingTime }) => (
-      <PostCard post={post} readingTime={readingTime} />
-    ))}
-  </div>
+  <PostFeed posts={pagePosts} />
 
   <Pagination nextUrl={nextUrl} />
 </BaseLayout>

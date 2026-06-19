@@ -8,43 +8,30 @@
  */
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
-import PostCard from '../../../../components/PostCard';
+import PostFeed from '../../../../components/PostFeed';
 import Pagination from '../../../../components/Pagination';
-import { getSortedPosts, filterByTag } from '../../../../utils/posts';
+import { getSortedPosts, filterByTag, paginatePosts, pageCount } from '../../../../utils/posts';
 import { getAllTags } from '../../../../utils/tags';
 import { SITE } from '../../../../config';
 
 export const getStaticPaths = (async () => {
   const all = await getSortedPosts();
-  const tags = getAllTags(all);
-  const perPage = SITE.postsPerPage;
   const paths = [];
-
-  for (const tag of tags) {
-    const posts = filterByTag(all, tag.slug);
-    const totalPages = Math.max(1, Math.ceil(posts.length / perPage));
+  for (const tag of getAllTags(all)) {
+    const totalPages = pageCount(filterByTag(all, tag.slug).length, SITE.postsPerPage);
     for (let page = 2; page <= totalPages; page++) {
-      const start = (page - 1) * perPage;
-      paths.push({
-        params: { tag: tag.slug, page: String(page) },
-        props: {
-          tag,
-          pagePosts: posts.slice(start, start + perPage),
-          page,
-          totalPages,
-        },
-      });
+      paths.push({ params: { tag: tag.slug, page: String(page) }, props: { tag, page } });
     }
   }
   return paths;
 }) satisfies GetStaticPaths;
 
-const { tag, pagePosts, page, totalPages } = Astro.props;
+const { tag, page } = Astro.props;
+const all = await getSortedPosts();
+const posts = filterByTag(all, tag.slug);
+const { pagePosts, nextUrl, prevUrl } = paginatePosts(posts, page, SITE.postsPerPage, `/tag/${tag.slug}`);
 
 const canonical = `${SITE.url}/tag/${tag.slug}/page/${page}/`;
-const nextUrl = page < totalPages ? `/tag/${tag.slug}/page/${page + 1}/` : undefined;
-const prevUrl =
-  page > 2 ? `/tag/${tag.slug}/page/${page - 1}/` : `/tag/${tag.slug}/`;
 const title = `${tag.name} - ${SITE.title}`;
 
 const head = {
@@ -53,7 +40,7 @@ const head = {
   description: SITE.metaDescription,
   canonical,
   next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
-  prev: `${SITE.url}${prevUrl}`,
+  prev: prevUrl ? `${SITE.url}${prevUrl}` : undefined,
   ogType: 'website',
   twitterCard: 'summary',
   primaryTag: tag.name,
@@ -70,11 +57,7 @@ const head = {
     </main>
   </div>
 
-  <div class="post-feed gh-feed gh-canvas">
-    {pagePosts.map(({ post, readingTime }) => (
-      <PostCard post={post} readingTime={readingTime} />
-    ))}
-  </div>
+  <PostFeed posts={pagePosts} />
 
   <Pagination nextUrl={nextUrl} />
 </BaseLayout>

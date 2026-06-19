@@ -8,37 +8,28 @@
  */
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import PostCard from '../../components/PostCard';
+import PostFeed from '../../components/PostFeed';
 import Pagination from '../../components/Pagination';
-import { getSortedPosts } from '../../utils/posts';
+import { getSortedPosts, paginatePosts, pageCount } from '../../utils/posts';
 import { SITE } from '../../config';
 
 export const getStaticPaths = (async () => {
   const all = await getSortedPosts();
-  const perPage = SITE.postsPerPage;
-  const totalPages = Math.max(1, Math.ceil(all.length / perPage));
+  const totalPages = pageCount(all.length, SITE.postsPerPage);
 
   const paths = [];
   // Pages 2..N (skip page 1 → that is index.astro).
   for (let page = 2; page <= totalPages; page++) {
-    const start = (page - 1) * perPage;
-    paths.push({
-      params: { page: String(page) },
-      props: {
-        pagePosts: all.slice(start, start + perPage),
-        page,
-        totalPages,
-      },
-    });
+    paths.push({ params: { page: String(page) }, props: { page } });
   }
   return paths;
 }) satisfies GetStaticPaths;
 
-const { pagePosts, page, totalPages } = Astro.props;
+const { page } = Astro.props;
+const all = await getSortedPosts();
+const { pagePosts, nextUrl, prevUrl } = paginatePosts(all, page, SITE.postsPerPage, '');
 
 const canonical = `${SITE.url}/page/${page}/`;
-const nextUrl = page < totalPages ? `/page/${page + 1}/` : undefined;
-const prevUrl = page > 2 ? `/page/${page - 1}/` : '/';
 
 const head = {
   type: 'home',
@@ -50,7 +41,7 @@ const head = {
   twitterDescription: SITE.twitterDescription,
   canonical,
   next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
-  prev: `${SITE.url}${prevUrl}`, // page 2 → "/", page N → "/page/N-1/"
+  prev: prevUrl ? `${SITE.url}${prevUrl}` : undefined, // page 2 → "/", page N → "/page/N-1/"
   ogType: 'website',
   ogImage: SITE.ogImage,
   twitterImage: SITE.twitterImage,
@@ -59,11 +50,7 @@ const head = {
 <BaseLayout head={head} bodyClass="home-template paged" isHome={false}>
   <div class="site-content"></div>
 
-  <div class="post-feed gh-feed gh-canvas">
-    {pagePosts.map(({ post, readingTime }) => (
-      <PostCard post={post} readingTime={readingTime} />
-    ))}
-  </div>
+  <PostFeed posts={pagePosts} />
 
   <Pagination nextUrl={nextUrl} />
 </BaseLayout>

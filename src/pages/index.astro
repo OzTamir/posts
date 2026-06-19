@@ -10,16 +10,13 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Cover from '../components/Cover';
-import PostCard from '../components/PostCard';
+import PostFeed from '../components/PostFeed';
 import Pagination from '../components/Pagination';
-import { getSortedPosts } from '../utils/posts';
+import { getSortedPosts, paginatePosts } from '../utils/posts';
 import { SITE } from '../config';
 
 const all = await getSortedPosts();
-const perPage = SITE.postsPerPage;
-const totalPages = Math.max(1, Math.ceil(all.length / perPage));
-const pagePosts = all.slice(0, perPage);
-const nextUrl = totalPages > 1 ? '/page/2/' : undefined;
+const { pagePosts, nextUrl } = paginatePosts(all, 1, SITE.postsPerPage, '');
 
 const head = {
   type: 'home',
@@ -41,11 +38,7 @@ const head = {
   <div class="home-content">
     <Cover />
 
-    <div class="post-feed gh-feed gh-canvas">
-      {pagePosts.map(({ post, readingTime }) => (
-        <PostCard post={post} readingTime={readingTime} />
-      ))}
-    </div>
+    <PostFeed posts={pagePosts} />
 
     <Pagination nextUrl={nextUrl} />
   </div>
