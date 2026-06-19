@@ -16,7 +16,7 @@ There is **one** CSS file: `src/styles/global.css`. It owns everything:
 - Runtime `--*-color` custom properties that flip per theme (`:root`, `.theme-dark:root`,
   `.theme-light:root`, and a `prefers-color-scheme: dark` fallback)
 - `@layer base` — preflight-adjacent resets + base typography
-- `@layer components` — the named-grid, post-body (`.gh-content`/figure/table/code), and
+- `@layer components` — the named-grid, post-body (`.post-content`/figure/table/code), and
   structural site chrome (header, feed cards, single post, tag archive) that cannot be
   cleanly expressed as inline utilities in JSX
 
@@ -81,7 +81,7 @@ Dark/light values live in `global.css` under `.theme-dark:root` and `.theme-ligh
 
 - `--navbar-height: 80px`, `--content-font-size: 1.7rem` (mobile) / `1.8rem` (desktop),
   `--header-spacing: 60px` (`30px` on mobile via `@media (max-width: 767px)`).
-- Content width comes from the **named-grid system** (`.gh-canvas`):
+- Content width comes from the **named-grid system** (`.post-canvas`):
   - `[main]` column — the standard prose width (720 px, responsive)
   - `[wide]` column — wider bleed (`.content-wide`), used by `<Figure wide>`
   - `[full]` column — edge-to-edge (`.content-full`)
@@ -119,8 +119,8 @@ tags directly without per-post `import` lines.
 
 ## Post body styling
 
-Rendered MDX is wrapped in `<div class="single-content gh-content gh-canvas">`.
-Styling inside `.gh-content` (in `@layer components` in `global.css`):
+Rendered MDX is wrapped in `<div class="single-content post-content post-canvas">`.
+Styling inside `.post-content` (in `@layer components` in `global.css`):
 
 - Headings (`h2`–`h4`), paragraphs, links (brand accent + underline), lists (disc/decimal
   restored after Tailwind Preflight reset), blockquotes, tables (horizontally scrollable),
@@ -139,6 +139,6 @@ Styling inside `.gh-content` (in `@layer components` in `global.css`):
 - **New component:** build with Tailwind utilities bound to the `@theme` tokens
   (`text-accent`, `font-mono`, `bg-bg`, …). Don't hardcode hex/px values that duplicate
   a token.
-- **New post-body element:** style it under `.gh-content` in `@layer components` in
+- **New post-body element:** style it under `.post-content` in `@layer components` in
   `global.css`, reusing the runtime `--*-color` variables.
 - Keep the **768 px** mental model: write mobile styles first, layer desktop under `md:`.

@@ -26,7 +26,7 @@ export default function AuthorCard({ author }: Props) {
   const avatar = author.profileImage;
 
   return (
-    <section className="author gh-canvas mb-[4.5rem] flex flex-col items-center text-center">
+    <section className="author post-canvas mb-[4.5rem] flex flex-col items-center text-center">
       <div className="author-image-placeholder u-placeholder square mb-[2rem] w-[70px] shrink-0 overflow-hidden rounded-full">
         <img className="author-image u-object-fit" src={avatar} alt={author.name} />
       </div>

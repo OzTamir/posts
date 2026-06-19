@@ -21,7 +21,7 @@ interface Props {
 export default function RelatedPosts({ related }: Props) {
   if (related.length === 0) return null;
   return (
-    <section className="related-wrapper gh-canvas mt-[40px] bg-lighter-gray pt-[56px] pb-[32px]">
+    <section className="related-wrapper post-canvas mt-[40px] bg-lighter-gray pt-[56px] pb-[32px]">
       <h3 className="related-title mb-[20px] text-[2.1rem]">Hungry for more?</h3>
       <div className="related-feed">
         {related.map(({ post, readingTime }) => (
