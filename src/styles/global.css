@@ -1,8 +1,39 @@
+/* =====================================================================
+   global.css — the single Tailwind entry for the site.
+
+   Contains ONLY Tailwind constructs:
+     • the remote IBM Plex Mono @import (must precede Tailwind's import)
+     • @import "tailwindcss"
+     • @plugin "@tailwindcss/typography"
+     • @custom-variant dark (class-based, wired to .theme-dark)
+     • @theme tokens (fonts/colors/spacing) — generate utilities used in JSX
+     • @font-face blocks (self-hosted Mulish/Lora + remote Literata / Press Start 2P)
+     • the runtime --*-color custom properties that FLIP per theme
+       (.theme-dark / .theme-light re-point them; components reference the
+       tokens that resolve to them, so dark/light swaps need no component edits)
+     • @layer base — preflight-adjacent resets + base typography
+     • @layer components — the named-grid + post-body (gh-content / kg-*) styling
+       that cannot live as utilities in JSX (the post HTML is authored in the
+       Markdown content, not here)
+
+   Component chrome (header, footer, feed cards, single-post header, author
+   card, cover, related) is styled with Tailwind utility classes directly in
+   the .tsx components, bound to these @theme tokens.
+   ===================================================================== */
+
 /* CSS @import rules must precede all other rules — keep the remote font import
    first, before Tailwind's import expands into rules. */
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
 @import "tailwindcss";
-@import "./content.css";
+
+/* Typography plugin — powers the `prose` classes on rendered post bodies. */
+@plugin "@tailwindcss/typography";
+
+/* Dark mode is class-based: the site ships <html class="theme-dark"> and the
+   footer toggle swaps .theme-dark / .theme-light. Wire Tailwind's `dark:`
+   variant to the .theme-dark class so `dark:` utilities (and the typography
+   `prose-invert`-style overrides) react to it. */
+@custom-variant dark (&:where(.theme-dark, .theme-dark *));
 
 /* =====================================================================
    FONTS
@@ -10,7 +41,6 @@
    IBM Plex Mono (code) from Google Fonts (imported above); Literata
    Variable + Press Start 2P (used by specific posts) from jsDelivr fontsource.
    ===================================================================== */
-
 @font-face { font-family: Mulish; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/mulish-v10-latin-regular.woff2") format("woff2"), url("/fonts/mulish-v10-latin-regular.woff") format("woff"); }
 @font-face { font-family: Mulish; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/mulish-v10-latin-700.woff2") format("woff2"), url("/fonts/mulish-v10-latin-700.woff") format("woff"); }
 @font-face { font-family: Mulish; font-style: normal; font-weight: 800; font-display: swap; src: url("/fonts/mulish-v10-latin-800.woff2") format("woff2"), url("/fonts/mulish-v10-latin-800.woff") format("woff"); }
@@ -25,11 +55,11 @@
 
 /* =====================================================================
    DESIGN TOKENS (Tailwind v4 @theme).
-   Light-theme baseline custom properties. Expose Tailwind utilities
-   (bg-bg, text-primary, font-mono, …) AND emit matching CSS custom
-   properties. Dark mode is handled below by the `.theme-dark` /
-   `.theme-light` class mechanism, which re-points the runtime
-   --*-color variables that the component CSS consumes.
+   These generate the utilities used in the .tsx components (bg-bg,
+   text-primary-text, font-mono, text-accent, text-twitter, …). The color
+   tokens point at the runtime --*-color custom properties defined below, so
+   they FLIP automatically with the theme class — utilities in JSX never need
+   a dark: variant for these.
    ===================================================================== */
 @theme {
   /* Font stacks — exactly as live (--font-sans / --font-serif / --font-mono). */
@@ -37,45 +67,44 @@
   --font-serif: Lora, Times, serif;
   --font-mono: "IBM Plex Mono", "SF Mono", Monaco, Inconsolata, "Roboto Mono", "Courier New", monospace;
 
-  /* Brand / accent (light theme baseline). */
-  --color-accent: #997700;
-  --color-accent-hover: #8b6914;
-  --color-accent-light: #fff4b3;
+  /* Theme-flipping colors → resolve to the runtime --*-color properties. */
+  --color-bg: var(--white-color);
+  --color-primary-text: var(--primary-text-color);
+  --color-secondary-text: var(--secondary-text-color);
+  --color-brand: var(--brand-color);
+  --color-accent: var(--accent-color);
+  --color-accent-hover: var(--accent-color-hover);
+  --color-accent-light: var(--accent-color-light);
+  --color-lighter-gray: var(--lighter-gray-color);
+  --color-light-gray: var(--light-gray-color);
+  --color-mid-gray: var(--mid-gray-color);
+  --color-dark-gray: var(--dark-gray-color);
+  --color-darker-gray: var(--darker-gray-color);
+  --color-black: var(--black-color);
 
-  /* Light theme palette (live :root values). */
-  --color-bg: #ffffff;
-  --color-primary-text: #1a1a1a;
-  --color-secondary-text: #666666;
-  --color-lighter-gray: #f8f8f8;
-  --color-light-gray: #e8e8e8;
-  --color-mid-gray: #b3b3b3;
-  --color-dark-gray: #4d4d4d;
-  --color-darker-gray: #1a1a1a;
-  --color-black: #000000;
+  /* Static status / social brand colors. */
   --color-green: #28a745;
   --color-orange: #ffc107;
   --color-red: #dc3545;
-
-  /* Social brand colors (live values). */
-  --color-facebook: #3b5998;
-  --color-twitter: #1da1f2;
-  --color-linkedin: #0b66c3;
-  --color-bluesky: #1185fe;
-  --color-threads: #000000;
-  --color-mastodon: #6364ff;
-  --color-tiktok: #000000;
-  --color-youtube: #ff0000;
-  --color-instagram: #000000;
-  --color-rss: #f26522;
+  --color-facebook: var(--facebook-color);
+  --color-twitter: var(--twitter-color);
+  --color-linkedin: var(--linkedin-color);
+  --color-bluesky: var(--bluesky-color);
+  --color-threads: var(--threads-color);
+  --color-mastodon: var(--mastodon-color);
+  --color-tiktok: var(--tiktok-color);
+  --color-youtube: var(--youtube-color);
+  --color-instagram: var(--instagram-color);
+  --color-rss: var(--rss-color);
 }
 
 /* =====================================================================
    RUNTIME THEME VARIABLES + DARK MODE
-   The component CSS reads these `--*-color` custom properties. The site
-   ships `<html class="theme-dark">` by default; the footer toggle swaps
-   `.theme-dark`/`.theme-light` on <html> (see BaseLayout script), and a
-   prefers-color-scheme fallback applies when no class is forced.
-   --site-accent-color is injected per-page in <head> (= #ffd102).
+   The site ships <html class="theme-dark"> by default; the footer toggle
+   swaps .theme-dark / .theme-light on <html> (see ThemeToggle island + the
+   no-flash inline head script), and a prefers-color-scheme fallback applies
+   when no class is forced. --site-accent-color is injected per-page in <head>
+   (= #ffd102). These values are 1:1 with the previous theme.
    ===================================================================== */
 :root {
   --brand-color: var(--site-accent-color, #997700);
@@ -85,17 +114,11 @@
   --primary-text-color: #1a1a1a;
   --secondary-text-color: #666;
   --white-color: #fff;
-  --color-white: #fff;
   --lighter-gray-color: #f8f8f8;
-  --color-lighter-gray: #f8f8f8;
   --light-gray-color: #e8e8e8;
-  --color-light-gray: #e8e8e8;
   --mid-gray-color: #b3b3b3;
-  --color-mid-gray: #b3b3b3;
   --dark-gray-color: #4d4d4d;
-  --color-dark-gray: #4d4d4d;
   --darker-gray-color: #1a1a1a;
-  --color-darker-gray: #1a1a1a;
   --black-color: #000;
   --green-color: #28a745;
   --orange-color: #ffc107;
@@ -140,33 +163,13 @@ html.theme-light:root {
   --primary-text-color: #e8e8e8;
   --secondary-text-color: #a0a0a0;
   --white-color: #1a1a1a;
-  --color-white: #1a1a1a;
   --lighter-gray-color: #252525;
-  --color-lighter-gray: #252525;
   --light-gray-color: #333;
-  --color-light-gray: #333;
-  --color-light-color: #333;
   --mid-gray-color: #666;
-  --color-mid-gray: #666;
   --dark-gray-color: #d0d0d0;
-  --color-dark-gray: #d0d0d0;
   --darker-gray-color: #fff;
-  --color-darker-gray: #fff;
   --black-color: #0f0f0f;
 }
-
-.theme-dark .gh-head-logo img:first-child:not(:only-child) { opacity: 0; }
-.theme-dark .gh-head-logo img + img { opacity: 1; }
-.theme-dark .share-link { background-color: var(--darker-gray-color); }
-.theme-dark .share-link-facebook { color: var(--facebook-color); }
-.theme-dark .share-link-twitter { color: var(--twitter-color); }
-.theme-dark .share-link-linkedin { color: var(--linkedin-color); }
-.theme-dark .share-link-bluesky { color: var(--bluesky-color); }
-.theme-dark .share-link-threads { color: var(--threads-color); }
-.theme-dark .share-link-mastodon { color: var(--mastodon-color); }
-.theme-dark .share-link-tiktok { color: var(--tiktok-color); }
-.theme-dark .share-link-youtube { color: var(--youtube-color); }
-.theme-dark .share-link-instagram { color: var(--instagram-color); }
 
 /* Dark mode — system-preference fallback when no class is forced. */
 @media (prefers-color-scheme: dark) {
@@ -178,559 +181,885 @@ html.theme-light:root {
     --primary-text-color: #e8e8e8;
     --secondary-text-color: #a0a0a0;
     --white-color: #1a1a1a;
-    --color-white: #1a1a1a;
     --lighter-gray-color: #252525;
     --light-gray-color: #333;
     --mid-gray-color: #666;
     --dark-gray-color: #d0d0d0;
     --darker-gray-color: #fff;
-    --color-darker-gray: #fff;
     --black-color: #0f0f0f;
   }
-  html:not(.theme-light) .gh-head-logo img:first-child:not(:only-child) { opacity: 0; }
-  html:not(.theme-light) .gh-head-logo img + img { opacity: 1; }
-  html:not(.theme-light) .share-link { background-color: var(--darker-gray-color); }
-  html:not(.theme-light) .share-link-facebook { color: var(--facebook-color); }
-  html:not(.theme-light) .share-link-twitter { color: var(--twitter-color); }
-  html:not(.theme-light) .share-link-linkedin { color: var(--linkedin-color); }
 }
 
 /* =====================================================================
    BASE / RESET
    html font-size:62.5% so 1rem = 10px; all rem values follow this scale.
+   Layered into `base` so utilities still win where applied in JSX.
    ===================================================================== */
-*, *::after, *::before { box-sizing: border-box; }
-blockquote, body, dd, dl, figure, h1, h2, h3, h4, h5, h6, p { margin: 0; }
-ol[role="list"], ul[role="list"] { list-style: none; }
-html:focus-within { scroll-behavior: smooth; }
-a:not([class]) { -webkit-text-decoration-skip: ink; text-decoration-skip-ink: auto; }
-img, picture { display: block; max-width: 100%; }
-button, input, select, textarea { font: inherit; }
+@layer base {
+  *, *::after, *::before { box-sizing: border-box; }
+  blockquote, body, dd, dl, figure, h1, h2, h3, h4, h5, h6, p { margin: 0; }
+  ol[role="list"], ul[role="list"] { list-style: none; }
+  html:focus-within { scroll-behavior: smooth; }
+  a:not([class]) { -webkit-text-decoration-skip: ink; text-decoration-skip-ink: auto; }
+  img, picture { display: block; max-width: 100%; }
+  button, input, select, textarea { font: inherit; }
 
-@media (prefers-reduced-motion: reduce) {
-  html:focus-within { scroll-behavior: auto; }
-  *, *::after, *::before {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
+  @media (prefers-reduced-motion: reduce) {
+    html:focus-within { scroll-behavior: auto; }
+    *, *::after, *::before {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: .01ms !important;
+    }
+  }
+
+  html { font-size: 62.5%; }
+
+  body {
+    background-color: var(--white-color);
+    color: var(--primary-text-color);
+    font-family: var(--gh-font-body, var(--font-sans));
+    font-size: 1.6rem;
+    line-height: 1.6;
+    min-height: 100vh;
+    text-rendering: optimizespeed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  img { height: auto; }
+
+  a {
+    color: var(--darker-gray-color);
+    text-decoration: none;
+    transition: color .2s var(--animation-base);
+  }
+  a:hover { color: var(--brand-color); opacity: .8; }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--darker-gray-color);
+    font-family: var(--gh-font-heading, var(--font-sans));
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.15;
+  }
+  h1 { font-size: var(--h1-size, 4.6rem); }
+  h2 { font-size: 2.8rem; }
+  h3 { font-size: 2.4rem; }
+  h4 { font-size: 2.2rem; }
+  h5 { font-size: 2rem; }
+  h6 { font-size: 1.8rem; }
+
+  hr { background-color: var(--light-gray-color); border: 0; height: 1px; width: 100%; }
+
+  blockquote:not([class]) { border-left: 4px solid var(--site-accent-color); padding-left: 2rem; }
+
+  /* Global code styling. Applies to the home cover's <code>, the "FIN"
+     divider <code>, and post content. */
+  pre {
+    background-color: var(--lighter-gray-color);
+    hyphens: none;
+    line-height: 1.5;
+    overflow-x: auto;
+    padding: 1.6rem 2.4rem;
+    white-space: pre;
+    -webkit-overflow-scrolling: touch;
+  }
+  code { font-family: var(--font-mono); font-size: .9em; }
+  :not(pre) > code {
+    background-color: var(--lighter-gray-color) !important;
+    border-radius: 3px !important;
+    color: var(--darker-gray-color) !important;
+    font-family: var(--font-mono);
+    font-size: .9em;
+    padding: .2rem .4rem !important;
+  }
+
+  figcaption {
+    color: var(--secondary-text-color);
+    font-size: 1.4rem;
+    line-height: 1.4;
+    margin-top: 1.6rem;
+    text-align: center;
+  }
+
+  iframe { border: 0; display: block; overflow: hidden; width: 100%; }
+
+  @media (max-width: 767px) {
+    h2 { font-size: 2.4rem; }
+    h3 { font-size: 2.1rem; }
+  }
+
+  /* Layout sizing tokens consumed by the named-grid system below. */
+  :root { --gap: 3.6rem; --h1-size: 4.6rem; }
+  @media (max-width: 767px) {
+    :root { --h1-size: 3.2rem !important; --gap: 2rem; }
   }
 }
 
-html { font-size: 62.5%; }
-
-body {
-  background-color: var(--white-color);
-  color: var(--primary-text-color);
-  font-family: var(--gh-font-body, var(--font-sans));
-  font-size: 1.6rem;
-  line-height: 1.6;
-  min-height: 100vh;
-  text-rendering: optimizespeed;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-img { height: auto; }
-
-a {
-  color: var(--darker-gray-color);
-  text-decoration: none;
-  transition: color .2s var(--animation-base);
-}
-a:hover { color: var(--brand-color); opacity: .8; }
-
-h1, h2, h3, h4, h5, h6 {
-  color: var(--darker-gray-color);
-  font-family: var(--gh-font-heading, var(--font-sans));
-  font-weight: 800;
-  letter-spacing: -.02em;
-  line-height: 1.15;
-}
-h1 { font-size: var(--h1-size, 4.6rem); }
-h2 { font-size: 2.8rem; }
-h3 { font-size: 2.4rem; }
-h4 { font-size: 2.2rem; }
-h5 { font-size: 2rem; }
-h6 { font-size: 1.8rem; }
-
-hr { background-color: var(--light-gray-color); border: 0; height: 1px; width: 100%; }
-
-blockquote:not([class]) { border-left: 4px solid var(--site-accent-color); padding-left: 2rem; }
-
-/* Global code styling. Applies to the home cover's <code>, the "FIN"
-   divider <code>, and post content. */
-pre {
-  background-color: var(--lighter-gray-color);
-  hyphens: none;
-  line-height: 1.5;
-  overflow-x: auto;
-  padding: 1.6rem 2.4rem;
-  white-space: pre;
-  -webkit-overflow-scrolling: touch;
-}
-code { font-family: var(--font-mono); font-size: .9em; }
-:not(pre) > code {
-  background-color: var(--lighter-gray-color) !important;
-  border-radius: 3px !important;
-  color: var(--darker-gray-color) !important;
-  font-family: var(--font-mono);
-  font-size: .9em;
-  padding: .2rem .4rem !important;
-}
-
-figcaption {
-  color: var(--secondary-text-color);
-  font-size: 1.4rem;
-  line-height: 1.4;
-  margin-top: 1.6rem;
-  text-align: center;
-}
-
-iframe { border: 0; display: block; overflow: hidden; width: 100%; }
-
-@media (max-width: 767px) {
-  h2 { font-size: 2.4rem; }
-  h3 { font-size: 2.1rem; }
-}
-
 /* =====================================================================
-   LAYOUT  (site shell, gh-outer / gh-inner / gh-canvas grid)
+   LAYOUT GRID + POST BODY  (@layer components)
+
+   The named-grid `.gh-canvas` system and the post-body `.gh-content` / `kg-*`
+   styling live here because the rendered post HTML (authored in Markdown)
+   uses these class hooks — they cannot be expressed as utilities in JSX. The
+   component chrome (header/footer/feed/etc.) is styled with utilities in the
+   .tsx files instead.
    ===================================================================== */
-:root { --gap: 3.6rem; --h1-size: 4.6rem; }
-@media (max-width: 767px) {
-  :root { --h1-size: 3.2rem !important; --gap: 2rem; }
-}
+@layer components {
+  /* ---- Named-grid system: full / wide / main columns. ---- */
+  .gh-outer { padding-left: var(--gap); padding-right: var(--gap); }
+  .gh-inner { margin: 0 auto; max-width: var(--container-width, 1200px); }
 
-.site { display: flex; flex-direction: column; min-height: 100vh; }
-
-.home-template .home-content {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  justify-content: center;
-}
-
-.site-content { flex-grow: 1; padding: 6rem 0 1rem; }
-@media (max-width: 767px) { .site-content { padding: 3rem 0; } }
-
-.gh-outer { padding-left: var(--gap); padding-right: var(--gap); }
-.gh-inner { margin: 0 auto; max-width: var(--container-width, 1200px); }
-
-/* Named-grid system: full / wide / main columns. */
-.gh-canvas {
-  --main: min(var(--content-width, 720px), 100% - var(--gap) * 2);
-  --wide: minmax(0, calc((var(--container-width, 1200px) - var(--content-width, 720px)) / 2));
-  --full: minmax(var(--gap), 1fr);
-  display: grid;
-  grid-template-columns:
-    [full-start] var(--full)
-    [wide-start] var(--wide)
-    [main-start] var(--main) [main-end]
-    var(--wide) [wide-end]
-    var(--full) [full-end];
-}
-.gh-canvas > * { grid-column: main; }
-.kg-width-wide { grid-column: wide; }
-.kg-width-full { grid-column: full; }
-.kg-width-full img { width: 100%; }
-
-/* =====================================================================
-   SITE HEADER  (gh-head). Shown on every page EXCEPT home.
-   Left-logo layout (is-head-left-logo).
-   ===================================================================== */
-.gh-head { background-color: var(--color-white); height: 100px; }
-.gh-head-inner {
-  align-items: center;
-  column-gap: var(--head-nav-gap, 2.8rem);
-  display: grid;
-  grid-auto-flow: row dense;
-  grid-template-columns: 1fr auto auto;
-  height: 100%;
-}
-.gh-head-brand { line-height: 1; }
-.gh-head-brand-wrapper { align-items: center; display: flex; }
-.gh-head-logo {
-  font-family: var(--gh-font-heading, var(--font-sans));
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: -.02em;
-  position: relative;
-}
-.gh-head-logo img { max-height: 40px; }
-.gh-head-logo img:nth-child(2) { left: 0; opacity: 0; position: absolute; top: 0; }
-.gh-head-menu { display: flex; align-items: center; gap: var(--head-nav-gap, 2.8rem); font-size: 1.5rem; font-weight: 700; }
-.gh-head-actions {
-  align-items: center;
-  display: flex;
-  gap: var(--head-nav-gap, 2.8rem);
-  justify-content: flex-end;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-.gh-search { margin-left: -6px; margin-right: -6px; }
-.gh-search:hover { opacity: .9; }
-.gh-head-brand .gh-search { margin-right: 8px; }
-
-.is-head-left-logo .gh-head-inner { grid-template-columns: auto 1fr auto; }
-@media (min-width: 992px) {
-  .is-head-left-logo .gh-head-menu { margin-left: 16px; margin-right: 64px; }
-}
-
-.gh-icon-btn {
-  align-items: center;
-  background-color: transparent;
-  border: 0;
-  color: var(--darker-gray-color);
-  cursor: pointer;
-  display: inline-flex;
-  height: 30px;
-  justify-content: center;
-  outline: none;
-  padding: 0;
-  width: 30px;
-}
-.gh-icon-btn svg { height: 20px; width: 20px; }
-
-@media (min-width: 768px) {
-  .gh-head-brand .gh-search { display: none; }
-}
-@media (max-width: 767px) {
-  .gh-head-actions .gh-search { display: none; }
-  #gh-head { height: 64px; }
-  #gh-head .gh-head-inner {
-    gap: 48px;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 1fr auto;
-  }
-  #gh-head .gh-head-brand {
-    align-items: center;
+  .gh-canvas {
+    --main: min(var(--content-width, 720px), 100% - var(--gap) * 2);
+    --wide: minmax(0, calc((var(--container-width, 1200px) - var(--content-width, 720px)) / 2));
+    --full: minmax(var(--gap), 1fr);
     display: grid;
-    grid-column-start: 1;
-    grid-template-columns: 1fr auto auto;
-    height: 64px;
+    grid-template-columns:
+      [full-start] var(--full)
+      [wide-start] var(--wide)
+      [main-start] var(--main) [main-end]
+      var(--wide) [wide-end]
+      var(--full) [full-end];
   }
-  #gh-head .gh-head-logo { font-size: 2.2rem; }
-}
+  .gh-canvas > * { grid-column: main; }
+  .kg-width-wide { grid-column: wide; }
+  .kg-width-full { grid-column: full; }
+  .kg-width-full img { width: 100%; }
 
-/* =====================================================================
-   COVER  (home hero).
-   ===================================================================== */
-.cover { margin-top: 48px; }
-.cover-content {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto;
-  max-width: 520px;
-  text-align: center;
-}
-.cover-icon { margin-bottom: 32px; position: relative; }
-.cover-icon-image { width: 120px; }
-.cover-description { font-size: 1.7rem; }
-.cover-cta { display: flex; margin-top: 2rem; }
-.cover-cta .button { margin: 0 .5rem; }
-
-/* =====================================================================
-   FEED  (post cards on home / tag / author / related). IBM Plex Mono.
-   NOTE: var(--text-color) is not defined — it resolves to the inherited
-   color (primary text) and the border falls back to currentColor.
-   ===================================================================== */
-.feed {
-  display: grid;
-  font-family: "IBM Plex Mono", monospace;
-  grid-template-areas: "content metadata";
-  grid-template-columns: 3fr 1fr;
-  overflow: hidden;
-  padding: 2rem 0;
-  position: relative;
-}
-.feed + .feed { border-top: 1px solid var(--light-gray-color); }
-.feed + .feed.feed-paged { border-top: 0; margin-top: 3rem; }
-.feed-content { grid-area: content; }
-.feed-title {
-  border-bottom: 2px solid var(--text-color);
-  color: var(--text-color);
-  display: inline-block;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 1.8rem;
-  font-weight: 700;
-  line-height: 1.2;
-  margin: 0 0 .8rem;
-  padding-bottom: .3rem;
-}
-.feed-description {
-  color: var(--text-color);
-  font-size: 1.1rem;
-  font-weight: 400;
-  line-height: 1.4;
-  margin: 0;
-}
-.feed-metadata {
-  align-items: flex-end;
-  color: var(--text-color);
-  display: flex;
-  flex-direction: column;
-  font-size: 1rem;
-  font-weight: 400;
-  grid-area: metadata;
-  justify-content: flex-start;
-  margin: 0;
-  padding-left: 1rem;
-}
-.feed-date { color: var(--brand-color) !important; font-size: 1rem; font-weight: 400; }
-.feed-reading-time { font-size: 1rem; font-weight: 400; margin-top: .2rem; }
-
-.post-feed.gh-feed.gh-canvas {
-  --gap: 120px;
-  --content-width: 720px;
-  --container-width: 1200px;
-  margin: 0 auto;
-  max-width: 1200px;
-  padding: 6rem 4rem 0;
-}
-.post-feed .feed-title { font-size: 1.8rem; }
-.post-feed .feed-description { font-size: 1.1rem; }
-.post-feed .feed-metadata { font-size: 1rem; }
-
-@media (min-width: 1200px) {
-  .post-feed.gh-feed.gh-canvas {
-    --gap: 120px;
-    --content-width: 900px;
-    --container-width: 1400px;
-    max-width: 1400px;
-    padding: 6rem 6rem 0;
+  /* ---------------------------------------------------------------------
+     gh-content base + vertical rhythm
+     --------------------------------------------------------------------- */
+  .gh-content {
+    font-size: var(--content-font-size, 1.8rem);
+    letter-spacing: var(--content-letter-spacing, 0);
+    margin-top: 4rem;
+    word-break: break-word;
   }
-  .post-feed .feed-title { font-size: 2.2rem; }
-  .post-feed .feed-description { font-size: 1.3rem; }
-  .post-feed .feed-date,
-  .post-feed .feed-metadata,
-  .post-feed .feed-reading-time { font-size: 1.1rem; }
-}
-@media (min-width: 1600px) {
-  .post-feed.gh-feed.gh-canvas {
-    --gap: 120px;
-    --content-width: 1000px;
-    --container-width: 1600px;
-    max-width: 1600px;
-    padding: 6rem 8rem 0;
+  .gh-content > * + * {
+    margin-bottom: 0;
+    margin-top: calc(1.6em * var(--content-spacing-multiplier, 1));
   }
-  .post-feed .feed-title { font-size: 2.6rem; }
-  .post-feed .feed-description { font-size: 1.5rem; }
-  .post-feed .feed-metadata { font-size: 1.2rem; }
-  .post-feed .feed-date,
-  .post-feed .feed-reading-time { font-size: 1.5rem; }
-}
-@media (max-width: 768px) {
-  .post-feed.gh-feed.gh-canvas {
-    --gap: 2rem;
-    --content-width: 100%;
-    --container-width: 100%;
+  .gh-content > [id] { margin: 0; }
+  .gh-content > .kg-card + [id] {
+    margin-top: calc(2em * var(--content-spacing-multiplier, 1)) !important;
+  }
+  .gh-content > [id]:not(:first-child) {
+    margin-top: calc(1.6em * var(--content-spacing-multiplier, 1));
+  }
+  .gh-content > [id] + * { margin-top: calc(.8em * var(--content-spacing-multiplier, 1)); }
+  .gh-content > blockquote,
+  .gh-content > hr { position: relative; }
+  .gh-content > blockquote,
+  .gh-content > blockquote + *,
+  .gh-content > hr,
+  .gh-content > hr + * {
+    margin-top: calc(2.4em * var(--content-spacing-multiplier, 1));
+  }
+
+  /* Headings inside content (relative to content font size). */
+  .gh-content h2 { font-size: 1.6em; }
+  .gh-content h3 { font-size: 1.4em; }
+
+  /* Links inside content use the brand accent + underline. */
+  .gh-content a {
+    color: var(--site-accent-color);
+    text-decoration: underline;
+    word-break: break-word;
+  }
+  .gh-content figcaption a { color: var(--darker-gray-color); text-decoration: none; }
+
+  /* Lists. NOTE: Tailwind v4 Preflight resets `ol, ul { list-style: none }`,
+     which would strip bullets/numbers. Restore native markers inside content
+     (disc / decimal), then keep the nested-list overrides. */
+  .gh-content ul { list-style: disc; }
+  .gh-content ol { list-style: decimal; }
+  .gh-content li { display: list-item; }
+  .gh-content dl,
+  .gh-content ol,
+  .gh-content ul { padding-left: 2.8rem; }
+  .gh-content li + li,
+  .gh-content li ul,
+  .gh-content li ol { margin-top: .8rem; }
+  .gh-content ol ol li { list-style-type: lower-alpha; }
+  .gh-content ol ol ol li { list-style-type: lower-roman; }
+
+  /* Spacing rules around cards/tables (so images get a 2em gap). */
+  .gh-content :not(.kg-card):not(table):not([id]) + :is(.kg-card, table) {
+    margin-top: calc(2em * var(--content-spacing-multiplier, 1));
+  }
+  .gh-content :is(.kg-card, table) + :not(.kg-card):not(table):not([id]) {
+    margin-top: calc(2em * var(--content-spacing-multiplier, 1));
+  }
+  .gh-content > .kg-width-full + .kg-width-full:not(.kg-width-full.kg-card-hascaption + .kg-width-full) {
+    margin-top: 0;
+  }
+
+  @media (max-width: 767px) {
+    .gh-content { font-size: 1.7rem; margin-top: 3.2rem; }
+  }
+
+  /* ---------------------------------------------------------------------
+     Tables — horizontally scrollable with edge shadows.
+     --------------------------------------------------------------------- */
+  .gh-content table:not(.gist table) {
+    border-collapse: collapse;
+    border-spacing: 0;
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 1.6rem;
     max-width: 100%;
-    padding: 3rem 2rem 0;
+    overflow-x: auto;
+    vertical-align: top;
+    white-space: nowrap;
+    width: auto;
+    -webkit-overflow-scrolling: touch;
+    background:
+      radial-gradient(ellipse at left, rgba(0, 0, 0, .2) 0, transparent 75%) 0,
+      radial-gradient(ellipse at right, rgba(0, 0, 0, .2) 0, transparent 75%) 100%;
+    background-attachment: scroll, scroll;
+    background-repeat: no-repeat;
+    background-size: 10px 100%, 10px 100%;
   }
-  .feed { display: flex; flex-direction: column; }
-  .feed-content { grid-area: unset; }
-  .feed-description { margin: 0 0 1rem; }
-  .feed-metadata {
+  .gh-content table:not(.gist table) td:first-child {
+    background-image: linear-gradient(90deg, var(--white-color) 50%, rgba(255, 255, 255, 0));
+    background-repeat: no-repeat;
+    background-size: 20px 100%;
+  }
+  .gh-content table:not(.gist table) td:last-child {
+    background-image: linear-gradient(270deg, var(--white-color) 50%, rgba(255, 255, 255, 0));
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+    background-size: 20px 100%;
+  }
+  .gh-content table:not(.gist table) th {
+    background-color: var(--white-color);
+    color: var(--darker-gray-color);
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: .2px;
+    text-align: left;
+    text-transform: uppercase;
+  }
+  .gh-content table:not(.gist table) td,
+  .gh-content table:not(.gist table) th {
+    border: 1px solid var(--light-gray-color);
+    padding: 6px 12px;
+  }
+
+  /* ---------------------------------------------------------------------
+     Code — inline + blocks.
+
+     Astro renders Markdown with Shiki (inline per-token colors, Nord theme).
+     The container uses the dark Nord background (#2e3440) with IBM Plex Mono;
+     Shiki's <span style="color:…"> tokens supply syntax colors. The
+     .language-* token rules below apply to any pre-highlighted markup.
+     --------------------------------------------------------------------- */
+
+  /* Inline code (not inside <pre>). */
+  .gh-content :not(pre) > code {
+    background-color: var(--lighter-gray-color) !important;
+    border-radius: 3px !important;
+    color: var(--darker-gray-color) !important;
+    font-family: var(--font-mono);
+    font-size: .9em;
+    padding: .2rem .4rem !important;
+  }
+  .gh-content code { font-family: var(--font-mono); font-size: .9em; }
+
+  /* Code blocks — base container. */
+  .gh-content pre {
+    background-color: var(--lighter-gray-color);
+    border-radius: 5px;
+    hyphens: none;
+    line-height: 1.5;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    padding: 1rem;
+    white-space: pre;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gh-content pre code {
+    background-color: transparent !important;
+    border: none;
+    border-radius: 0;
+    color: inherit;
+    font-size: inherit;
+    padding: 0;
+  }
+
+  /* Force the Nord dark container regardless of Shiki's inline bg. */
+  .gh-content pre.astro-code,
+  .gh-content pre[class*="language-"] {
+    background: #2e3440 !important;
+    color: #f8f8f2;
+    border-radius: .3em;
+    margin: .5em 0;
+    overflow: auto;
+    padding: 1em;
+    /* Code font stack — Fira Code is referenced but not self-hosted; falls back gracefully. */
+    font-family: "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+    text-align: left;
+    white-space: pre;
+    word-break: normal;
+    word-spacing: normal;
+    word-wrap: normal;
+    hyphens: none;
+    line-height: 1.5;
+    -moz-tab-size: 4;
+    tab-size: 4;
+  }
+  .gh-content pre.astro-code code { font-family: "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace; }
+
+  /* Nord token colors — applies to language-* code. */
+  .gh-content code[class*="language-"],
+  .gh-content pre[class*="language-"] {
+    color: #f8f8f2;
+    background: none;
+    font-family: "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  }
+  .gh-content :not(pre) > code[class*="language-"] {
+    background: #2e3440;
+    border-radius: .3em;
+    padding: .1em;
+    white-space: normal;
+  }
+  .gh-content .token.cdata,
+  .gh-content .token.comment,
+  .gh-content .token.doctype,
+  .gh-content .token.prolog { color: #636f88; }
+  .gh-content .token.punctuation { color: #81a1c1; }
+  .gh-content .namespace { opacity: .7; }
+  .gh-content .token.constant,
+  .gh-content .token.deleted,
+  .gh-content .token.property,
+  .gh-content .token.symbol,
+  .gh-content .token.tag { color: #81a1c1; }
+  .gh-content .token.number { color: #b48ead; }
+  .gh-content .token.boolean { color: #81a1c1; }
+  .gh-content .token.attr-name,
+  .gh-content .token.builtin,
+  .gh-content .token.char,
+  .gh-content .token.inserted,
+  .gh-content .token.selector,
+  .gh-content .token.string { color: #a3be8c; }
+  .gh-content .language-css .token.string,
+  .gh-content .style .token.string,
+  .gh-content .token.entity,
+  .gh-content .token.operator,
+  .gh-content .token.url,
+  .gh-content .token.variable { color: #81a1c1; }
+  .gh-content .token.atrule,
+  .gh-content .token.attr-value,
+  .gh-content .token.class-name,
+  .gh-content .token.function { color: #88c0d0; }
+  .gh-content .token.keyword { color: #81a1c1; }
+  .gh-content .token.important,
+  .gh-content .token.regex { color: #ebcb8b; }
+  .gh-content .token.bold,
+  .gh-content .token.important { font-weight: 700; }
+  .gh-content .token.italic { font-style: italic; }
+  .gh-content .token.entity { cursor: help; }
+
+  /* ---------------------------------------------------------------------
+     Images & figures
+     --------------------------------------------------------------------- */
+  .kg-image { margin-left: auto; margin-right: auto; }
+  .kg-image-card a:hover,
+  .kg-gallery-image a:hover { opacity: 1 !important; }
+  .kg-image[width][height],
+  .kg-gallery-image { cursor: pointer; }
+
+  .kg-width-full figcaption { padding: 0 1.6rem; }
+
+  /* Image card — the Markdown emits:
+     <figure class="kg-card kg-image-card [kg-card-hascaption]">
+       <img …><figcaption>…</figcaption>
+     </figure>
+     Width is governed by gh-canvas grid (default = main column). */
+  .kg-card.kg-image-card { margin-left: auto; margin-right: auto; }
+  .kg-card.kg-image-card img { display: block; margin: 0 auto; width: 100%; }
+
+  /* ---------------------------------------------------------------------
+     Gallery card
+     --------------------------------------------------------------------- */
+  .kg-gallery-card,
+  .kg-image-card { --gap: 1.2rem; }
+  .kg-gallery-card:not(.kg-card-hascaption) + .kg-gallery-card,
+  .kg-gallery-card:not(.kg-card-hascaption) + .kg-image-card,
+  .kg-image-card:not(.kg-card-hascaption) + .kg-gallery-card,
+  .kg-image-card:not(.kg-card-hascaption) + .kg-image-card { margin-top: var(--gap); }
+  .kg-gallery-container { position: relative; }
+  .kg-gallery-row { display: flex; flex-direction: row; justify-content: center; }
+  .kg-gallery-image img { display: block; margin: 0; width: 100%; height: 100%; }
+  .kg-gallery-row:not(:first-of-type) { margin: var(--gap) 0 0; }
+  .kg-gallery-image:not(:first-of-type) { margin: 0 0 0 var(--gap); }
+  @media (max-width: 600px) {
+    .kg-gallery-card,
+    .kg-image-card { --gap: .6rem; }
+  }
+
+  /* ---------------------------------------------------------------------
+     Video card. Markdown emits:
+     <figure class="kg-card kg-video-card"><video … style="width:100%"></figure>
+     --------------------------------------------------------------------- */
+  .kg-video-card,
+  .kg-video-card * { box-sizing: border-box; }
+  .kg-video-card { position: relative; }
+  .kg-video-card video { display: block; max-width: 100%; height: auto; }
+  .kg-video-container { position: relative; height: 0; width: 100%; overflow: hidden; }
+  .kg-video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+
+  /* ---------------------------------------------------------------------
+     Embeds — .kg-embed-card + social embed widgets.
+     Twitter and Instagram scripts are injected by the EmbedLoader island
+     when the rendered HTML contains .twitter-tweet / .instagram-media.
+     --------------------------------------------------------------------- */
+  .kg-embed-card {
     align-items: center;
     display: flex;
-    flex-direction: row;
-    grid-area: unset;
-    justify-content: space-between;
-    padding-left: 0;
+    flex-direction: column;
+    width: 100%;
   }
-  .feed-reading-time { margin-top: 0; }
-}
+  /* Center the social embeds before/while their scripts upgrade them. */
+  .gh-content .twitter-tweet { margin-left: auto !important; margin-right: auto !important; }
+  .gh-content .instagram-media { margin-left: auto !important; margin-right: auto !important; }
 
-.load-more { display: flex; justify-content: center; margin-top: 48px; }
+  /* ---------------------------------------------------------------------
+     Blockquote (alt)
+     --------------------------------------------------------------------- */
+  blockquote.kg-blockquote-alt {
+    color: var(--secondary-text-color);
+    font-style: normal;
+    font-weight: 400;
+  }
+  .kg-blockquote-alt {
+    font-size: 1.5em;
+    font-style: italic;
+    line-height: 1.7em;
+    text-align: center;
+    padding: 0 2.5em;
+  }
+  @media (max-width: 800px) {
+    .kg-blockquote-alt { font-size: 1.4em; padding-left: 2em; padding-right: 2em; }
+  }
+  @media (max-width: 600px) {
+    .kg-blockquote-alt { font-size: 1.2em; padding-left: 1.75em; padding-right: 1.75em; }
+  }
 
-/* =====================================================================
-   BUTTONS  (only the secondary/”Load more” style is used in this site).
-   ===================================================================== */
-.button {
-  align-items: center;
-  background-color: var(--white-color);
-  border: 1px solid var(--light-gray-color);
-  border-radius: 3px;
-  color: var(--brand-color);
-  cursor: pointer;
-  display: inline-flex;
-  font-size: 11px;
-  font-weight: 800;
-  height: 36px;
-  justify-content: center;
-  letter-spacing: .5px;
-  outline: none;
-  padding: 0 15px;
-  text-transform: uppercase;
-}
-.button:hover { border-color: var(--brand-color); color: var(--brand-color); opacity: 1; }
-.button-secondary { color: var(--darker-gray-color); }
+  /* ---------------------------------------------------------------------
+     Bookmark card — used in posts that embed a link as a rich bookmark.
+     --------------------------------------------------------------------- */
+  .kg-bookmark-card,
+  .kg-bookmark-card * { box-sizing: border-box; }
+  .kg-bookmark-card,
+  .kg-bookmark-publisher { position: relative; }
+  .kg-bookmark-card a.kg-bookmark-container,
+  .kg-bookmark-card a.kg-bookmark-container:hover {
+    display: flex;
+    background: var(--background-color, #fff) !important;
+    color: var(--darker-gray-color, #222) !important;
+    text-decoration: none;
+    border-radius: .25em !important;
+    border: 1px solid rgb(124 139 154 / 25%);
+    overflow: hidden;
+    opacity: 1;
+  }
+  .theme-dark .kg-bookmark-card a.kg-bookmark-container,
+  .theme-dark .kg-bookmark-card a.kg-bookmark-container:hover {
+    background-color: var(--lighter-gray-color) !important;
+  }
+  .kg-bookmark-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-basis: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 1.15em;
+    overflow: hidden;
+    font-family: var(--font-sans);
+  }
+  .kg-bookmark-title { font-size: .9em; line-height: 1.4em; font-weight: 600; }
+  .kg-bookmark-description {
+    display: -webkit-box;
+    font-size: .8em;
+    line-height: 1.5em;
+    margin-top: .3em;
+    font-weight: 400;
+    max-height: none;
+    overflow-y: hidden;
+    opacity: .7;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .kg-bookmark-metadata {
+    display: flex;
+    align-items: center;
+    margin-top: 22px;
+    width: 100%;
+    font-size: .8em;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .kg-bookmark-metadata > :not(img) { opacity: .7; }
+  .kg-bookmark-icon { width: 20px; height: 20px; margin-right: 6px; }
+  .kg-bookmark-author { display: inline; }
+  .kg-bookmark-publisher {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 240px;
+    white-space: nowrap;
+    display: block;
+    line-height: 1.65em;
+  }
+  .kg-bookmark-thumbnail { position: relative; flex-grow: 1; min-width: 33%; }
+  .kg-bookmark-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0 .2em .2em 0;
+  }
 
-/* =====================================================================
-   SINGLE POST  (article header + footer/author).
-   ===================================================================== */
-.single-header { margin-bottom: 4.5rem; text-align: center; }
-.single-meta {
-  color: var(--secondary-text-color);
-  font-size: 1.2rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  text-transform: uppercase;
-}
-.single-meta-item + .single-meta-item::before {
-  content: "\02022";
-  font-family: serif;
-  padding: 0 .3rem;
-}
-.single-meta-tag .post-tag { color: var(--brand-color); }
-.single-title {
-  font-size: 4rem;
-  letter-spacing: -.1rem;
-  line-height: 1.2;
-  margin-bottom: 0;
-  word-break: break-word;
-}
-.single-excerpt { font-size: 1.8rem; margin-top: 2rem; word-break: break-word; }
-.single-media { margin-top: 4.5rem; }
+  /* ---------------------------------------------------------------------
+     Callout card.
+     --------------------------------------------------------------------- */
+  .kg-callout-card,
+  .kg-callout-card * { box-sizing: border-box; }
+  .kg-callout-card { display: flex; padding: 1.2em 1.6em; border-radius: .25em; }
+  .kg-callout-card-grey { background: rgba(124, 139, 154, .13); }
+  .kg-callout-card-white { background: 0 0; box-shadow: inset 0 0 0 1px rgba(124, 139, 154, .2); }
+  .kg-callout-card-blue { background: rgba(33, 172, 232, .12); }
+  .kg-callout-card-green { background: rgba(52, 183, 67, .12); }
+  .kg-callout-card-yellow { background: rgba(240, 165, 15, .13); }
+  .kg-callout-card-red { background: rgba(209, 46, 46, .11); }
+  .kg-callout-card-pink { background: rgba(225, 71, 174, .11); }
+  .kg-callout-card-purple { background: rgba(135, 85, 236, .12); }
+  .kg-callout-card-accent { background: var(--site-accent-color); color: #fff; }
+  .kg-callout-card.kg-callout-card-accent a { color: #fff; text-decoration: underline; }
+  .kg-callout-card div.kg-callout-emoji { padding-right: .8em; line-height: 1.25em; font-size: 1.15em; }
+  .kg-callout-card div.kg-callout-text { font-size: .95em; line-height: 1.5em; }
+  .kg-callout-card + .kg-callout-card { margin-top: 1em; }
 
-.single-footer { margin-top: 4.5rem; }
-.single-footer-divider { border: 0; border-top: 1px solid var(--light-gray-color); margin: 0 0 2rem; width: 100%; }
-.single-footer-author { align-items: flex-start; display: flex; gap: 3rem; padding-top: 1.25rem; }
-.author-image-column { align-items: center; display: flex; flex: 0 0 33.333%; justify-content: center; }
-.single-footer-author .author-image-column .author-image-placeholder {
-  border-radius: 50%;
-  flex-shrink: 0;
-  height: 120px;
-  margin: 0;
-  overflow: hidden;
-  width: 120px;
+  /* ---------------------------------------------------------------------
+     Button card — used where a CTA button appears inline.
+     --------------------------------------------------------------------- */
+  .kg-button-card,
+  .kg-button-card * { box-sizing: border-box; }
+  .kg-button-card,
+  .kg-button-card a.kg-btn { display: flex; position: static; align-items: center; }
+  .kg-button-card { width: 100%; justify-content: center; }
+  .kg-button-card.kg-align-left { justify-content: flex-start; }
+  .kg-button-card a.kg-btn {
+    padding: 0 1.2em;
+    height: 2.4em;
+    line-height: 1em;
+    font-family: var(--font-sans);
+    font-size: 1em;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: opacity .2s ease-in-out;
+  }
+  .kg-button-card a.kg-btn:hover { opacity: .85; }
+  .kg-button-card a.kg-btn-accent { background-color: var(--site-accent-color); color: #fff; }
+
+  /* =====================================================================
+     SITE CHROME — structural CSS that is parity-critical and hard to express
+     as inline utilities: the named-grid responsive cascade, pseudo-elements
+     (the "#" tag prefix and "•" meta separators), and the feed font-size
+     cascade tied to the grid's --content-width. All bound to the @theme
+     runtime color variables so it still flips with the theme class.
+     ===================================================================== */
+
+  /* ---- SITE SHELL — column flex so the footer sticks to the bottom. ---- */
+  .site { display: flex; flex-direction: column; min-height: 100vh; }
+  .home-template .home-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+  }
+  .site-content { flex-grow: 1; padding: 6rem 0 1rem; }
+  @media (max-width: 767px) { .site-content { padding: 3rem 0; } }
+
+  /* ---- SITE HEADER (gh-head) — shown on every page except home. ---- */
+  .gh-head { background-color: var(--white-color); height: 100px; }
+  .gh-head-inner {
+    align-items: center;
+    column-gap: var(--head-nav-gap, 2.8rem);
+    display: grid;
+    grid-auto-flow: row dense;
+    grid-template-columns: 1fr auto auto;
+    height: 100%;
+  }
+  .gh-head-brand { line-height: 1; }
+  .gh-head-brand-wrapper { align-items: center; display: flex; }
+  .gh-head-logo {
+    font-family: var(--gh-font-heading, var(--font-sans));
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    position: relative;
+  }
+  .gh-head-logo img { max-height: 40px; }
+  .gh-head-logo img:nth-child(2) { left: 0; opacity: 0; position: absolute; top: 0; }
+  .gh-head-menu { display: flex; align-items: center; gap: var(--head-nav-gap, 2.8rem); font-size: 1.5rem; font-weight: 700; }
+  .gh-head-actions {
+    align-items: center;
+    display: flex;
+    gap: var(--head-nav-gap, 2.8rem);
+    justify-content: flex-end;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .is-head-left-logo .gh-head-inner { grid-template-columns: auto 1fr auto; }
+  @media (min-width: 992px) {
+    .is-head-left-logo .gh-head-menu { margin-left: 16px; margin-right: 64px; }
+  }
+
+  @media (max-width: 767px) {
+    #gh-head { height: 64px; }
+    #gh-head .gh-head-inner {
+      gap: 48px;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto 1fr auto;
+    }
+    #gh-head .gh-head-brand {
+      align-items: center;
+      display: grid;
+      grid-column-start: 1;
+      grid-template-columns: 1fr auto auto;
+      height: 64px;
+    }
+    #gh-head .gh-head-logo { font-size: 2.2rem; }
+  }
+
+  /* ---- FEED (post cards on home / tag / author / related). IBM Plex Mono.
+     NOTE: var(--text-color) is intentionally undefined — it resolves to the
+     inherited color (primary text) and borders fall back to currentColor,
+     exactly as before. ---- */
+  .feed {
+    display: grid;
+    font-family: "IBM Plex Mono", monospace;
+    grid-template-areas: "content metadata";
+    grid-template-columns: 3fr 1fr;
+    overflow: hidden;
+    padding: 2rem 0;
+    position: relative;
+  }
+  .feed + .feed { border-top: 1px solid var(--light-gray-color); }
+  .feed + .feed.feed-paged { border-top: 0; margin-top: 3rem; }
+  .feed-content { grid-area: content; }
+  .feed-title {
+    border-bottom: 2px solid var(--text-color);
+    color: var(--text-color);
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 .8rem;
+    padding-bottom: .3rem;
+  }
+  .feed-description {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1.4;
+    margin: 0;
+  }
+  .feed-metadata {
+    align-items: flex-end;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    font-size: 1rem;
+    font-weight: 400;
+    grid-area: metadata;
+    justify-content: flex-start;
+    margin: 0;
+    padding-left: 1rem;
+  }
+  .feed-date { color: var(--brand-color) !important; font-size: 1rem; font-weight: 400; }
+  .feed-reading-time { font-size: 1rem; font-weight: 400; margin-top: .2rem; }
+
+  .post-feed.gh-feed.gh-canvas {
+    --gap: 120px;
+    --content-width: 720px;
+    --container-width: 1200px;
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 6rem 4rem 0;
+  }
+  .post-feed .feed-title { font-size: 1.8rem; }
+  .post-feed .feed-description { font-size: 1.1rem; }
+  .post-feed .feed-metadata { font-size: 1rem; }
+
+  @media (min-width: 1200px) {
+    .post-feed.gh-feed.gh-canvas {
+      --gap: 120px;
+      --content-width: 900px;
+      --container-width: 1400px;
+      max-width: 1400px;
+      padding: 6rem 6rem 0;
+    }
+    .post-feed .feed-title { font-size: 2.2rem; }
+    .post-feed .feed-description { font-size: 1.3rem; }
+    .post-feed .feed-date,
+    .post-feed .feed-metadata,
+    .post-feed .feed-reading-time { font-size: 1.1rem; }
+  }
+  @media (min-width: 1600px) {
+    .post-feed.gh-feed.gh-canvas {
+      --gap: 120px;
+      --content-width: 1000px;
+      --container-width: 1600px;
+      max-width: 1600px;
+      padding: 6rem 8rem 0;
+    }
+    .post-feed .feed-title { font-size: 2.6rem; }
+    .post-feed .feed-description { font-size: 1.5rem; }
+    .post-feed .feed-metadata { font-size: 1.2rem; }
+    .post-feed .feed-date,
+    .post-feed .feed-reading-time { font-size: 1.5rem; }
+  }
+  @media (max-width: 768px) {
+    .post-feed.gh-feed.gh-canvas {
+      --gap: 2rem;
+      --content-width: 100%;
+      --container-width: 100%;
+      max-width: 100%;
+      padding: 3rem 2rem 0;
+    }
+    .feed { display: flex; flex-direction: column; }
+    .feed-content { grid-area: unset; }
+    .feed-description { margin: 0 0 1rem; }
+    .feed-metadata {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      grid-area: unset;
+      justify-content: space-between;
+      padding-left: 0;
+    }
+    .feed-reading-time { margin-top: 0; }
+  }
+
+  /* ---- SINGLE POST — meta separators are pseudo-elements. ---- */
+  .single-meta-item + .single-meta-item::before {
+    content: "\02022";
+    font-family: serif;
+    padding: 0 .3rem;
+  }
+
+  /* ---- TAG ARCHIVE — the "#" prefix is a pseudo-element. ---- */
+  .tag .tag-name::before { content: "#"; }
+
+  /* ---- SHARE links (author archive). Light mode: brand background + white
+     text. Dark mode: light (--darker-gray) background + brand-colored text.
+     Kept in CSS so the dark override wins over the base brand background. ---- */
+  .share { display: flex; gap: .4rem; }
+  .share-link {
+    align-items: center;
+    border-radius: 3px;
+    color: var(--white-color);
+    display: flex;
+    font-size: 1.1rem;
+    font-weight: 800;
+    height: 2.6rem;
+    letter-spacing: .04rem;
+    line-height: 1;
+    margin: 0 .6rem;
+    padding: 0 .8rem;
+    text-transform: uppercase;
+  }
+  .share-link-facebook { background-color: var(--facebook-color); }
+  .share-link-twitter { background-color: var(--twitter-color); }
+  .share-link-linkedin { background-color: var(--linkedin-color); }
+  .theme-dark .share-link { background-color: var(--darker-gray-color); }
+  .theme-dark .share-link-facebook { color: var(--facebook-color); }
+  .theme-dark .share-link-twitter { color: var(--twitter-color); }
+  .theme-dark .share-link-linkedin { color: var(--linkedin-color); }
+
+  /* ---- UTILITIES — placeholders + object-fit + permalink overlay. ---- */
+  .u-permalink { bottom: 0; left: 0; outline: none; position: absolute; right: 0; top: 0; z-index: 50; }
+  .u-placeholder { background-color: var(--lighter-gray-color); position: relative; z-index: 10; }
+  .u-placeholder::before { content: ""; display: block; }
+  .u-placeholder.horizontal::before { padding-bottom: 50%; }
+  .u-placeholder.square::before { padding-bottom: 100%; }
+  .u-object-fit { height: 100%; left: 0; object-fit: cover; position: absolute; top: 0; width: 100%; }
+
+  /* ---- ICONS — base size + contextual overrides. ---- */
+  .icon { height: 20px; width: 20px; }
+  .share-link .icon { height: 14px; width: 14px; }
+
+  /* ---- TAG ARCHIVE — centered section + accent "#name" heading. ---- */
+  .tag { margin-bottom: 4.5rem; text-align: center; }
+  .tag .tag-name { color: var(--brand-color); font-size: 3rem; margin-bottom: 0; }
+  @media (max-width: 767px) {
+    .tag { margin-bottom: 2.5rem; }
+  }
+
+  /* ---- SINGLE POST — article header + author footer. Parity-critical
+     responsive layout (33/66 → 30/70 → stacked at 991/767px) that can't be
+     expressed cleanly as inline utilities. ---- */
+  .single-header { margin-bottom: 4.5rem; text-align: center; }
+  .single-meta {
+    color: var(--secondary-text-color);
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  .single-meta-tag .post-tag { color: var(--brand-color); }
+  .single-title {
+    font-size: 4rem;
+    letter-spacing: -.1rem;
+    line-height: 1.2;
+    margin-bottom: 0;
+    word-break: break-word;
+  }
+  .single-excerpt { font-size: 1.8rem; margin-top: 2rem; word-break: break-word; }
+  .single-media { margin-top: 4.5rem; }
+
+  .single-footer { margin-top: 4.5rem; }
+  .single-footer-author { align-items: flex-start; display: flex; gap: 3rem; padding-top: 1.25rem; }
+  .author-image-column { align-items: center; display: flex; flex: 0 0 33.333%; justify-content: center; }
+  .single-footer-author .author-image-column .author-image-placeholder {
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: 120px;
+    margin: 0;
+    overflow: hidden;
+    width: 120px;
+  }
+  .single-footer-author .author-image-column .author-image { height: 100%; object-fit: cover; width: 100%; }
+  .author-content-column { display: flex; flex: 0 0 66.666%; flex-direction: column; gap: 1rem; text-align: left; }
+  .single-footer-title { font-size: 1.8rem; font-weight: 800; margin: 0; }
+  .single-footer .author-bio { color: var(--secondary-text-color); font-size: 1.5rem; line-height: 1.6; margin: 0; }
+
+  @media (max-width: 991px) {
+    .single-footer-author { gap: 2rem; }
+    .author-image-column { flex: 0 0 30%; }
+    .author-content-column { flex: 0 0 70%; }
+  }
+  @media (max-width: 767px) {
+    .single-header { margin-bottom: 3rem; }
+    .single-title { font-size: 2.6rem; }
+    .single-excerpt { font-size: 1.7rem; }
+    .single-media { margin-top: 3rem; }
+    .single-footer-author { align-items: center; flex-direction: column; gap: 2rem; }
+    .author-image-column { flex: 0 0 auto; justify-content: center; width: 100%; }
+    .single-footer-author .author-image-column .author-image-placeholder { height: 100px; width: 100px; }
+    .author-content-column { flex: 1 1 100%; text-align: center; width: 100%; }
+    .single-footer-title { font-size: 1.6rem; }
+    .single-footer .author-bio { font-size: 1.4rem; }
+  }
 }
-.single-footer-author .author-image-column .author-image { height: 100%; object-fit: cover; width: 100%; }
-.author-content-column { display: flex; flex: 0 0 66.666%; flex-direction: column; gap: 1rem; text-align: left; }
-.single-footer-title { font-size: 1.8rem; font-weight: 800; margin: 0; }
-.author-bio { color: var(--secondary-text-color); font-size: 1.5rem; line-height: 1.6; margin: 0; }
-.single-footer-bottom { margin-top: 2rem; }
-
-@media (max-width: 991px) {
-  .single-footer-author { gap: 2rem; }
-  .author-image-column { flex: 0 0 30%; }
-  .author-content-column { flex: 0 0 70%; }
-}
-@media (max-width: 767px) {
-  .single-header { margin-bottom: 3rem; }
-  .single-title { font-size: 2.6rem; }
-  .single-excerpt { font-size: 1.7rem; }
-  .single-media { margin-top: 3rem; }
-  .single-footer-author { align-items: center; flex-direction: column; gap: 2rem; }
-  .author-image-column { flex: 0 0 auto; justify-content: center; width: 100%; }
-  .single-footer-author .author-image-column .author-image-placeholder { height: 100px; width: 100px; }
-  .author-content-column { flex: 1 1 100%; text-align: center; width: 100%; }
-  .single-footer-title { font-size: 1.6rem; }
-  .author-bio { font-size: 1.4rem; }
-}
-
-/* =====================================================================
-   AUTHOR ARCHIVE  (author.css) + SHARE links (share.css)
-   ===================================================================== */
-.author { align-items: center; display: flex; flex-direction: column; margin-bottom: 4.5rem; text-align: center; }
-.author-image-placeholder { border-radius: 50%; flex-shrink: 0; margin-bottom: 2rem; overflow: hidden; width: 70px; }
-.author-name { font-size: 2.4rem; margin-bottom: 0; }
-.author-meta { color: var(--secondary-text-color); font-size: 1.2rem; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
-.author .author-bio { margin-top: 16px; max-width: 520px; }
-.author-social { margin-top: 2rem; }
-
-.share { display: flex; gap: .4rem; }
-.share-link {
-  align-items: center;
-  border-radius: 3px;
-  color: var(--white-color);
-  display: flex;
-  font-size: 1.1rem;
-  font-weight: 800;
-  height: 2.6rem;
-  letter-spacing: .04rem;
-  line-height: 1;
-  margin: 0 .6rem;
-  padding: 0 .8rem;
-  text-transform: uppercase;
-}
-.share-link .icon { height: 14px; width: 14px; }
-.share-link-facebook { background-color: var(--facebook-color); }
-.share-link-twitter { background-color: var(--twitter-color); }
-.share-link-linkedin { background-color: var(--linkedin-color); }
-.share-link-bluesky { background-color: var(--bluesky-color); }
-.share-link-threads { background-color: var(--threads-color); }
-.share-link-mastodon { background-color: var(--mastodon-color); }
-.share-link-tiktok { background-color: var(--tiktok-color); }
-.share-link-youtube { background-color: var(--youtube-color); }
-.share-link-instagram { background-color: var(--instagram-color); }
-.share-link-rss { background-color: var(--rss-color); }
-
-/* =====================================================================
-   TAG ARCHIVE  (tag.css)
-   ===================================================================== */
-.tag { margin-bottom: 4.5rem; text-align: center; }
-.tag .tag-name { color: var(--brand-color); font-size: 3rem; margin-bottom: 0; }
-.tag .tag-name::before { content: "#"; }
-.tag .tag-description { margin: 16px auto 0; max-width: 520px; }
-.tag .tag-media { margin-top: 4.5rem; }
-@media (max-width: 767px) {
-  .tag { margin-bottom: 2.5rem; }
-  .tag .tag-media { margin-top: 3rem; }
-}
-
-/* =====================================================================
-   RELATED POSTS  (related.css)
-   ===================================================================== */
-.related-wrapper { background-color: var(--lighter-gray-color); margin-top: 40px; padding: 56px 0 32px; }
-.related-title { font-size: 2.1rem; margin-bottom: 20px; }
-
-/* =====================================================================
-   FOOTER  (gh-foot). Social links + theme toggle.
-   ===================================================================== */
-.gh-foot {
-  color: var(--secondary-text-color);
-  margin-top: auto;
-  padding: 2rem 0 !important;
-  white-space: nowrap;
-}
-.gh-foot-inner { padding: 0 !important; }
-.no-menu .gh-foot-inner { align-items: center; display: flex; flex-direction: column; gap: 24px; }
-.gh-foot a { color: var(--secondary-text-color); }
-.gh-foot a:hover { color: var(--darker-gray-color); opacity: 1; }
-.gh-foot-social { display: flex; gap: 1rem; justify-content: center; }
-.gh-foot-social-link { align-items: center; color: var(--secondary-text-color); display: inline-flex; transition: color .2s ease; }
-.gh-foot-social-link:hover { color: var(--primary-text-color); }
-.gh-foot-social-link .icon { height: 25px; width: 25px; }
-.gh-foot-bottom { align-items: center; display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
-.gh-foot-divider { background: var(--light-gray-color); border-radius: 1px; display: block; height: 2px; margin-bottom: .5rem; width: 400px; }
-.gh-copyright { color: var(--secondary-text-color); font-size: 1.4rem; }
-.gh-theme-toggle-wrapper {
-  align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  gap: .5rem;
-  padding: 0;
-  transition: opacity .2s ease;
-}
-.gh-foot .gh-theme-toggle-wrapper:hover { opacity: .7; }
-.gh-foot .gh-theme-toggle-wrapper .gh-theme-icon { align-items: center; display: inline-flex; }
-.gh-foot .gh-theme-toggle-wrapper .gh-theme-icon .icon { color: var(--secondary-text-color); height: 20px; width: 20px; }
-.gh-foot .gh-theme-text { color: var(--secondary-text-color); font-size: 1.4rem; }
-
-/* =====================================================================
-   UTILITIES  (utils.css) — placeholders + object-fit + permalink
-   ===================================================================== */
-.u-permalink { bottom: 0; left: 0; outline: none; position: absolute; right: 0; top: 0; z-index: 50; }
-.u-placeholder { background-color: var(--lighter-gray-color); position: relative; z-index: 10; }
-.u-placeholder::before { content: ""; display: block; }
-.u-placeholder.horizontal::before { padding-bottom: 50%; }
-.u-placeholder.rectangle::before { padding-bottom: 62.5%; }
-.u-placeholder.square::before { padding-bottom: 100%; }
-.u-object-fit { height: 100%; left: 0; object-fit: cover; position: absolute; top: 0; width: 100%; }
-
-.icon { height: 20px; width: 20px; }
