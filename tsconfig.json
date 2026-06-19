@@ -6,6 +6,8 @@
     "strictNullChecks": true,
     "allowJs": true,
     "module": "ESNext",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   }
 }
