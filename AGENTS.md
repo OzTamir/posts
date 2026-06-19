@@ -1,16 +1,15 @@
 # AGENTS.md — working in this repo
 
 Guidance for AI agents (and humans) editing **0xZ** (`posts.oztamir.com`), a static Astro
-blog migrated 1:1 from Ghost. This file is the source of truth for conventions; read it
-before making changes.
+blog. This file is the source of truth for conventions; read it before making changes.
 
 ## What this is
 
 - **Astro 6**, `output: "static"` — prerendered HTML, no server runtime. Deployed to
   **Cloudflare Workers Static Assets** (`./dist`).
 - TypeScript (strict), **Tailwind v4** (CSS-first `@theme`), content collections.
-- Design intent: **faithful parity** with the original Ghost theme. Do **not** redesign,
-  restyle, or "modernize." When unsure about a visual detail, match the original.
+- Design intent: **preserve the established look**. Do **not** redesign, restyle, or
+  "modernize." When unsure about a visual detail, match what is already there.
 
 Full docs: [`docs/building-and-content.md`](./docs/building-and-content.md),
 [`docs/design-system.md`](./docs/design-system.md),
@@ -41,15 +40,14 @@ Full docs: [`docs/building-and-content.md`](./docs/building-and-content.md),
    social embeds — copy the patterns in existing posts (`kg-card` classes).
 4. Put images in `public/content/images/<path>` and reference them with that **absolute**
    path (`/content/images/...`). `public/` is served as-is — no build-time image
-   processing (this keeps URLs identical to Ghost and preserves animated GIFs).
+   processing (this preserves animated GIFs and keeps image URLs stable).
 5. Tags and the author archive update automatically — nothing else to register.
 
 ## Conventions
 
-- **URLs are 1:1 with Ghost and use trailing slashes** (`trailingSlash: "always"`,
-  `build.format: "directory"`). Posts at `/<slug>/`, tags `/tag/<slug>/`, author
-  `/author/oz/`, home pagination `/page/N/`. Don't change URL shapes — they're load-bearing
-  for SEO and existing links.
+- **URLs use trailing slashes** (`trailingSlash: "always"`, `build.format: "directory"`).
+  Posts at `/<slug>/`, tags `/tag/<slug>/`, author `/author/oz/`, home pagination
+  `/page/N/`. Don't change URL shapes — they're load-bearing for SEO and existing links.
 - **Styling:** use Tailwind utilities bound to `@theme` tokens; for theme-flipping colors
   use the runtime `--*-color` variables. Don't hardcode hex/px that duplicate a token.
   Mobile-first; `md:` (768px) is the desktop breakpoint.
@@ -67,21 +65,15 @@ npm run preview        # eyeball at http://localhost:4321 before claiming done
 ```
 
 Always run `build` (and ideally render `preview`) before asserting a change works. For
-visual changes, compare against the live site at both mobile and desktop widths.
+visual changes, check at both mobile and desktop widths.
 
 ## Do NOT touch (unless that's explicitly the task)
 
 - `astro.config.mjs`, `tsconfig.json`, `wrangler.jsonc` — infra; change deliberately.
-- `ghost-assets/` — the original Ghost export + theme (reference only; the export JSON is
-  gitignored). Don't re-import per-post code injection — the site intentionally ships
-  without it.
-- `scripts/` — one-time migration tools; not part of normal operation.
 - URL structure and the trailing-slash config — see above.
 
 ## Gotchas
 
 - Don't run `npm run dev` unless asked; use `npm run build` + `npm run preview`.
-- Code blocks are highlighted by Shiki with the **nord** theme (set in `astro.config.mjs`)
-  to match the original Prism styling.
-- `updatedDate` in frontmatter is noisy (post-export timestamps) and is intentionally not
-  shown in the UI; ordering and dates use `pubDate`.
+- Code blocks are highlighted by Shiki with the **nord** theme (set in `astro.config.mjs`).
+- `updatedDate` in frontmatter is intentionally not shown in the UI; ordering and dates use `pubDate`.

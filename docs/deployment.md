@@ -17,7 +17,7 @@ repo, Cloudflare builds it and deploys.
   "assets": {
     "directory": "./dist",                  // Astro's build output
     "not_found_handling": "404-page",        // serve dist/404.html with HTTP 404
-    "html_handling": "auto-trailing-slash"   // /slug → /slug/ (matches Ghost)
+    "html_handling": "auto-trailing-slash"   // /slug → /slug/ (trailing-slash canonical)
   }
 }
 ```
@@ -25,7 +25,7 @@ repo, Cloudflare builds it and deploys.
 - `not_found_handling: "404-page"` serves the prerendered `404.html` with a real 404
   status. (Switch to `"single-page-application"` only if the site ever becomes an SPA.)
 - `html_handling: "auto-trailing-slash"` pairs with Astro's `trailingSlash: "always"` so
-  every URL canonicalises to a trailing slash, exactly like the old Ghost site.
+  every URL canonicalises to a trailing slash.
 
 ## Build settings
 
@@ -68,7 +68,7 @@ Files in `public/` are copied verbatim into `dist/`. Workers Static Assets honor
 `_redirects`:
 
 ```
-/rss/                       /rss.xml               301   # Ghost feed URL → Astro endpoint
+/rss/                       /rss.xml               301   # legacy feed URL → /rss.xml endpoint
 /page/1/                    /                      301
 /tag/:tag/page/1/           /tag/:tag/             301
 /author/:author/page/1/     /author/:author/       301
@@ -108,6 +108,4 @@ npm run build && npm run preview   # serves ./dist exactly as it will be served 
 
 ## What is NOT deployed
 
-Only `./dist` is uploaded. `ghost-assets/` (the original export + theme) and `scripts/`
-(one-time migration tools) live in the repo for reference but never ship. The Ghost
-export JSON is gitignored.
+Only `./dist` is uploaded — the prerendered HTML, CSS, JS, and public assets.

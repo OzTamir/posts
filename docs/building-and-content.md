@@ -1,8 +1,8 @@
 # Building the site & working with content
 
-This is **0xZ** (`posts.oztamir.com`) — a personal blog migrated from Ghost CMS to a
-fully static **Astro** site, deployed on **Cloudflare Workers Static Assets**. There is
-no server runtime: every page is prerendered to HTML at build time.
+This is **0xZ** (`posts.oztamir.com`) — a personal blog built as a fully static **Astro**
+site, deployed on **Cloudflare Workers Static Assets**. There is no server runtime: every
+page is prerendered to HTML at build time.
 
 ## Stack
 
@@ -10,7 +10,7 @@ no server runtime: every page is prerendered to HTML at build time.
 | --- | --- |
 | Framework | [Astro](https://astro.build) 6 (`output: "static"`) |
 | Language | TypeScript (strict) |
-| Styling | Tailwind CSS v4 (CSS-first `@theme`) + ported theme CSS |
+| Styling | Tailwind CSS v4 (CSS-first `@theme`) + custom theme CSS |
 | Content | Astro content collections (Markdown + the `glob` loader) |
 | Hosting | Cloudflare Workers Static Assets (see [deployment.md](./deployment.md)) |
 | Runtime | Node 20+ / npm |
@@ -33,14 +33,12 @@ no server runtime: every page is prerendered to HTML at build time.
 │   ├── styles/             # global.css (tokens + dark mode), content.css (post prose + cards)
 │   └── utils/              # format (dates/reading-time), posts, tags, imageSize
 ├── public/
-│   ├── content/images/**   # all post/feature images, mirrored 1:1 from Ghost paths
+│   ├── content/images/**   # all post/feature images
 │   ├── content/media/**     # videos + posters
 │   ├── fonts/              # self-hosted Mulish + Lora woff2/woff
 │   ├── _redirects          # Cloudflare redirects
 │   ├── _headers            # Cloudflare cache headers
-│   └── sitemap.xsl         # styled sitemap stylesheet (verbatim from Ghost)
-├── scripts/                # ONE-TIME migration scripts (see "Migration scripts")
-└── ghost-assets/           # the original Ghost export + theme (reference only; gitignored JSON)
+│   └── sitemap.xsl         # styled sitemap stylesheet
 ```
 
 ## Commands
@@ -66,7 +64,7 @@ Frontmatter fields (all but `title`/`pubDate` optional):
 | Field | Meaning |
 | --- | --- |
 | `title` | Post title |
-| `excerpt` | Short summary (cards + meta description) — Ghost `custom_excerpt` |
+| `excerpt` | Short summary (cards + meta description) |
 | `pubDate` | Publish date (ISO) |
 | `updatedDate` | Last-updated date (not surfaced in the UI) |
 | `tags` | `[{ slug, name }]` in display order; `tags[0]` is the **primary tag** |
@@ -100,14 +98,14 @@ Frontmatter fields (all but `title`/`pubDate` optional):
    - Code blocks: fenced with a language (```` ```ts ````) — highlighted by Shiki (nord theme).
 4. **Images/media**: drop the file into `public/content/images/<path>` (any structure)
    and reference it with that absolute path. Files in `public/` are served verbatim at
-   the same URL — this is deliberate, to keep image URLs identical to Ghost and to
-   preserve animated GIFs (no build-time image transforms are applied).
+   the same URL — no build-time image transforms are applied (preserves animated GIFs
+   and keeps image URLs stable).
 5. `npm run build` to verify, `npm run preview` to eyeball.
 
 Tags and the author archive are derived automatically from the posts at build time —
 there is nothing else to register.
 
-## Routes (1:1 with the old Ghost site)
+## Routes
 
 | URL | Source |
 | --- | --- |
@@ -121,19 +119,6 @@ there is nothing else to register.
 | 404 | `src/pages/404.astro` |
 
 Trailing slashes are enforced globally (`trailingSlash: "always"` + `build.format:
-"directory"`), matching Ghost.
-
-## Migration scripts (one-time)
-
-`scripts/` holds the tools used to perform the original migration — they are **not part
-of the normal workflow**:
-
-- `scripts/convert-content.mjs` — converted the Ghost export's rendered HTML into the
-  Markdown files in `src/content/posts/` (Turndown + custom rules for Ghost cards).
-- `scripts/fetch-assets.mjs` — downloaded every image/video referenced by the export
-  from the live site into `public/content/`.
-
-They read from `ghost-assets/` (the Ghost export + original theme), kept for reference.
-You only need them if you re-run the migration from a fresh Ghost export.
+"directory"`).
 
 See also: [design-system.md](./design-system.md) and [deployment.md](./deployment.md).
