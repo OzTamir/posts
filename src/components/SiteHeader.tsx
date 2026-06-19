@@ -14,6 +14,7 @@
  * font size/weight; the per-link utilities add the hover/accent treatment).
  */
 import { SITE } from '../config';
+import { SITE_IMAGES } from '../data/site-images';
 
 const navLinkClass =
   'gh-head-link text-primary-text transition-colors hover:text-brand hover:opacity-100';
@@ -25,8 +26,8 @@ export default function SiteHeader() {
         <div className="gh-head-brand">
           <div className="gh-head-brand-wrapper">
             <a className="gh-head-logo" href="/">
-              {/* Single logo image. */}
-              <img src={SITE.logo} alt={SITE.title} />
+              {/* Single logo image (optimized asset). */}
+              <img src={SITE_IMAGES.logo.src} alt={SITE.title} />
             </a>
           </div>
         </div>

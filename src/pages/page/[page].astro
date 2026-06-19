@@ -11,6 +11,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostFeed from '../../components/PostFeed';
 import Pagination from '../../components/Pagination';
 import { getSortedPosts, paginatePosts, pageCount } from '../../utils/posts';
+import { socialImageUrl } from '../../utils/images';
 import { SITE } from '../../config';
 
 export const getStaticPaths = (async () => {
@@ -29,6 +30,9 @@ const { page } = Astro.props;
 const all = await getSortedPosts();
 const { pagePosts, nextUrl, prevUrl } = paginatePosts(all, page, SITE.postsPerPage, '');
 
+const ogImg = await socialImageUrl(SITE.url, SITE.ogImage);
+const twImg = await socialImageUrl(SITE.url, SITE.twitterImage);
+
 const canonical = `${SITE.url}/page/${page}/`;
 
 const head = {
@@ -43,8 +47,8 @@ const head = {
   next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
   prev: prevUrl ? `${SITE.url}${prevUrl}` : undefined, // page 2 → "/", page N → "/page/N-1/"
   ogType: 'website',
-  ogImage: SITE.ogImage,
-  twitterImage: SITE.twitterImage,
+  ogImage: ogImg?.url,
+  twitterImage: twImg?.url,
 };
 ---
 <BaseLayout head={head} bodyClass="home-template paged" isHome={false}>

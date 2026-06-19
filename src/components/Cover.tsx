@@ -7,16 +7,15 @@
  * (the 1rem = 10px scale means [1.7rem] = the live --cover font size).
  */
 import { SITE } from '../config';
+import { SITE_IMAGES } from '../data/site-images';
 
 export default function Cover() {
   return (
     <div className="cover gh-outer mt-[48px]">
       <div className="cover-content mx-auto flex max-w-[520px] flex-col items-center text-center">
-        {SITE.icon && (
-          <div className="cover-icon relative mb-[32px]">
-            <img className="cover-icon-image w-[120px]" src={SITE.icon} alt={SITE.title} />
-          </div>
-        )}
+        <div className="cover-icon relative mb-[32px]">
+          <img className="cover-icon-image w-[120px]" src={SITE_IMAGES.icon.src} alt={SITE.title} />
+        </div>
 
         {SITE.description && (
           <div className="cover-description text-[1.7rem]">

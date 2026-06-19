@@ -11,7 +11,7 @@ import { z } from 'astro/zod';
  * verbatim from /public — no build-time transforms.
  */
 const posts = defineCollection({
-  loader: glob({ base: './src/content/posts', pattern: '**/*.md' }),
+  loader: glob({ base: './src/content/posts', pattern: '**/*.{md,mdx}' }),
   schema: z.object({
     title: z.string(),
     // Short summary — used for cards + meta description fallback.

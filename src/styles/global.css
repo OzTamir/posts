@@ -333,9 +333,15 @@ html.theme-light:root {
       var(--full) [full-end];
   }
   .gh-canvas > * { grid-column: main; }
-  .kg-width-wide { grid-column: wide; }
-  .kg-width-full { grid-column: full; }
-  .kg-width-full img { width: 100%; }
+  /* Wide/full bleed hooks. `.content-*` are the clean names used by the MDX
+     component kit; the `.kg-width-*` aliases remain for the single-post
+     feature-image markup (PostLayout) and parity. */
+  .kg-width-wide,
+  .content-wide { grid-column: wide; }
+  .kg-width-full,
+  .content-full { grid-column: full; }
+  .kg-width-full img,
+  .content-full img { width: 100%; }
 
   /* ---------------------------------------------------------------------
      gh-content base + vertical rhythm
@@ -351,7 +357,11 @@ html.theme-light:root {
     margin-top: calc(1.6em * var(--content-spacing-multiplier, 1));
   }
   .gh-content > [id] { margin: 0; }
-  .gh-content > .kg-card + [id] {
+  /* `.gh-content > figure` are the MDX image/video/embed cards (the only
+     figures inside the body); they take the same spacing the old `.kg-card`
+     markup did. */
+  .gh-content > .kg-card + [id],
+  .gh-content > figure + [id] {
     margin-top: calc(2em * var(--content-spacing-multiplier, 1)) !important;
   }
   .gh-content > [id]:not(:first-child) {
@@ -394,11 +404,12 @@ html.theme-light:root {
   .gh-content ol ol li { list-style-type: lower-alpha; }
   .gh-content ol ol ol li { list-style-type: lower-roman; }
 
-  /* Spacing rules around cards/tables (so images get a 2em gap). */
-  .gh-content :not(.kg-card):not(table):not([id]) + :is(.kg-card, table) {
+  /* Spacing rules around cards/tables (so images get a 2em gap). The MDX
+     body figures (.gh-content > figure) are treated exactly like .kg-card. */
+  .gh-content :not(.kg-card):not(figure):not(table):not([id]) + :is(.kg-card, figure, table) {
     margin-top: calc(2em * var(--content-spacing-multiplier, 1));
   }
-  .gh-content :is(.kg-card, table) + :not(.kg-card):not(table):not([id]) {
+  .gh-content :is(.kg-card, figure, table) + :not(.kg-card):not(figure):not(table):not([id]) {
     margin-top: calc(2em * var(--content-spacing-multiplier, 1));
   }
   .gh-content > .kg-width-full + .kg-width-full:not(.kg-width-full.kg-card-hascaption + .kg-width-full) {
@@ -589,6 +600,18 @@ html.theme-light:root {
      Width is governed by gh-canvas grid (default = main column). */
   .kg-card.kg-image-card { margin-left: auto; margin-right: auto; }
   .kg-card.kg-image-card img { display: block; margin: 0 auto; width: 100%; }
+
+  /* MDX <Figure> image card (clean equivalent of .kg-image-card). The <img>
+     (or optimized <Image>) fills the column and centers; consecutive
+     captionless images sit at the tight --gap like the old gallery rhythm. */
+  figure.image-card { --gap: 1.2rem; margin-left: auto; margin-right: auto; }
+  figure.image-card img { display: block; margin: 0 auto; width: 100%; }
+  .gh-content figure.image-card:not(.has-caption) + figure.image-card {
+    margin-top: var(--gap) !important;
+  }
+  @media (max-width: 600px) {
+    figure.image-card { --gap: .6rem; }
+  }
 
   /* ---------------------------------------------------------------------
      Gallery card

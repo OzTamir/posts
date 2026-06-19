@@ -32,15 +32,24 @@ interface RelatedItem {
   post: CollectionEntry<'posts'>;
   readingTime: number;
 }
+/** Optimized feature image (resolved by the route via getImage). */
+interface FeatureImage {
+  src: string;
+  srcset: string;
+  width: number;
+  height: number;
+}
 interface Props {
   post: CollectionEntry<'posts'>;
   readingTime: number;
   related: RelatedItem[];
+  /** Optimized feature image attributes (null when the post has none). */
+  feature?: FeatureImage | null;
   /** The rendered Markdown body (forwarded from the route's <Content />). */
   children?: ReactNode;
 }
 
-export default function PostLayout({ post, readingTime, related, children }: Props) {
+export default function PostLayout({ post, readingTime, related, feature, children }: Props) {
   const d = post.data;
   const author = AUTHORS[d.author] ?? DEFAULT_AUTHOR;
   const primaryTag = d.tags?.[0];
@@ -48,11 +57,9 @@ export default function PostLayout({ post, readingTime, related, children }: Pro
   // Article class: "post tag-<slug> …" for each tag.
   const tagClasses = (d.tags ?? []).map((t) => `tag-${t.slug}`).join(' ');
 
-  // Feature image — original path; CSS controls sizing.
-  const featureImage = d.featureImage ?? null;
   const featureAlt = d.featureImageAlt || d.title;
 
-  // Author avatar — original path; CSS controls sizing.
+  // Author avatar — optimized asset URL from the author record.
   const authorAvatar = author.profileImage;
 
   return (
@@ -78,14 +85,19 @@ export default function PostLayout({ post, readingTime, related, children }: Pro
 
             {d.excerpt && <div className="single-excerpt">{d.excerpt}</div>}
 
-            {featureImage && (
-              <figure className="single-media kg-width-wide">
+            {feature && (
+              <figure className="single-media content-wide">
                 <div className="u-placeholder horizontal">
                   <img
                     className="u-object-fit"
                     sizes="(min-width: 1200px) 920px, 92vw"
-                    src={featureImage}
+                    src={feature.src}
+                    srcSet={feature.srcset || undefined}
+                    width={feature.width}
+                    height={feature.height}
                     alt={featureAlt}
+                    loading="eager"
+                    decoding="async"
                   />
                 </div>
                 {d.featureImageCaption && (

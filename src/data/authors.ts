@@ -7,11 +7,13 @@
  * `sameAs` all stay in sync from one place.
  */
 import { SITE } from '../config';
+import { SITE_IMAGES } from './site-images';
 
 export interface Author {
   slug: string;
   name: string;
   bio: string;
+  /** Optimized avatar asset URL (hashed /_astro path). */
   profileImage: string;
   location: string;
   website: string;
@@ -32,7 +34,7 @@ export const AUTHORS: Record<string, Author> = {
     slug: 'oz',
     name: 'Oz Tamir',
     bio: "I'm Oz, 2x Founding Engineer at cybersecurity companies like Blockaid and [REDACTED].\n\nI like to write about low level security stuff, build smart home (and adjacent) DIY projects, and shitpost about startup culture.",
-    profileImage: '/content/images/2024/06/profile_small-1.png',
+    profileImage: SITE_IMAGES.profile.src,
     location: 'Terminally Online, Physically TLV',
     website: 'https://oztamir.com/',
     twitter: SITE.social.twitter.handle,

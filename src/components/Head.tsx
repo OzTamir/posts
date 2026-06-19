@@ -13,6 +13,7 @@
  */
 import { SITE } from '../config';
 import { AUTHORS } from '../data/authors';
+import { SITE_IMAGES } from '../data/site-images';
 
 type PageType = 'home' | 'post' | 'tag' | 'author' | 'page' | 'default';
 
@@ -112,9 +113,9 @@ export default function Head(props: HeadProps) {
     url: `${SITE.url}/`,
     logo: {
       '@type': 'ImageObject',
-      url: abs(SITE.logo),
-      width: 512,
-      height: 512,
+      url: abs(SITE_IMAGES.logo.src),
+      width: SITE_IMAGES.logo.width,
+      height: SITE_IMAGES.logo.height,
     },
   };
 
@@ -196,7 +197,7 @@ export default function Head(props: HeadProps) {
       <title>{title}</title>
 
       {description && <meta name="description" content={description} />}
-      <link rel="icon" href={SITE.icon} type="image/png" />
+      <link rel="icon" href={SITE_IMAGES.icon.src} type="image/png" />
       <link rel="canonical" href={canonical} />
       <meta name="referrer" content="no-referrer-when-downgrade" />
       {next && <link rel="next" href={next} />}
