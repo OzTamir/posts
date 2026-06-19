@@ -28,3 +28,6 @@ scratchpad/
 scripts/asset-map.json
 scripts/asset-names.json
 scripts/rename-plan.json
+
+# local planning docs (kept on disk, not committed)
+docs/superpowers/plans/
