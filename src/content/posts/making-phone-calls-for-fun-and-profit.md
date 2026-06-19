@@ -44,7 +44,7 @@ The magic behind this new feature is Twilio’s Voice Response API. From Wikiped
 
 As you can see, Twilio is a company which allows developers to easily send and receive phone calls or SMS messages from their code. I should note that I haven’t done **any** price or features comparison with rival services, but this is what I had in my head when I started so this is what I went with.
 
-Setting up Twilio was quite the breeze - after you [sign up](/p/65b382ef-1d68-49fe-8f6a-1141b40f87cb/www.twilio.com/referral/QV0FoN) (notice - this is a [referral link](https://sitechecker.pro/what-is-referral-link/)), you buy a number (I choose one that only supported voice calls as I did not intend on using the SMS capabilities, it was $4 and I got a landline number here in Israel) and get two ‘secrets’ - an Auth token and a SID:
+Setting up Twilio was quite the breeze - after you [sign up](https://www.twilio.com/referral/QV0FoN) (notice - this is a [referral link](https://sitechecker.pro/what-is-referral-link/)), you buy a number (I choose one that only supported voice calls as I did not intend on using the SMS capabilities, it was $4 and I got a landline number here in Israel) and get two ‘secrets’ - an Auth token and a SID:
 
 <figure class="kg-card kg-image-card">
   <img src="/content/images/2020/11/Screen-Shot-2020-11-22-at-22.25.54.png" alt="" loading="lazy" decoding="async">

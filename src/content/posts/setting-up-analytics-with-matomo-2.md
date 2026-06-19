@@ -48,7 +48,7 @@ Matomo, previously called Pwiki, is an open-source alternative with a focus on d
 
 ### Installation
 
-To install, I’ve followed [this tutorial](/p/2acf4275-48ed-439d-a54e-b142e468eea7/[https://www.scaleway.com/en/docs/setting-up-web-analytics-with-matomo-on-ubuntu-bionic/]) from the folks over at ScaleWay. However, two point for anyone trying to install this:
+To install, I’ve followed [this tutorial](https://www.scaleway.com/en/docs/setting-up-web-analytics-with-matomo-on-ubuntu-bionic/) from the folks over at ScaleWay. However, two point for anyone trying to install this:
 
 -   I’m using this over an Nginx setup, and therefor I recommend using [Matomo’s helpful Nginx configuration](https://github.com/matomo-org/matomo-nginx). Notice that you are required to changed some of the variables in the configuration (Most prominent: server\_name variable and PHP socket file).
 -   The [official documentation](https://matomo.org/docs/installation/) include an [helpful section](https://matomo.org/faq/how-to-install/faq_23484/) about setting up the required MySQL configuration.

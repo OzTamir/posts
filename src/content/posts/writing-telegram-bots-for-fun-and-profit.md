@@ -50,7 +50,7 @@ The project I’ve ended with is called [WebsiteWatcher](https://github.com/OzTa
 
 ## Step One: Registering a bot in Telegram
 
-Registering a bot in Telegram is one of the best experiences I could’ve ask for in this situation. No signup forms, no putting in tons of personal information, no explaining the reasons you wish to build a bot for - nothing. Just text [@BotFather](/p/5fc7e72b-c094-44fc-acab-36e278e08bef/t.me/botfather), choose a name and you’re done. It’s that easy:
+Registering a bot in Telegram is one of the best experiences I could’ve ask for in this situation. No signup forms, no putting in tons of personal information, no explaining the reasons you wish to build a bot for - nothing. Just text [@BotFather](https://t.me/botfather), choose a name and you’re done. It’s that easy:
 
 <figure class="kg-card kg-image-card kg-card-hascaption">
   <img src="/content/images/2020/11/Screen-Shot-2020-11-20-at-16.40.57.png" alt="Registering a bot is E A S Y" loading="lazy" decoding="async">
