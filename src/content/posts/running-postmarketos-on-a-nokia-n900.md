@@ -1,0 +1,139 @@
+---
+title: Running postmarketOS on a Nokia N900
+pubDate: "2020-07-24T17:21:36.000Z"
+updatedDate: "2026-06-18T23:45:48.000Z"
+tags:
+  - slug: technical
+    name: Technical
+  - slug: linux
+    name: Linux
+author: oz
+featured: false
+excerpt: My advantures trying to install postmarketOS on a Nokia N900
+featureImage: /content/images/2020/07/D1D0D475-8A1F-4A6D-BBA2-446404792C1F.png
+metaDescription: My advantures trying to install postmarketOS on a Nokia N900
+---
+
+Recently, I was scrolling through Twitter when I came across this tweet, by @HackerFantastic:
+
+<figure class="kg-card kg-embed-card">
+<blockquote class="twitter-tweet" data-width="550"><p lang="en" dir="ltr">A few people are laughing at my old Nokia phones, must be unaware that some models contain useful engineering tools and that the n900 has mainline Linux support. 32bit ARM Cortex with QWERTY keyboard, no Android, and runs metasploit. What’s not to love? This one needs updating. <a href="https://t.co/9rmZEmY6ry">pic.twitter.com/9rmZEmY6ry</a></p>— Hacker Fantastic (@hackerfantastic) <a href="https://twitter.com/hackerfantastic/status/1279431841179672581?ref_src=twsrc%5Etfw">July 4, 2020</a></blockquote>
+</figure>
+
+Which got me curious. A portable hacking setup in a 2000-era phone by Nokia sounded pretty awesome to me, so I went on eBay and ordered one. When I got it, I started reading about cool stuff I could run on it.
+
+## postmarketOS
+
+My initial plan was to find/build a version of Kali Linux that could run on the N900, but after researching the options it seemed that a Kali setup won’t be a good idea due to the lack of support for many of the built-in features of the phone (mainly the radios - WiFi, GSM etc).
+
+Therefor, I found myself reading about an open-source project called **postmarketOS**. PMOS is a linux distro specifically designed for running on mobile phones, and it seems to have a lot of support for the N900 - many of the components of the phone were already implemented, according to [the wiki](https://wiki.postmarketos.org/wiki/Nokia_N900_\(nokia-n900\)). I decided that this looks good enough - let’s install!
+
+### Installing pmOS
+
+The installation process for pmOS is pretty straight forward:
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2020/07/DraggedImage-3.png" alt="" loading="lazy" decoding="async">
+</figure>
+
+or… so I thought ☹️
+
+After running the `init` script and creating the config, trying to build the image for the Nokia results in an error:
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2020/07/DraggedImage-1-1.png" alt="" loading="lazy" decoding="async">
+</figure>
+
+I checked out the issues on the project’s [GitLab page](https://gitlab.com/postmarketOS/pmbootstrap), and as they say - timing _is_ everything in life.
+
+<figure class="kg-card kg-image-card kg-card-hascaption">
+  <img src="/content/images/2020/07/DraggedImage-2-1.png" alt="" loading="lazy" decoding="async">
+  <figcaption>I picked the wrong day to receive that phone 🙃</figcaption>
+</figure>
+
+### Installing pmOS (Thanos Edition)
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2020/07/GrossDentalIlladopsis-size_restricted.gif" alt="" loading="lazy" decoding="async">
+</figure>
+
+Let’s start by figuring out what the problem is. As the log tells us, seems like the script can’t find a package that is required for installation. Trying to browse to that URL using a reguler browser ([http://postmarketos1.brixit.nl/postmarketos/master/armv7/APKINDEX.tar.gz](http://postmarketos1.brixit.nl/postmarketos/master/)) _does_ seems to result in a 404. As a matter of face, the entire armv7 folder is inaccessible (Which makes sense, given the above information about armv7 needing a rebuilt).
+
+So what is accessible? Well, if we go just `cd ../..` , we will find that the master branch does in fact hold an [armv7 folder](http://postmarketos1.brixit.nl/postmarketos/v20.05/armv7/). However, trying to run the init script (`pmbootstrap init`) tells us that this is an invalid option - since there is no available build for the N900:
+
+<figure class="kg-card kg-image-card kg-card-hascaption">
+  <img src="/content/images/2020/07/DraggedImage-3-1.png" alt="Dude where's my N900?" loading="lazy" decoding="async">
+  <figcaption>Dude where's my N900?</figcaption>
+</figure>
+
+So we have a place from which we can get the packages from, however the script won’t allow it.
+
+What now? We have three options here:
+
+1.  Wait until the problem will be resolved in the stable channel.
+2.  Look into the script and understand what is happing under the hood, understand what is required in order to solve the issue, and fix that problem.
+3.  Hack away.
+
+I went with option 3, obviously.
+
+If we go to the root of the repository, we will find out that this mirror supports replication using the `rsync` utility. This is nice - it means we can setup our own repository on the local machine! And if we swap the v20.05 with the master folder, we could trick the script into fetching whatever it needs from this repository instead. How? we will edit our `/etc/hosts` file and point `postmarketos1.brixit.nl` at our local machine. We will than run a web server on localhost, and voila! - The installation script now fetches it’s files from our machine! I tried it, and it worked…almost.
+
+<figure class="kg-card kg-image-card kg-card-hascaption">
+  <img src="/content/images/2020/07/DraggedImage-4.png" alt="rsyncing to the incorrect path on purpose" loading="lazy" decoding="async">
+  <figcaption>rsyncing to the incorrect path on purpose</figcaption>
+</figure>
+
+<figure class="kg-card kg-image-card kg-card-hascaption">
+  <img src="/content/images/2020/07/DraggedImage-5.png" alt="" loading="lazy" decoding="async">
+  <figcaption>Fooling the script to use a local server</figcaption>
+</figure>
+
+Still missing packages. Dang.
+
+### Asking for help
+
+I was about to give up and wait, but than I entered pmOS’s IRC channel and asked around, and I got a tip - [this page](http://images.postmarketos.org/nokia-n900/). I downloaded one of the images, and burned it onto my microSD using [Etcher](https://www.balena.io/etcher/):
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2020/07/DraggedImage-6.png" alt="" loading="lazy" decoding="async">
+</figure>
+
+Afterwards, I tried installing U-Boot (required to boot from the microSD card) using the installer, however…
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2020/07/IMG_4740.png" alt="" loading="lazy" decoding="async">
+</figure>
+
+Another solution was to install using apt-get. Sadly, this required root access and I am but a normal user…oh wait right this is a phone from 2009, before security was a thing. One Google later, and I found out that you can literally install root. Yup:
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2020/07/IMG_4741.png" alt="" loading="lazy" decoding="async">
+</figure>
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2020/07/IMG_4743.png" alt="" loading="lazy" decoding="async">
+</figure>
+
+Amazing. One boot later, and…
+
+<figure class="kg-card kg-image-card kg-card-hascaption">
+  <img src="/content/images/2020/07/99CCA884-2C68-4D19-BAA6-A1AE0E1E5760.GIF" alt="Booting..." width="360" height="203" loading="lazy" decoding="async">
+  <figcaption>Booting...</figcaption>
+</figure>
+
+<figure class="kg-card kg-image-card kg-card-hascaption">
+  <img src="/content/images/2020/07/2893FE38-9A4B-4220-98C9-167B092A5591.jpeg" alt="Victory!" loading="lazy" decoding="async">
+  <figcaption>Victory!</figcaption>
+</figure>
+
+## Conclusion
+
+This was a wild ride. I think the key takeaways I have from this quest are the following:
+
+1.  **RTFM** - I could've spared myself a lot of messing around if only I would've read the issues page right away when I encountered, well, an issue.
+2.  **Ask around** - My breakthrough was reached when I went out to the IRC to ask the people who actually maintain this project. Not everything needs to be done on a DIY approach, sometimes asking for help can save you quite a bit of time.
+3.  **Timing is everything** - As I said already, timing is everything. Had I started out three hours earlier, this whole mess would've been averted. But hey, it wouldn't be fun if everything would just work, now would it?
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2020/07/861B02F7-A8EF-422D-85D5-E837C91B6C8E.png" alt="" loading="lazy" decoding="async">
+</figure>

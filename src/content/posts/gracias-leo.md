@@ -1,0 +1,116 @@
+---
+title: Gracias, Leo
+pubDate: "2021-08-08T19:31:03.000Z"
+updatedDate: "2026-06-18T23:45:49.000Z"
+tags:
+  - slug: sports
+    name: Sports
+author: oz
+featured: false
+excerpt: Sharing my feelings regarding Leo’s departure
+featureImage: /content/images/2021/08/AFACD0EC-4AC7-4E1E-9C2A-401C878AE6AE.jpeg
+---
+
+Why do people like football?
+
+It’s a question I’ve heard being asked around (and was asked myself) many times. As a long time football (soccer, for all Americans out there) enthusiast, this has always been a though one to explain - as one of Maccabi’s stadium chants go, “[And if you’re not a part of it - you’ll never understand](https://youtu.be/qREv5ZFuFbk)”.
+
+But let me try, on this special, sorrowful (I’ll get to that in a minute) day, and explain why I like football, and what it means to me, today of all days.
+
+On it’s own, football’s isn’t a very exciting sport. You’ve got 22 people running around with a ball trying to get it behind a certain line. B O R I NG. This isn’t why I like football.
+
+<figure class="kg-card kg-image-card kg-card-hascaption">
+  <img src="/content/images/2021/08/99007E26-B1F2-4D88-99DF-A20EB20F59C3.jpeg" alt="Boring…?" loading="lazy" decoding="async">
+  <figcaption>Pictured: 11 men who run around with a ball for money</figcaption>
+</figure>
+
+For me, the thing that drew me into watching to begin with are the stories that surround the game. Later, when I started attending Macabbi’s games in-person as a season ticket holder, I would also come to appreciate the sense of belonging, and the feeling of being one with the thousands others in the stadium, all cheering and crying and feeling together. But at the heart of the matter, it was always the stories that attracted me.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2021/08/Image-08-08-2021--22-14.png" alt="" loading="lazy" decoding="async">
+</figure>
+
+And the stories are how I got here in the first place. It was 2015, and my father, who wasn’t a huge football fan at time, told me that today we should watch the UEFA Champions League Semi Final. He elaborated - the game is to be played between FC Barcelona, who will face the German team of Bayern Munich. The story was the hook - Leo Messi, the best player in the world, comes to meet Bayern who is couched by Pep Guardiola, Barca’s former manager. Dad told me that the last time they’ve met Barcelona were crushed, and he promised me that the game will be worth watching
+
+Boy, was he right.
+
+I’ve heard about Messi before - I wasn’t living under a rock. But in the last twenty minutes of that game, the little Argentinian magician produced some plays that made me - who had no idea of what good football looks like at the time - catch me head in astonishment.
+
+[It was on that day that I fell in love.](https://www.youtube.com/watch?v=tbKMBuR-pxs)
+
+From that day on I watched Messi whenever I could, and I was never disappointed. Time after time, he produced moments of pure magic and joy that left me speechless. Whether it’s a highly technical goal like [this](https://youtu.be/Qe5lHCsnux0), from the 2018 world cup, or Perfect, guided-middle like free kicks like [this](https://youtu.be/0KdJDPWskVk) - Leo had it all.
+
+Week after week, game after game - each time he touched the ball, a new story was written.
+
+The rivalery between Messi and Ronaldo.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2021/08/7FDBCEC8-3114-4797-95AD-B325E9EC77C4.webp" alt="" width="700" height="525" loading="lazy" decoding="async">
+</figure>
+
+The rivalery between Barcelona and Real.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2021/08/EF760BAB-FDF5-4257-9D1E-B23C42E4F179.jpeg" alt="" width="1280" height="720" loading="lazy" decoding="async">
+</figure>
+
+The treble in 2015.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2021/08/1DF898E2-F2C2-4B79-999A-CDC6423141BE.jpeg" alt="" width="1920" height="1080" loading="lazy" decoding="async">
+</figure>
+
+The remontada against PSG.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2021/08/DEF2960B-712D-469D-9F08-DDC07DA34851.jpeg" alt="" width="1200" height="750" loading="lazy" decoding="async">
+</figure>
+
+The crashes against Liverpool and Rome.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2021/08/FA55688D-EF44-45AA-8959-4CA9240B2C07.webp" alt="" width="912" height="516" loading="lazy" decoding="async">
+</figure>
+
+  
+The loses at the Copa finals, and the redemption at the latest Copa.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2021/08/image.jpeg" alt="" width="1200" height="675" loading="lazy" decoding="async">
+</figure>
+
+For better or for worse, wherever Leo went, new stories came to be.
+
+But as a smart man once said, all good things must come to an end.
+
+On Thursday, after weeks of reports about the successful negotiations for Messi’s contract renewal, there was a sudden and unexpected twist - the Spanish league refused to approve the new contract (for reasons related to Barca’s financial situation and the league attempts to pressure Barca into a deal with the CVC company).
+
+And just like that, out of the blue, came the announcement every Barca fans wanted to never hear - [Leo Messi will not be staying at FC Barcelona](https://www.fcbarcelona.com/en/football/first-team/news/2207655/leo-messi-not-staying-at-fc-barcelona).
+
+The news were shocking.
+
+I won't lie - I cried, real tears.
+
+Though I’ve never met him, Leo Messi had a profound and deep impact on my life as a person. Without his magical moment on that night in the UCL, I might’ve decided that football’s not for me and would’ve become a different person. But he was there to make it happen, and here I am, shading tears over a person I never knew.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2021/08/BE4A2DF5-7E24-42E4-AE0A-7173B1DCFBD2.jpeg" alt="" loading="lazy" decoding="async">
+</figure>
+
+And for me, this is the real reason people love football. Because of that simple fact - there are always more stories.
+
+So yes, Leo is leaving Barcelona today.
+
+He is leaving as the greatest player to have ever graced the game (at least in my opinion), and I am hopeful that he will spend the remainder of his career pursuing his goals and adding at least a few more trophies to his collection.
+
+And as for Barca...we will wait. Because the next story begins now.
+
+I will end with something strange - a beer commercial. Messi is also the presenter of the Budweiser beer, and they’ve released a tribute that I found very touching, and one that I feel that embodies the feelings I’ve felt writing this post.
+
+<figure class="kg-card kg-embed-card">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Leo Messi’s dream of becoming a professional footballer has impacted a lot of lives over the last 20 years. Cheers to the people who shared in that dream and will continue to inspire him to rewrite the record books. <a href="https://twitter.com/hashtag/NeverDreamAlone?src=hash&amp;ref_src=twsrc%5Etfw">#NeverDreamAlone</a> <a href="https://t.co/91g5JJXfeB">pic.twitter.com/91g5JJXfeB</a></p>— Budweiser (@Budweiser) <a href="https://twitter.com/Budweiser/status/1424320542916628480?ref_src=twsrc%5Etfw">August 8, 2021</a></blockquote>
+</figure>
+
+Gracias, Leo.
+
+Thank you for sharing your story with us.

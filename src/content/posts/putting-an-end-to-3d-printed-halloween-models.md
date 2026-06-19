@@ -1,0 +1,167 @@
+---
+title: Putting an end to 3D printed Halloween models
+pubDate: "2024-10-05T14:09:25.000Z"
+updatedDate: "2026-06-18T23:45:59.000Z"
+tags:
+  - slug: 3d-printing
+    name: 3d-printing
+  - slug: browser-extension
+    name: Browser extension
+author: oz
+featured: false
+excerpt: I was tired of seeing 3D Printed Halloween models - so I created a browser extension to fix it.
+featureImage: /content/images/2024/10/DALL-E-2024-10-05-17.02.23---A-wide-2D-abstract-image-for-a-blog-post-representing-a-3D-printer-creating-a-Halloween-themed-pumpkin-with-a-large-red--X--over-the-pumpkin--symboliz.png
+---
+
+Ah, October. It’s the time of year when every 3D printing model site goes Halloween-crazy. If you've been browsing [Printables](https://www.printables.com/model), [Thingiverse](https://www.thingiverse.com/), or [Makerworld](https://makerworld.com/en/3d-models) lately, you know what I'm talking about. Skeletons, witches, pumpkins—it’s as if every other model has been dipped in spooky sauce.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2024/10/Screenshot-2024-10-05-at-17.14.08.png" alt="" width="1642" height="884" loading="lazy" decoding="async">
+</figure>
+
+Now, don’t get me wrong—Halloween's fun and all. But not when you’re just looking for cool new prints, and all you get is a flood of bats, cobwebs, and the same jack-o’-lantern model in 30 different styles. Since I’m not exactly in the Halloween spirit (being from a non-celebrating country and all), this overload felt more like spam.
+
+So, instead of just scrolling past in frustration, I figured, why not do something about it? Thus, I built a browser extension that filters out all the Halloween-themed content and restores balance to my 3D model browsing experience. No more spooky clutter on my screen.
+
+## The Problem
+
+Every October, these 3D printing sites look like they’ve been taken over by Halloween.
+
+If you’re actually hunting for new prints, it becomes this endless scavenger hunt to sift through all the spooky clutter. Skeleton hands, pumpkin lanterns, ghost cookies—every search query ends up returning more of the same. It wasn’t long before I found myself spending more time filtering out seasonal stuff in my head than actually finding useful models.
+
+Annoyed by this, I decided to take matters into my own hands and filter it all out—programmatically.
+
+## The Solution: Building a Halloween-Filter Browser Extension
+
+So, how do you block out Halloween models without blocking the entire site? The solution was to create a [browser extension](https://github.com/OzTamir/FilterHalloweenModels/) that hides or removes items based on specific keywords, like "pumpkin," "witch," "ghost," "skeleton," etc.
+
+<figure class="kg-card kg-image-card kg-card-hascaption">
+  <img src="/content/images/2024/10/icon2.png" alt="" width="307" height="307" loading="lazy" decoding="async">
+  <figcaption><span style="white-space: pre-wrap;">The icon ChatGPT helped me create</span></figcaption>
+</figure>
+
+This extension works by running a background script that detects when a user is visiting one of the aforementioned 3D printing sites. For those unfamiliar, a background script in browser extensions runs in the background, waiting for specific events or actions to occur.
+
+In my case, the script listens for a page load event (i.e., when you load up Printables or Thingiverse), then executes the filtering logic to hide any Halloween-related models.
+
+```js
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete") {
+    if (tab.url.includes("printables.com")) {
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ["halloweenRemovers/printables.js"],
+      });
+    } else if (tab.url.includes("thingiverse.com")) {
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ["halloweenRemovers/thingyverse.js"],
+      });
+    } else if (tab.url.includes("makerworld.com")) {
+      chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        files: ["halloweenRemovers/makerworld.js"],
+      });
+    }
+  }
+});
+```
+
+Once the page is fully loaded, the extension injects a specific script depending on the site you’re visiting. You might wonder why we need to inject a script at all—can’t the background script handle everything? Well, not quite.
+
+In this case, the injected script needs to manipulate the HTML of the webpage directly. This means it needs to run in the same JavaScript context as the website to access and modify the DOM.
+
+Imagine the webpage is a sandbox where JavaScript is running. To change things inside that sandbox (like hiding a Halloween model), the script itself must run within the sandbox. That’s where the injected script comes in—it gets dropped into the website’s sandbox and gets full access to modify the page as needed.
+
+### The Filtering Logic: Removing Halloween Models in Action
+
+Once the extension detects that you’ve loaded one of the supported 3D printing sites, it injects a script tailored to the site's specific layout.
+
+The filtering logic works by scanning the page’s HTML and comparing each model’s details against a list of Halloween-related keywords (like "pumpkin," "witch," and "ghost").
+
+If a match is found, the offending model gets swiftly removed from the page. Before it does, though, it loads the list of words deemed to be related to Halloween:
+
+```js
+let halloweenWords = [];
+
+// Function to load Halloween words from chrome.storage
+function loadHalloweenWords() {
+  chrome.storage.local.get(["halloweenWords"], function (result) {
+    if (chrome.runtime.lastError) {
+      console.error("Error loading Halloween words:", chrome.runtime.lastError);
+      return;
+    }
+
+    halloweenWords = result.halloweenWords || [];
+    console.log("Loaded Halloween words:", halloweenWords);
+
+    if (halloweenWords.length === 0) {
+      console.warn(
+        "No Halloween words loaded. Check if words are being saved correctly."
+      );
+    }
+
+    removeArticles();
+  });
+}
+```
+
+Once we have the words, we can iterate over the items (in Printable's’ HTML code, they appear inside `<article>` tags - which is why the code refers to articles):
+
+```js
+function removeArticles() {
+  // Updated selector to match the correct class name
+  const articles = document.querySelectorAll("article.card.svelte-j1lj8e");
+  console.log(`Found ${articles.length} articles`);
+
+  articles.forEach((article, index) => {
+    const link = article.querySelector("a[href^='/model/']");
+    if (link) {
+      const href = link.getAttribute("href").toLowerCase();
+
+      if (halloweenWords.some((word) => href.includes(word))) {
+        console.warn("Removed article:", {
+          title: article.querySelector("h2")?.textContent || "No title",
+          link: href,
+        });
+        article.remove();
+      }
+    }
+  });
+}
+```
+
+Finally, since these sites are loading more models on the go, I’ve also added a `MutationObserver` that will re-run the filtering logic whenever the `body` changes:
+
+```js
+const observer = new MutationObserver(() => {
+  console.log("MutationObserver triggered, running removeArticles");
+  removeArticles();
+});
+observer.observe(document.body, { childList: true, subtree: true });
+```
+
+## Keeping Things Dynamic: Updating the Keyword List
+
+One of the nice parts of this extension is that the list of banned keywords is editable by the user. This way, it’s not just limited to Halloween. You can add keywords to filter out Christmas models in December or Valentine’s Day models in February.
+
+<figure class="kg-card kg-image-card">
+  <img src="/content/images/2024/10/image.png" alt="" width="1099" height="712" loading="lazy" decoding="async">
+</figure>
+
+The extension stores the user’s blacklist in `chrome.storage.local`, meaning it persists even after the browser is closed. This makes the extension highly adaptable for any kind of seasonal content—just add the words you want to avoid, and it’ll clean up your feed accordingly.
+
+## Conclusion
+
+While 3D printing model sites haven’t (yet) introduced features to filter out unwanted seasonal content, this extension fills that gap. With a dynamic, customizable keyword list, I can now look for new models to print - without being bombarded by pumpkins and witches in October.
+
+<figure class="kg-card kg-image-card kg-card-hascaption">
+  <img src="/content/images/2024/10/Screenshot-2024-10-05-at-16.57.35.png" alt="Same page - with FHM extension enabled" width="1634" height="895" loading="lazy" decoding="async">
+  <figcaption><span style="white-space: pre-wrap;">Same page - with FHM extension enabled</span></figcaption>
+</figure>
+
+The final extension is available on GitHub [here](https://github.com/OzTamir/FilterHalloweenModels/). Installation instructions are provided in the README file.
+
+Whether you’re as tired as I am of seasonal model spam or simply want more control over what you see, this extension gives you the power to customize your 3D printing feed to your heart’s content.
+
+It’s not perfect, but it sure makes for a less spooky browsing experience. 🎃
