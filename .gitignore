@@ -8,9 +8,6 @@ dist/
 # local scratch / QA artifacts (agent temp output, never committed)
 scratchpad/
 
-# Ghost export — large; local only, not committed.
-ghost-export.json
-
 # cloudflare / wrangler
 .wrangler/
 .dev.vars
