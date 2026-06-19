@@ -23,3 +23,8 @@ scratchpad/
 .DS_Store
 .DS_STORE
 *.log
+
+# asset-migration working files
+scripts/asset-map.json
+scripts/asset-names.json
+scripts/rename-plan.json

@@ -603,3 +603,31 @@ git commit -m "feat(build): strip image metadata from dist assets (EXIF/GPS back
 **Type/shape consistency:** `asset-map.json` shape emitted by A1 (`posts{file,featureImage,images,videos{src,poster,posterRoot,posterMissing}}`, `assets[{root,rel,posts,kinds}]`, `orphans`, `shared`) is exactly what `build-rename-plan.mjs` reads in A2. `asset-names.json` key form `"<root>:<rel>"` is consistent between A3/A4 (writers) and `build-rename-plan.mjs` (reader). `rename-plan.json` `{moves,edits}` shape is consistent between builder (A2) and applier (A2). `scan-exif.mjs` reused by B1 (sources) and B2 (dist).
 
 **Risks already mitigated in-plan:** broken refs (build throws — A4 Step 3); shared asset in checkpoint (pick a non-shared checkpoint post — A3 intro); name overlap with featureImage substring (figure/video edits are attribute-qualified `="rel"` — A2 builder); build-time re-encode cost (skip clean files — B2 integration).
+
+---
+
+## Addendum — A1 inventory findings (2026-06-19)
+
+Running the inventory surfaced refinements the spec didn't anticipate:
+
+- **SEO frontmatter image fields.** `asset-map.mjs` now also parses `ogImage` and
+  `twitterImage` (kinds `og`/`twitter`), not just `featureImage`. Only `twitterImage` is
+  used in practice (2 posts: `codye-6.png`→hello-world, `new-2.png`→new-personal-website).
+  `build-rename-plan.mjs` (A2) names these `og.<ext>`/`twitter.<ext>` (conventional, like
+  `featured`) when distinct from the feature image, and rewrites the frontmatter
+  `ogImage:`/`twitterImage:` lines to `/content/images/posts/<slug>/<name>.<ext>`.
+
+- **Site/brand images (4 files) — not post assets.** `2024/07/android-chrome-512x512-1.png`
+  (logo + default twitter), `2024/07/android-chrome-512x512.png` (favicon/icon),
+  `2020/07/android-chrome-512x512.png` (OG default), `2024/06/profile_small-1.png` (avatar)
+  are referenced from `src/config.ts` (string paths) and `src/data/site-images.ts` (imports).
+  They stay under `src/assets` (optimized + hashed + intrinsic dims the code uses) — NOT
+  `public/` — but move to `src/assets/content/images/site/` with clean names: `logo.png`,
+  `icon.png`, `og-default.png`, `avatar.png`. Update the import paths in `site-images.ts`
+  and the string paths in `config.ts`. (Handled in Task A5.)
+
+- **True orphans (2 files) → delete** (user-confirmed): `images/2020/07/android-chrome-512x512-1.png`
+  (stray duplicate icon) and `media/2024/08/Broke_thumb.jpg` (unreferenced video thumbnail);
+  `git rm` both in Task A5.
+
+Final tally: 392 post assets + 4 site images + 2 orphans = 398 (all accounted for); 0 shared.
