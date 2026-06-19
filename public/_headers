@@ -1,0 +1,16 @@
+# Cloudflare Workers Static Assets custom response headers
+# Long cache for immutable static assets. Astro fingerprints /_astro/* assets,
+# content images are never overwritten in Ghost convention (new paths for new images),
+# and fonts are stable. HTML is intentionally NOT cached long-term here.
+
+/content/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/content/media/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

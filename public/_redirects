@@ -1,0 +1,17 @@
+# Cloudflare Workers Static Assets redirects
+# Syntax: source destination [status]
+# Default status if omitted: 302. We use 301 (permanent) for all Ghost→Astro URL migrations.
+
+# Ghost served the RSS feed at /rss/ — Astro emits it at /rss.xml
+# Head links in layouts still reference /rss/ for compatibility; this 301 ensures
+# old subscribers and feed readers that bookmarked /rss/ continue to work.
+/rss/  /rss.xml  301
+
+# Ghost's paginated home page /page/1/ redirects to / (canonical first page)
+/page/1/  /  301
+
+# Ghost's paginated tag archives /tag/:tag/page/1/ → /tag/:tag/
+/tag/:tag/page/1/  /tag/:tag/  301
+
+# Ghost's paginated author archives /author/:author/page/1/ → /author/:author/
+/author/:author/page/1/  /author/:author/  301
