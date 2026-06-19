@@ -1,29 +1,21 @@
 /* =====================================================================
    content.css — styles for RENDERED POST BODIES.
 
-   Ported faithfully from the live theme's compiled CSS:
-     • .gh-content prose rules            (live-screen.css)
-     • Koenig (kg-*) card styles          (live-cards.css)
-     • Prism "Nord" code theme            (live-screen.css prism block)
+   Everything inside `.single-content.gh-content` (see PostLayout.astro).
+   The gh-canvas named-grid (in global.css) controls image sizing:
+     `.kg-width-wide` → wide column, `.kg-width-full` → full-bleed.
 
-   The converted Markdown is rendered inside `.single-content.gh-content`
-   (see PostLayout.astro). The gh-canvas named-grid (in global.css) is
-   what sizes images: `.kg-width-wide` → wide column, `.kg-width-full`
-   → full-bleed. This file styles everything that lives *inside* the
-   content wrapper.
-
-   Classes/elements styled here (per the migration spec):
+   Classes/elements styled here:
      figure.kg-card.kg-image-card > img + figcaption
      figure.kg-card.kg-video-card > video
      .twitter-tweet, .instagram-media  (social embeds)
      prose: h2/h3/h4, p, ul/ol/li, blockquote, pre/code, inline code,
             a, hr, table, img
-     plus the kg-gallery / kg-embed / kg-bookmark / kg-callout cards
-     that appear in some posts.
+     plus kg-gallery / kg-embed / kg-bookmark / kg-callout / kg-button cards.
    ===================================================================== */
 
 /* ---------------------------------------------------------------------
-   gh-content base + vertical rhythm  (live-screen.css)
+   gh-content base + vertical rhythm
    --------------------------------------------------------------------- */
 .gh-content {
   font-size: var(--content-font-size, 1.8rem);
@@ -58,16 +50,15 @@
 
 /* Links inside content use the brand accent + underline. */
 .gh-content a {
-  color: var(--ghost-accent-color);
+  color: var(--site-accent-color);
   text-decoration: underline;
   word-break: break-word;
 }
 .gh-content figcaption a { color: var(--darker-gray-color); text-decoration: none; }
 
 /* Lists. NOTE: Tailwind v4 Preflight resets `ol, ul { list-style: none }`,
-   which would strip the post bullets/numbers the live site shows. Restore
-   the native markers inside content (disc / decimal), then keep Dawn's
-   nested-list overrides. */
+   which would strip bullets/numbers. Restore native markers inside content
+   (disc / decimal), then keep the nested-list overrides. */
 .gh-content ul { list-style: disc; }
 .gh-content ol { list-style: decimal; }
 .gh-content li { display: list-item; }
@@ -96,7 +87,7 @@
 }
 
 /* ---------------------------------------------------------------------
-   Tables  (live-screen.css). Horizontally scrollable with edge shadows.
+   Tables — horizontally scrollable with edge shadows.
    --------------------------------------------------------------------- */
 .gh-content table:not(.gist table) {
   border-collapse: collapse;
@@ -144,13 +135,12 @@
 }
 
 /* ---------------------------------------------------------------------
-   Code — inline + blocks.  (live-screen.css base + prism Nord theme)
+   Code — inline + blocks.
 
-   The live site highlights with Prism (Nord, #2e3440 bg). Astro renders
-   Markdown with Shiki (inline per-token colors). We reproduce the live
-   *container* (dark Nord bg, rounded, IBM Plex Mono) and keep the look;
-   Shiki's own <span style="color:…"> tokens supply the colors. We also
-   keep the original Prism rules so any `language-*` markup still matches.
+   Astro renders Markdown with Shiki (inline per-token colors, Nord theme).
+   The container uses the dark Nord background (#2e3440) with IBM Plex Mono;
+   Shiki's <span style="color:…"> tokens supply syntax colors. The
+   `.language-*` token rules below apply to any pre-highlighted markup.
    --------------------------------------------------------------------- */
 
 /* Inline code (not inside <pre>). */
@@ -185,8 +175,7 @@
   padding: 0;
 }
 
-/* Shiki output (Astro default): force the Nord dark container so code
-   blocks read like the live site regardless of Shiki's inline bg. */
+/* Force the Nord dark container regardless of Shiki's inline bg. */
 .gh-content pre.astro-code,
 .gh-content pre[class*="language-"] {
   background: #2e3440 !important;
@@ -195,8 +184,7 @@
   margin: .5em 0;
   overflow: auto;
   padding: 1em;
-  /* Match the live theme's prism.css code-block stack (Fira Code is referenced
-     but not self-hosted there either, so this falls back identically to live). */
+  /* Code font stack — Fira Code is referenced but not self-hosted; falls back gracefully. */
   font-family: "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
   text-align: left;
   white-space: pre;
@@ -210,7 +198,7 @@
 }
 .gh-content pre.astro-code code { font-family: "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace; }
 
-/* Prism "Nord" token colors (live-screen.css) — applies to language-* code. */
+/* Nord token colors — applies to language-* code. */
 .gh-content code[class*="language-"],
 .gh-content pre[class*="language-"] {
   color: #f8f8f2;
@@ -261,7 +249,7 @@
 .gh-content .token.entity { cursor: help; }
 
 /* ---------------------------------------------------------------------
-   Images & figures  (live-screen.css)
+   Images & figures
    --------------------------------------------------------------------- */
 .kg-image { margin-left: auto; margin-right: auto; }
 .kg-image-card a:hover,
@@ -280,7 +268,7 @@
 .kg-card.kg-image-card img { display: block; margin: 0 auto; width: 100%; }
 
 /* ---------------------------------------------------------------------
-   Gallery card  (live-cards.css)
+   Gallery card
    --------------------------------------------------------------------- */
 .kg-gallery-card,
 .kg-image-card { --gap: 1.2rem; }
@@ -299,7 +287,7 @@
 }
 
 /* ---------------------------------------------------------------------
-   Video card  (live-cards.css). Markdown emits:
+   Video card. Markdown emits:
    <figure class="kg-card kg-video-card"><video … style="width:100%"></figure>
    --------------------------------------------------------------------- */
 .kg-video-card,
@@ -310,9 +298,8 @@
 .kg-video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------------------------------------------------------------------
-   Embeds  (live-screen.css .kg-embed-card + social embed widgets).
-   Twitter (platform.twitter.com/widgets.js) and Instagram
-   (instagram.com/embed.js) scripts are injected by PostLayout when the
+   Embeds — .kg-embed-card + social embed widgets.
+   Twitter and Instagram scripts are injected by PostLayout when the
    rendered HTML contains .twitter-tweet / .instagram-media.
    --------------------------------------------------------------------- */
 .kg-embed-card {
@@ -326,7 +313,7 @@
 .gh-content .instagram-media { margin-left: auto !important; margin-right: auto !important; }
 
 /* ---------------------------------------------------------------------
-   Blockquote (alt)  (live-cards.css + live-screen.css)
+   Blockquote (alt)
    --------------------------------------------------------------------- */
 blockquote.kg-blockquote-alt {
   color: var(--secondary-text-color);
@@ -348,8 +335,7 @@ blockquote.kg-blockquote-alt {
 }
 
 /* ---------------------------------------------------------------------
-   Bookmark card  (live-cards.css + screen.css overrides). Used by a few
-   posts where a link was turned into a bookmark.
+   Bookmark card — used in posts that embed a link as a rich bookmark.
    --------------------------------------------------------------------- */
 .kg-bookmark-card,
 .kg-bookmark-card * { box-sizing: border-box; }
@@ -426,7 +412,7 @@ blockquote.kg-blockquote-alt {
 }
 
 /* ---------------------------------------------------------------------
-   Callout card  (live-cards.css). Lightweight subset used by posts.
+   Callout card.
    --------------------------------------------------------------------- */
 .kg-callout-card,
 .kg-callout-card * { box-sizing: border-box; }
@@ -439,14 +425,14 @@ blockquote.kg-blockquote-alt {
 .kg-callout-card-red { background: rgba(209, 46, 46, .11); }
 .kg-callout-card-pink { background: rgba(225, 71, 174, .11); }
 .kg-callout-card-purple { background: rgba(135, 85, 236, .12); }
-.kg-callout-card-accent { background: var(--ghost-accent-color); color: #fff; }
+.kg-callout-card-accent { background: var(--site-accent-color); color: #fff; }
 .kg-callout-card.kg-callout-card-accent a { color: #fff; text-decoration: underline; }
 .kg-callout-card div.kg-callout-emoji { padding-right: .8em; line-height: 1.25em; font-size: 1.15em; }
 .kg-callout-card div.kg-callout-text { font-size: .95em; line-height: 1.5em; }
 .kg-callout-card + .kg-callout-card { margin-top: 1em; }
 
 /* ---------------------------------------------------------------------
-   Button card  (live-cards.css). Used where a CTA button appears inline.
+   Button card — used where a CTA button appears inline.
    --------------------------------------------------------------------- */
 .kg-button-card,
 .kg-button-card * { box-sizing: border-box; }
@@ -466,7 +452,7 @@ blockquote.kg-blockquote-alt {
   transition: opacity .2s ease-in-out;
 }
 .kg-button-card a.kg-btn:hover { opacity: .85; }
-.kg-button-card a.kg-btn-accent { background-color: var(--ghost-accent-color); color: #fff; }
+.kg-button-card a.kg-btn-accent { background-color: var(--site-accent-color); color: #fff; }
 
 /* ---------------------------------------------------------------------
    The "FIN" end-of-post divider (markup emitted by content wrapper).

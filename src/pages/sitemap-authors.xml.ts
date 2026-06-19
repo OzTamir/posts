@@ -1,11 +1,7 @@
 /**
- * sitemap-authors.xml — mirrors Ghost's /sitemap-authors.xml.
- *
- * Ghost emits one entry per author. This blog has a single author: oz.
- * The <loc> is the author archive URL: /author/oz/
- * The <lastmod> uses the most recently updated post as a proxy for the
- * author's last activity (Ghost uses a real-time "now" value but we
- * use the latest post lastmod for deterministic static builds).
+ * sitemap-authors.xml — one entry per author (single author: oz).
+ * <loc> = /author/oz/
+ * <lastmod> = most recently updated post date (deterministic for static builds).
  */
 
 import { getCollection } from 'astro:content';

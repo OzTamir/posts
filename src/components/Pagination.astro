@@ -1,17 +1,10 @@
 ---
 /**
- * Pagination.astro — the feed pager (ported from partials/pagination.hbs).
+ * Pagination.astro — the feed pager.
  *
- * The live Dawn theme renders a single "Load more" button that Ghost's
- * main.min.js wires up to infinite-scroll (fetching /page/N/). In the
- * static port there is no client infinite-scroll, so this is a plain
- * link to the next page when one exists, styled identically. When there
- * is no next page the button is omitted (nothing to load).
- *
- * It renders the EXACT live markup (`<nav class="load-more"><button
- * class="button button-secondary gh-loadmore">Load more</button></nav>`)
- * and, when a next page exists, wraps the button in a link to that page so
- * it still functions without JavaScript.
+ * Renders a "Load more" link to the next page when one exists; omitted
+ * when there is no next page. Functions as a plain `<a>` — no JavaScript
+ * required.
  */
 interface Props {
   /** Absolute or root-relative URL of the next page, if any. */

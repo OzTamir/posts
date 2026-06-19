@@ -1,12 +1,9 @@
 ---
 /**
  * Home page (page 1) — cover hero + newest `postsPerPage` posts + pager.
- * Ports Ghost's index.hbs inside the home branch of default.hbs:
  *   <div class="home-content"> cover · post-feed · pagination </div>
- * The header is intentionally absent (home uses the cover instead),
- * matching live-home.html. Body class = "home-template".
- *
- * 41 posts / 5 per page = 9 pages; this is page 1, linking next → /page/2/.
+ * The header is absent (home uses the Cover component instead).
+ * Body class = "home-template".
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Cover from '../components/Cover.astro';
@@ -25,7 +22,7 @@ const head = {
   type: 'home',
   title: SITE.metaTitle, // <title> = "0xZ | Posts"
   description: SITE.metaDescription,
-  // Home OG/Twitter use the verbatim Ghost values (note "OxZ" vs "0xZ").
+  // Home OG/Twitter titles (note "OxZ" vs "0xZ" — intentional).
   ogTitle: SITE.ogTitle, // "Read posts from OxZ"
   ogDescription: SITE.ogDescription,
   twitterTitle: SITE.twitterTitle, // "Read posts from 0xZ"

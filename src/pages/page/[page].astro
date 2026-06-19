@@ -1,15 +1,10 @@
 ---
 /**
  * Home pagination — pages 2..N only (page 1 is index.astro; /page/1/ is
- * intentionally NOT emitted, matching Ghost).
+ * intentionally not emitted — a redirect handles it).
  *
- * In Ghost, `is "home"` is true only on page 1, so paginated index pages
- * render through the `{{^is "home"}}` branch of default.hbs: the SITE
- * HEADER is shown, the cover is NOT, `{{{body}}}` (empty for index.hbs)
- * sits in an empty `.site-content`, then the post-feed + pager. Body
- * class is "home-template paged". We reproduce that exactly.
- *
- * 41 posts / 5 per page = 9 pages → this generates /page/2/ … /page/9/.
+ * Paginated index pages show the SITE HEADER (not the cover), an empty
+ * `.site-content`, then the post-feed + pager. Body class = "home-template paged".
  */
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';

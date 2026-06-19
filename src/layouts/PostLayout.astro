@@ -1,9 +1,8 @@
 ---
 /**
- * PostLayout.astro — the single-post scaffold (ports post.hbs +
- * partials/content.hbs + single-footer.hbs + pswp.hbs).
+ * PostLayout.astro — the single-post scaffold.
  *
- * Structure (matches live-post-hello-world.html):
+ * Structure:
  *   <main class="site-main">
  *     <article class="single post tag-…">
  *       <header class="single-header gh-canvas"> meta · title · excerpt · feature image </header>
@@ -12,10 +11,10 @@
  *     <RelatedPosts/>            (related-wrapper)
  *     <div class="gh-canvas"><footer class="single-footer"> author bio </footer></div>
  *   </main>
- *   <PSWP markup>
+ *   <PhotoSwipe lightbox markup>
  *
- * After the content, embed loader scripts are injected only when the
- * rendered HTML actually contains the relevant embeds:
+ * Embed loader scripts are injected only when the rendered HTML contains
+ * the relevant embeds:
  *   .twitter-tweet   → https://platform.twitter.com/widgets.js
  *   .instagram-media → https://www.instagram.com/embed.js
  */
@@ -41,18 +40,15 @@ const d = post.data;
 const author = AUTHORS[d.author] ?? DEFAULT_AUTHOR;
 const primaryTag = d.tags?.[0];
 
-// Ghost post_class → "post tag-<slug> …" used on <article> and <body>.
+// Article class: "post tag-<slug> …" for each tag.
 const tagClasses = (d.tags ?? []).map((t) => `tag-${t.slug}`).join(' ');
 const bodyClass = `post-template ${primaryTag ? `tag-${primaryTag.slug}` : ''}`.trim();
 
-// Feature image. NOTE: Ghost's `size/wXXX/` derivatives are NOT shipped in
-// the static export (only originals live under /content/images/**), so we
-// reference the ORIGINAL path. The CSS (.single-media + u-placeholder)
-// controls sizing, so the rendered result matches the live layout.
+// Feature image — original path; CSS controls sizing.
 const featureImage = d.featureImage ?? null;
 const featureAlt = d.featureImageAlt || d.title;
 
-// Author avatar — original path (the w150 derivative is not shipped).
+// Author avatar — original path; CSS controls sizing.
 const authorAvatar = author.profileImage;
 ---
 <BaseLayout head={head} bodyClass={bodyClass} isPost={true}>
@@ -103,7 +99,7 @@ const authorAvatar = author.profileImage;
 
         <div class="single-content gh-content gh-canvas">
           <slot />
-          {/* End-of-post "FIN" divider — emitted by Dawn's content wrapper. */}
+          {/* End-of-post "FIN" divider. */}
           <div style="margin-top: 3rem; display: flex; align-items: center; justify-content: center; gap: 1rem;">
             <span style="flex: 1; max-width: 100px; height: 1px; background-color: var(--light-gray-color);"></span>
             <code>FIN</code>
@@ -141,8 +137,7 @@ const authorAvatar = author.profileImage;
     </main>
   </div>
 
-  {/* PhotoSwipe lightbox container (parity with the live theme markup),
-      rendered as a sibling of .site exactly like Ghost's default.hbs. */}
+  {/* PhotoSwipe lightbox container, rendered as a sibling of .site. */}
   <div slot="after" class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="pswp__bg"></div>
     <div class="pswp__scroll-wrap">

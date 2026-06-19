@@ -5,11 +5,10 @@
 @import "./content.css";
 
 /* =====================================================================
-   FONTS — loaded identically to the live posts.oztamir.com site.
+   FONTS
    Mulish (sans) + Lora (serif) self-hosted from /public/fonts.
    IBM Plex Mono (code) from Google Fonts (imported above); Literata
-   Variable + Press Start 2P (used by specific posts) from jsDelivr
-   fontsource — all as on the live site (see live-screen.css).
+   Variable + Press Start 2P (used by specific posts) from jsDelivr fontsource.
    ===================================================================== */
 
 @font-face { font-family: Mulish; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/mulish-v10-latin-regular.woff2") format("woff2"), url("/fonts/mulish-v10-latin-regular.woff") format("woff"); }
@@ -26,12 +25,11 @@
 
 /* =====================================================================
    DESIGN TOKENS (Tailwind v4 @theme).
-   These mirror the LIGHT-theme custom properties from the live theme's
-   :root block (live-screen.css). They expose Tailwind utilities
-   (bg-bg, text-primary, font-mono, …) AND emit the matching CSS custom
-   properties. Dark mode is handled below by the Ghost `.theme-dark` /
+   Light-theme baseline custom properties. Expose Tailwind utilities
+   (bg-bg, text-primary, font-mono, …) AND emit matching CSS custom
+   properties. Dark mode is handled below by the `.theme-dark` /
    `.theme-light` class mechanism, which re-points the runtime
-   --*-color variables the ported component CSS actually consumes.
+   --*-color variables that the component CSS consumes.
    ===================================================================== */
 @theme {
   /* Font stacks — exactly as live (--font-sans / --font-serif / --font-mono). */
@@ -73,15 +71,14 @@
 
 /* =====================================================================
    RUNTIME THEME VARIABLES + DARK MODE
-   Ported verbatim from the live compiled theme (live-screen.css). The
-   component CSS below reads these `--*-color` custom properties. The
-   site ships `<html class="theme-dark">` by default; the footer toggle
-   swaps `.theme-dark`/`.theme-light` on <html> (see BaseLayout script),
-   and a prefers-color-scheme fallback applies when no class is forced.
-   --ghost-accent-color is injected per-page in <head> (= #ffd102).
+   The component CSS reads these `--*-color` custom properties. The site
+   ships `<html class="theme-dark">` by default; the footer toggle swaps
+   `.theme-dark`/`.theme-light` on <html> (see BaseLayout script), and a
+   prefers-color-scheme fallback applies when no class is forced.
+   --site-accent-color is injected per-page in <head> (= #ffd102).
    ===================================================================== */
 :root {
-  --brand-color: var(--ghost-accent-color, #997700);
+  --brand-color: var(--site-accent-color, #997700);
   --accent-color: #997700;
   --accent-color-hover: #8b6914;
   --accent-color-light: #fff4b3;
@@ -131,12 +128,12 @@ html.theme-light:root {
   --accent-color: #e3b900 !important;
   --accent-color-hover: #8b6914 !important;
   --accent-color-light: #fff4b3 !important;
-  --ghost-accent-color: #970 !important;
+  --site-accent-color: #970 !important;
 }
 
 /* Dark mode — explicit class (the site default), live values. */
 .theme-dark:root {
-  --brand-color: var(--ghost-accent-color, #ffd102);
+  --brand-color: var(--site-accent-color, #ffd102);
   --accent-color: #ffd102;
   --accent-color-hover: #fd3;
   --accent-color-light: #650;
@@ -174,7 +171,7 @@ html.theme-light:root {
 /* Dark mode — system-preference fallback when no class is forced. */
 @media (prefers-color-scheme: dark) {
   html:not(.theme-light):root {
-    --brand-color: var(--ghost-accent-color, #ffd102);
+    --brand-color: var(--site-accent-color, #ffd102);
     --accent-color: #ffd102;
     --accent-color-hover: #fd3;
     --accent-color-light: #650;
@@ -199,9 +196,8 @@ html.theme-light:root {
 }
 
 /* =====================================================================
-   BASE / RESET  (ported from live-screen.css "basics" reset + body type)
-   Note: html font-size:62.5% so 1rem = 10px, and all rem values below
-   follow the live theme's 10px-rem scale.
+   BASE / RESET
+   html font-size:62.5% so 1rem = 10px; all rem values follow this scale.
    ===================================================================== */
 *, *::after, *::before { box-sizing: border-box; }
 blockquote, body, dd, dl, figure, h1, h2, h3, h4, h5, h6, p { margin: 0; }
@@ -260,10 +256,10 @@ h6 { font-size: 1.8rem; }
 
 hr { background-color: var(--light-gray-color); border: 0; height: 1px; width: 100%; }
 
-blockquote:not([class]) { border-left: 4px solid var(--ghost-accent-color); padding-left: 2rem; }
+blockquote:not([class]) { border-left: 4px solid var(--site-accent-color); padding-left: 2rem; }
 
-/* Global code styling (live Ghost base + theme override). Applies to the
-   home cover's <code> and the "FIN" divider <code> as well as content. */
+/* Global code styling. Applies to the home cover's <code>, the "FIN"
+   divider <code>, and post content. */
 pre {
   background-color: var(--lighter-gray-color);
   hyphens: none;
@@ -300,7 +296,6 @@ iframe { border: 0; display: block; overflow: hidden; width: 100%; }
 
 /* =====================================================================
    LAYOUT  (site shell, gh-outer / gh-inner / gh-canvas grid)
-   Ported from live-screen.css (layout.css). The site uses a 10px rem.
    ===================================================================== */
 :root { --gap: 3.6rem; --h1-size: 4.6rem; }
 @media (max-width: 767px) {
@@ -322,7 +317,7 @@ iframe { border: 0; display: block; overflow: hidden; width: 100%; }
 .gh-outer { padding-left: var(--gap); padding-right: var(--gap); }
 .gh-inner { margin: 0 auto; max-width: var(--container-width, 1200px); }
 
-/* The Ghost named-grid system: full / wide / main columns. */
+/* Named-grid system: full / wide / main columns. */
 .gh-canvas {
   --main: min(var(--content-width, 720px), 100% - var(--gap) * 2);
   --wide: minmax(0, calc((var(--container-width, 1200px) - var(--content-width, 720px)) / 2));
@@ -341,9 +336,8 @@ iframe { border: 0; display: block; overflow: hidden; width: 100%; }
 .kg-width-full img { width: 100%; }
 
 /* =====================================================================
-   SITE HEADER  (gh-head). Shown on every template EXCEPT home.
-   Ported from live-screen.css (header.css) — left-logo layout only,
-   which is the configured navigation_layout (is-head-left-logo).
+   SITE HEADER  (gh-head). Shown on every page EXCEPT home.
+   Left-logo layout (is-head-left-logo).
    ===================================================================== */
 .gh-head { background-color: var(--color-white); height: 100px; }
 .gh-head-inner {
@@ -420,7 +414,7 @@ iframe { border: 0; display: block; overflow: hidden; width: 100%; }
 }
 
 /* =====================================================================
-   COVER  (home hero). Ported from live-screen.css (cover.css).
+   COVER  (home hero).
    ===================================================================== */
 .cover { margin-top: 48px; }
 .cover-content {
@@ -438,11 +432,9 @@ iframe { border: 0; display: block; overflow: hidden; width: 100%; }
 .cover-cta .button { margin: 0 .5rem; }
 
 /* =====================================================================
-   FEED  (post cards on home / tag / author / related).
-   Ported from live-screen.css (feed.css). Monospace IBM Plex Mono.
-   NOTE: the live theme references var(--text-color) which is never
-   defined, so it resolves to inherited color (primary text) and the
-   border falls back to currentColor — reproduced here 1:1.
+   FEED  (post cards on home / tag / author / related). IBM Plex Mono.
+   NOTE: var(--text-color) is not defined — it resolves to the inherited
+   color (primary text) and the border falls back to currentColor.
    ===================================================================== */
 .feed {
   display: grid;
@@ -554,9 +546,7 @@ iframe { border: 0; display: block; overflow: hidden; width: 100%; }
 .load-more { display: flex; justify-content: center; margin-top: 48px; }
 
 /* =====================================================================
-   BUTTONS  (only the secondary/“Load more” style is used in the static
-   site; the live "Load more" is a no-op button kept for visual parity).
-   Ported from live-screen.css (button.css).
+   BUTTONS  (only the secondary/”Load more” style is used in this site).
    ===================================================================== */
 .button {
   align-items: center;
@@ -580,7 +570,6 @@ iframe { border: 0; display: block; overflow: hidden; width: 100%; }
 
 /* =====================================================================
    SINGLE POST  (article header + footer/author).
-   Ported from live-screen.css (single.css).
    ===================================================================== */
 .single-header { margin-bottom: 4.5rem; text-align: center; }
 .single-meta {
@@ -699,8 +688,7 @@ iframe { border: 0; display: block; overflow: hidden; width: 100%; }
 .related-title { font-size: 2.1rem; margin-bottom: 20px; }
 
 /* =====================================================================
-   FOOTER  (gh-foot). Ported from live-screen.css (layout.css footer
-   overrides). The static site keeps the social links + theme toggle.
+   FOOTER  (gh-foot). Social links + theme toggle.
    ===================================================================== */
 .gh-foot {
   color: var(--secondary-text-color);

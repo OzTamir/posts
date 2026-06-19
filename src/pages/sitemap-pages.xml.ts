@@ -1,16 +1,9 @@
 /**
- * sitemap-pages.xml — mirrors Ghost's /sitemap-pages.xml.
+ * sitemap-pages.xml — the pages sub-sitemap.
  *
- * The live Ghost sitemap-pages.xml includes the site root plus Ghost-specific
- * member pages (account, signin, signup, login). In the Astro migration, only
- * the site root is a real page; the Ghost member routes don't exist.
- *
- * We include only the site root (/) to keep the sitemap accurate.
- * The lastmod matches the live Ghost value (from ghost-settings updated_at).
- *
- * The xmlns:image namespace is present for structural consistency with the
- * other sub-sitemaps even though no <image:image> elements are emitted here
- * (Ghost includes it in all sub-sitemaps).
+ * Includes only the site root (/); member/account routes are not
+ * part of this static site. The xmlns:image namespace is present for
+ * structural consistency with the other sub-sitemaps.
  */
 
 import { SITE } from '../config';
@@ -18,8 +11,7 @@ import { SITE } from '../config';
 export async function GET() {
   const siteUrl = SITE.url;
 
-  // The live Ghost page uses the ghost-settings updated_at timestamp for /.
-  // We use the same value to produce a byte-identical sitemap for the home page.
+  // Fixed lastmod for the home page (matches the site's last settings update).
   const homepageLastmod = '2026-06-06T09:59:07.298Z';
 
   const xml = [

@@ -1,5 +1,5 @@
 /**
- * Site-wide configuration, mirrored 1:1 from the Ghost settings export.
+ * Site-wide configuration.
  * Production domain lives here as the single source of truth — change `url`
  * if the site is ever served from a different host.
  */
@@ -10,12 +10,12 @@ export const SITE = {
   lang: 'en',
   locale: 'en',
   timezone: 'Asia/Jerusalem',
-  postsPerPage: 5, // Dawn theme config.posts_per_page
+  postsPerPage: 5,
 
   accentColor: '#ffd102',
 
-  // SEO defaults (Ghost settings). Note the verbatim casing in the OG/Twitter
-  // titles ("OxZ" vs "0xZ") — preserved exactly as on the live site.
+  // SEO defaults. Note the verbatim casing in the OG/Twitter
+  // titles ("OxZ" vs "0xZ") — intentional.
   metaTitle: '0xZ | Posts',
   metaDescription:
     'Shitposts about cybersecurity, home automation, DIY, AI, and everything else in the world.',
@@ -31,17 +31,16 @@ export const SITE = {
   logo: '/content/images/2024/07/android-chrome-512x512-1.png',
   icon: '/content/images/2024/07/android-chrome-512x512.png',
 
-  // Social (only facebook + twitter are set in Ghost; others are null)
+  // Social links
   twitter: '@oztamir',
   twitterUrl: 'https://x.com/oztamir',
   facebook: 'oztamir',
   facebookUrl: 'https://www.facebook.com/oztamir',
 
-  // Ghost navigation + secondary_navigation are both empty arrays.
   navigation: [] as { label: string; url: string }[],
   secondaryNavigation: [] as { label: string; url: string }[],
 
-  // Analytics: Plausible only (Matomo dropped during migration, per owner).
+  // Analytics: Plausible.
   plausibleDomain: 'posts.oztamir.com',
 } as const;
 

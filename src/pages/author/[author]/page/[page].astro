@@ -3,9 +3,8 @@
  * Author archive pagination — /author/<slug>/page/N/ for pages 2..N only
  * (page 1 is author/[author]/index.astro; /page/1/ is not emitted).
  *
- * Ghost renders the author header section on every page of the author
- * archive, so the AuthorCard still appears here. Body class =
- * "author-template author-<slug> paged".
+ * The AuthorCard header appears on every paginated page.
+ * Body class = "author-template author-<slug> paged".
  */
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';

@@ -3,9 +3,8 @@
  * Tag archive pagination — /tag/<slug>/page/N/ for pages 2..N only
  * (page 1 is tag/[tag]/index.astro; /page/1/ is not emitted).
  *
- * Ghost renders the `{{#tag}}` header section on every page of a tag
- * archive, so the tag name heading still appears here; only the feed
- * posts differ. Body class = "tag-template tag-<slug> paged".
+ * The tag name heading appears on every paginated page.
+ * Body class = "tag-template tag-<slug> paged".
  */
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';

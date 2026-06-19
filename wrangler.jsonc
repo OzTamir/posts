@@ -25,7 +25,7 @@
     // Use "single-page-application" instead if/when the site moves to SPA mode.
     "not_found_handling": "404-page",
     // Redirect /slug → /slug/ when /slug/index.html exists (Astro format: 'directory').
-    // Matches Ghost's trailing-slash-always canonical URL scheme.
+    // Pairs with Astro's trailingSlash:"always" so every URL ends with a slash.
     "html_handling": "auto-trailing-slash"
   }
 }

@@ -1,12 +1,7 @@
 /**
- * sitemap-tags.xml — mirrors Ghost's /sitemap-tags.xml.
- *
- * Emits one <url> per tag that has ≥1 post. The <lastmod> is the most
- * recent updatedDate or pubDate across all posts that carry the tag.
+ * sitemap-tags.xml — one <url> per tag that has ≥1 post.
+ * <lastmod> = most recent post date for that tag, sorted newest-first.
  * URL format: /tag/<slug>/ (trailing slash per site config).
- *
- * The live Ghost sitemap orders tags by their most recent post descending.
- * We replicate that ordering.
  */
 
 import { getCollection } from 'astro:content';
@@ -29,7 +24,7 @@ export async function GET() {
     }
   }
 
-  // Sort by lastmod descending (matches Ghost output order)
+  // Sort by lastmod descending.
   const sortedTags = Array.from(tagLastmod.entries()).sort(
     ([, a], [, b]) => b.getTime() - a.getTime()
   );

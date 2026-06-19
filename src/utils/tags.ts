@@ -2,8 +2,7 @@
  * Tag derivation — there is no separate tag collection, so we build the
  * set of tags from the posts themselves (every tag that has ≥1 post),
  * preserving each tag's display name. The slug → name map uses the first
- * occurrence seen while iterating newest-first posts (Ghost stores one
- * canonical name per tag, and the export is consistent).
+ * occurrence seen while iterating newest-first posts.
  */
 import type { PostWithMeta } from './posts';
 

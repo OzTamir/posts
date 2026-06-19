@@ -1,11 +1,8 @@
 ---
 /**
- * AuthorCard.astro — the author-archive header (ported from author.hbs).
+ * AuthorCard.astro — the author-archive header.
  * Shows the author avatar, name (linked to their website), location meta,
  * bio, and the Facebook / Twitter / LinkedIn share links.
- *
- * The avatar uses Ghost's `size="xs"` derivative (w150) to match the live
- * markup's `/content/images/size/w150/...` src.
  */
 import type { Author } from '../data/authors';
 import Facebook from './icons/Facebook.astro';
@@ -17,8 +14,7 @@ interface Props {
 }
 const { author } = Astro.props;
 
-// Avatar — original path. Ghost's `size/w150` derivative is not shipped
-// in the static export, so we reference the original (CSS sizes it).
+// Avatar — CSS controls sizing; we reference the original path.
 const avatar = author.profileImage;
 ---
 <section class="author gh-canvas">

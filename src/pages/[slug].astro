@@ -1,16 +1,15 @@
 ---
 /**
- * Single post — /<slug>/ (param = post.id, which IS the Ghost slug).
- * Renders the Markdown body through PostLayout and builds the full
- * per-post <head> (canonical, Open Graph, Twitter card, JSON-LD Article)
- * to match live-post-hello-world.html.
+ * Single post — /<slug>/ (param = post.id = the filename stem).
+ * Renders the Markdown body through PostLayout and builds the per-post
+ * <head> (canonical, Open Graph, Twitter card, JSON-LD Article).
  *
- * SEO precedence (Ghost posts_meta → sensible defaults):
+ * SEO precedence (per-post overrides → sensible defaults):
  *   title        = metaTitle  ?? title
  *   description  = metaDescription ?? excerpt
  *   og:title     = ogTitle    ?? title
- *   og:image     = ogImage    ?? featureImage   (absolute, ORIGINAL path)
- *   twitter:img  = twitterImage ?? featureImage  (absolute, ORIGINAL path)
+ *   og:image     = ogImage    ?? featureImage   (absolute path)
+ *   twitter:img  = twitterImage ?? featureImage  (absolute path)
  *   canonical    = canonicalUrl ?? <site>/<slug>/
  */
 import type { GetStaticPaths } from 'astro';

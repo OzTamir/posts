@@ -1,9 +1,8 @@
 /**
  * Shared post-collection helpers used by all routes.
  *
- * Posts are sorted newest-first by pubDate (Ghost's default published_at
- * DESC ordering). Reading time is precomputed from each post's raw body
- * with the Ghost-matching algorithm (see utils/format).
+ * Posts are sorted newest-first by pubDate. Reading time is precomputed
+ * from each post's raw body (see utils/format).
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { readingTimeMinutes } from './format';
@@ -36,8 +35,7 @@ export function filterByAuthor(all: PostWithMeta[], authorSlug: string): PostWit
 
 /**
  * Related posts for a single post: up to `limit` other posts that share
- * at least one tag, newest-first — mirrors Dawn's related-posts query
- * (filter="tags:[{{post.tags}}]+id:-{{post.id}}" limit="5").
+ * at least one tag with the current post, newest-first, excluding itself.
  */
 export function getRelated(
   all: PostWithMeta[],

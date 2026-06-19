@@ -1,15 +1,13 @@
 ---
 /**
- * SiteFooter.astro — the `.gh-foot` footer (ported from partials/footer.hbs).
+ * SiteFooter.astro — the `.gh-foot` footer.
  *
  * Shows: Twitter, LinkedIn, RSS social links + the dark/light theme
- * toggle. The `gh-foot-divider` appears only on post pages (matches the
- * live `{{#if post}}` guard). Secondary navigation is empty so the footer
- * always carries the `no-menu` modifier.
+ * toggle. The `gh-foot-divider` appears only on post pages. Secondary
+ * navigation is empty so the footer always carries the `no-menu` modifier.
  *
- * The theme-toggle markup is identical to the live theme; the toggle
- * behaviour (localStorage + class swap on <html>) lives in BaseLayout's
- * inline script, exactly as the live site wires it up.
+ * Theme-toggle behaviour (localStorage + class swap on <html>) lives in
+ * BaseLayout's inline script.
  */
 import { SITE } from '../config';
 import Twitter from './icons/Twitter.astro';
@@ -18,7 +16,7 @@ import Rss from './icons/Rss.astro';
 import Sun from './icons/Sun.astro';
 
 interface Props {
-  /** Render the top divider (live theme shows it only on single posts). */
+  /** Render the top divider (shown only on single posts). */
   isPost?: boolean;
 }
 const { isPost = false } = Astro.props;

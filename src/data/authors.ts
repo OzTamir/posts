@@ -1,7 +1,7 @@
 /**
- * Authors, mirrored from the Ghost users export. The blog has a single author.
- * Bio text is preserved verbatim (including the "[REDACTED]" and the original
- * "cybersecurtiy" typo) to match the live site exactly.
+ * Author definitions. The blog has a single author.
+ * Bio text is preserved verbatim (including the "[REDACTED]" and the
+ * "cybersecurtiy" typo — intentional).
  */
 export interface Author {
   slug: string;
@@ -14,7 +14,7 @@ export interface Author {
   facebook: string;
   /** Absolute author archive URL. */
   url: string;
-  /** schema.org sameAs links, mirrored from the live JSON-LD. */
+  /** schema.org sameAs links. */
   sameAs: string[];
 }
 

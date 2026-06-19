@@ -1,22 +1,11 @@
 /**
- * RSS feed — mirrors the live Ghost /rss/ endpoint.
+ * RSS feed at /rss.xml. A 301 redirect in public/_redirects maps /rss/ → /rss.xml.
  *
- * Ghost's live /rss/ feed serves exactly 15 items (the most recent posts).
- * We replicate that limit. Change RSS_LIMIT to Infinity to include all 41 posts.
+ * Serves the 15 most recent posts (change RSS_LIMIT to Infinity for all posts).
+ * Uses `post.rendered.html` for full-HTML <content:encoded>.
  *
- * content:encoded: Astro's Content Layer stores pre-rendered HTML on
- * `post.rendered.html`. We use that for full-HTML content:encoded.
- * The `content` field on RSSFeedItem maps to <content:encoded> in @astrojs/rss.
- *
- * Channel structure mirrors Ghost:
- *   <image> channel favicon block
- *   <atom:link> self-referential link
- *   <ttl>60</ttl>
- *   <media:content> per item (feature image)
- *   <dc:creator> per item
- *
- * The feed is served at /rss.xml. A 301 redirect in public/_redirects maps
- * the legacy Ghost URL /rss/ → /rss.xml so existing subscribers keep working.
+ * Channel extras: <image> favicon block, <atom:link> self-link, <ttl>60</ttl>.
+ * Per-item extras: <dc:creator>, <media:content> (feature image), <category> tags.
  */
 
 import rss from '@astrojs/rss';
@@ -24,7 +13,7 @@ import { getCollection } from 'astro:content';
 import { SITE } from '../config';
 import { AUTHORS } from '../data/authors';
 
-// Ghost default feed limit is 15 items.
+// Feed limit — 15 most recent posts.
 const RSS_LIMIT = 15;
 
 export async function GET(context: { site: URL }) {
@@ -58,7 +47,7 @@ export async function GET(context: { site: URL }) {
       const slug = post.id; // content layer: id = filename stem = slug
       const postUrl = `${siteUrl}/${slug}/`;
 
-      // Tag names for <category> elements (Ghost uses tag.name)
+      // Tag names for <category> elements.
       const categories = post.data.tags.map((t) => t.name);
 
       // Per-item custom XML
@@ -74,8 +63,7 @@ export async function GET(context: { site: URL }) {
         );
       }
 
-      // Full post HTML from Astro's Content Layer pre-render (post.rendered.html)
-      // This is equivalent to Ghost's <content:encoded> HTML body.
+      // Full post HTML from Astro's Content Layer pre-render (post.rendered.html).
       const htmlContent = post.rendered?.html ?? post.data.excerpt ?? '';
 
       return {

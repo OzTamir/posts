@@ -1,12 +1,10 @@
 /**
  * Build-time image dimension lookup (used only for og:image:width/height).
  *
- * Ghost's <head> advertises the feature image's pixel dimensions. The
- * static export ships the ORIGINAL images under public/content/images/**
- * (no `size/` derivatives), so we read the original's real size at build
- * time with `image-size`. Runs in Node during SSG only; failures degrade
- * gracefully to "no dimensions" so the build never breaks on a missing
- * or unreadable file.
+ * Reads feature image pixel dimensions at SSG time via `image-size`.
+ * Images are served verbatim from public/content/images/** with no size
+ * derivatives, so we read the original. Failures degrade gracefully to
+ * "no dimensions" so the build never breaks on a missing or unreadable file.
  */
 import { imageSize } from 'image-size';
 import { readFileSync } from 'node:fs';

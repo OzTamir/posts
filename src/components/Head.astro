@@ -1,19 +1,14 @@
 ---
 /**
- * Head.astro — reproduces the live Ghost <head> for each page type
- * (home / post / tag / author / 404), matching the live-*.html dumps.
+ * Head.astro — the <head> for each page type
+ * (home / post / tag / author / 404).
  *
- * Dropped vs. live (Ghost runtime features removed in the static port):
- *   • sodo-search loader script
- *   • webmention <link>
- *   • cards.min.js / cards.min.css
- *   • comment-counts.min.js
- *   • Matomo analytics
- *   • generator meta (set to Astro instead of Ghost)
- * Kept: Plausible analytics, accent-color <style>, favicon, RSS alternate.
+ * Emits: charset, viewport, title, description, favicon, canonical,
+ * Open Graph, Twitter card, JSON-LD, RSS alternate link, Plausible
+ * analytics, and the accent-color CSS variable.
  *
  * All og:image / twitter:image / canonical URLs are emitted ABSOLUTE
- * (https://posts.oztamir.com/...) exactly like the live site.
+ * (https://posts.oztamir.com/...).
  */
 import { SITE } from '../config';
 import { AUTHORS } from '../data/authors';
@@ -90,7 +85,7 @@ const resolvedOgType =
   ogType ??
   (type === 'post' ? 'article' : type === 'author' ? 'profile' : type === 'tag' ? 'website' : 'website');
 
-// Twitter card type: large image for home + posts, summary for tag/author (matches live).
+// Twitter card type: large image for home + posts, summary for tag/author.
 const resolvedTwitterCard =
   twitterCard ?? (type === 'tag' || type === 'author' ? 'summary' : 'summary_large_image');
 
@@ -106,7 +101,7 @@ const resolvedTwitterDescription = twitterDescription ?? description;
 // Author JSON-LD bits (single author site).
 const author = authorSlug ? AUTHORS[authorSlug] : undefined;
 
-/* ---------- JSON-LD per page type (mirrors live-*.html) ---------- */
+/* ---------- JSON-LD per page type ---------- */
 const orgPublisher = {
   '@type': 'Organization',
   name: SITE.title,
@@ -260,8 +255,8 @@ if (type === 'home') {
 <meta name="generator" content="Astro" />
 <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss/" />
 
-{/* Ghost accent color — consumed by the ported theme CSS. */}
-<style is:inline set:html={`:root{--ghost-accent-color:${SITE.accentColor}}`}></style>
+{/* Accent color CSS variable — consumed by the theme CSS. */}
+<style is:inline set:html={`:root{--site-accent-color:${SITE.accentColor}}`}></style>
 
-{/* Analytics: Plausible only (Matomo dropped during migration). */}
+{/* Plausible analytics. */}
 <script defer data-domain={SITE.plausibleDomain} src="https://plausible.io/js/plausible.js"></script>

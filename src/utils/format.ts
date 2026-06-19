@@ -1,8 +1,7 @@
 /**
- * Date + reading-time helpers, matching the live Ghost (Dawn) output.
+ * Date + reading-time helpers.
  *
- * Ghost renders dates in the site timezone (Asia/Jerusalem). We format in
- * that zone via Intl so the displayed day matches the live site exactly
+ * Dates are formatted in the site timezone (Asia/Jerusalem) via Intl
  * (e.g. a post published 2020-07-07T15:10:52Z shows "07 Jul 2020").
  */
 import { SITE } from '../config';
@@ -26,13 +25,13 @@ function ymd(date: Date): { year: number; month: number; day: number } {
   return { year: get('year'), month: get('month'), day: get('day') };
 }
 
-/** Feed/card date — Ghost format "MMM D, YYYY" (e.g. "Jun 6, 2026"). */
+/** Feed/card date — "MMM D, YYYY" (e.g. "Jun 6, 2026"). */
 export function formatFeedDate(date: Date): string {
   const { year, month, day } = ymd(date);
   return `${MONTHS_SHORT[month - 1]} ${day}, ${year}`;
 }
 
-/** Single-post display date — Ghost format "DD MMM YYYY" (e.g. "07 Jul 2020"). */
+/** Single-post display date — "DD MMM YYYY" (e.g. "07 Jul 2020"). */
 export function formatPostDate(date: Date): string {
   const { year, month, day } = ymd(date);
   return `${String(day).padStart(2, '0')} ${MONTHS_SHORT[month - 1]} ${year}`;
@@ -45,9 +44,9 @@ export function dateAttr(date: Date): string {
 }
 
 /**
- * Reading time in whole minutes, matching Ghost's `reading_time` helper.
+ * Reading time in whole minutes.
  *
- * Ghost's algorithm (verified 1:1 against the live "N min read" values):
+ * Algorithm:
  *   • words counted on the text content (code block CONTENT included;
  *     only the ``` fences are stripped), at 275 wpm
  *   • image time ramps: 1st image +12s, 2nd +11s … 10th +3s, then +3s each

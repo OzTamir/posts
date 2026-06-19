@@ -1,14 +1,12 @@
 ---
 /**
  * BaseLayout.astro — the html/head/body shell shared by every route.
- * Ports Ghost's default.hbs:
- *   • <html class="theme-dark"> (the site's configured default scheme)
+ *   • <html class="theme-dark"> (the default scheme)
  *   • <body class="<template> is-head-left-logo"> (body_class + layout)
  *   • <header id="gh-head"> on every page EXCEPT home (cover replaces it)
  *   • <footer class="gh-foot">
- *   • the dark/light theme-toggle inline script (verbatim from the theme),
- *     persisting the choice in localStorage and swapping .theme-dark /
- *     .theme-light on <html>, plus the sun/moon icon swap.
+ *   • dark/light theme-toggle inline script: persists choice in localStorage,
+ *     swaps .theme-dark / .theme-light on <html>, swaps sun/moon icon.
  *
  * Pages pass their <head> props through `head` and supply their own
  * <body> contents via the default slot. The wrapping `<div class="site">`
@@ -46,13 +44,13 @@ const { head, bodyClass, isHome = false, isPost = false } = Astro.props;
       <SiteFooter isPost={isPost} />
     </div>
 
-    {/* Sibling-of-.site content (e.g. the PostLayout PhotoSwipe markup +
-        embed loader), matching Ghost's pswp placement after .site. */}
+    {/* Sibling-of-.site content (e.g. PostLayout's PhotoSwipe markup +
+        embed loader scripts), rendered after .site. */}
     <slot name="after" />
 
     <script is:inline>
       document.addEventListener('DOMContentLoaded', function () {
-        // Theme toggle — ported verbatim from the live Ghost theme.
+        // Theme toggle.
         const themeToggle = document.getElementById('theme-toggle');
         const html = document.documentElement;
 
