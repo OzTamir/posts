@@ -110,10 +110,10 @@ export default function PostLayout({ post, readingTime, related, feature, childr
           <div className="single-content gh-content gh-canvas">
             {children}
             {/* End-of-post "FIN" divider. */}
-            <div style={{ marginTop: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
-              <span style={{ flex: 1, maxWidth: '100px', height: '1px', backgroundColor: 'var(--light-gray-color)' }}></span>
+            <div className="mt-[3rem] flex items-center justify-center gap-[1rem]">
+              <span className="h-px max-w-[100px] flex-1 bg-light-gray"></span>
               <code>FIN</code>
-              <span style={{ flex: 1, maxWidth: '100px', height: '1px', backgroundColor: 'var(--light-gray-color)' }}></span>
+              <span className="h-px max-w-[100px] flex-1 bg-light-gray"></span>
             </div>
           </div>
         </article>
