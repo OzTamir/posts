@@ -100,13 +100,19 @@
 
 /* =====================================================================
    RUNTIME THEME VARIABLES + DARK MODE
-   The site ships <html class="theme-dark"> by default; the footer toggle
-   swaps .theme-dark / .theme-light on <html> (see ThemeToggle island + the
-   no-flash inline head script), and a prefers-color-scheme fallback applies
-   when no class is forced. --site-accent-color is injected per-page in <head>
-   (= #ffd102). These values are 1:1 with the previous theme.
+   The site follows the visitor's prefers-color-scheme by default; the footer
+   toggle swaps .theme-dark / .theme-light on <html> and persists the choice
+   (see the no-flash inline head script). --site-accent-color is the single
+   source of truth for the accent and is defined here (light = #970, dark =
+   #ffd102). These values are 1:1 with the previous theme.
    ===================================================================== */
 :root {
+  /* Single source of truth for the accent. :root is the LIGHT base (used when
+     the visitor's system is light or .theme-light is set); .theme-dark:root
+     and the prefers-color-scheme:dark fallback re-point it to the dark accent.
+     Previously this was injected by a <head> <style> from SITE.accentColor —
+     now CSS owns it entirely. */
+  --site-accent-color: #970;
   --brand-color: var(--site-accent-color, #997700);
   --accent-color: #997700;
   --accent-color-hover: #8b6914;
@@ -154,8 +160,9 @@ html.theme-light:root {
   --site-accent-color: #970 !important;
 }
 
-/* Dark mode — explicit class (the site default), live values. */
+/* Dark mode — explicit class, live values. */
 .theme-dark:root {
+  --site-accent-color: #ffd102;
   --brand-color: var(--site-accent-color, #ffd102);
   --accent-color: #ffd102;
   --accent-color-hover: #fd3;
@@ -174,6 +181,7 @@ html.theme-light:root {
 /* Dark mode — system-preference fallback when no class is forced. */
 @media (prefers-color-scheme: dark) {
   html:not(.theme-light):root {
+    --site-accent-color: #ffd102;
     --brand-color: var(--site-accent-color, #ffd102);
     --accent-color: #ffd102;
     --accent-color-hover: #fd3;

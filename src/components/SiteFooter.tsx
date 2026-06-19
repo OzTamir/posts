@@ -34,15 +34,17 @@ export default function SiteFooter({ isPost = false }: Props) {
         <div className="gh-foot-bottom mt-[2rem] flex flex-col items-center gap-[1rem]">
           {isPost && <div className="gh-foot-divider mb-[.5rem] block h-[2px] w-[400px] rounded-[1px] bg-light-gray"></div>}
           <div className="gh-foot-social flex justify-center gap-[1rem]">
-            {SITE.twitter && (
-              <a className={socialLinkClass} href={SITE.twitterUrl} target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+            {SITE.social.twitter && (
+              <a className={socialLinkClass} href={SITE.social.twitter.url} target="_blank" rel="noopener noreferrer" aria-label="Twitter">
                 <Twitter />
               </a>
             )}
-            <a className={socialLinkClass} href="https://www.linkedin.com/in/oz-tamir-7179b185" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-              <Linkedin />
-            </a>
-            <a className={socialLinkClass} href="/rss/" target="_blank" rel="noopener noreferrer" aria-label="RSS Feed">
+            {SITE.social.linkedin && (
+              <a className={socialLinkClass} href={SITE.social.linkedin.url} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <Linkedin />
+              </a>
+            )}
+            <a className={socialLinkClass} href={SITE.social.rss.url} target="_blank" rel="noopener noreferrer" aria-label="RSS Feed">
               <Rss />
             </a>
           </div>

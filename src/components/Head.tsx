@@ -104,15 +104,17 @@ export default function Head(props: HeadProps) {
   const author = authorSlug ? AUTHORS[authorSlug] : undefined;
 
   /* ---------- JSON-LD per page type ---------- */
+  // Publisher logo + author image derive from SITE/author config (no
+  // hardcoded /content/... literals). The logo asset is 512×512.
   const orgPublisher = {
     '@type': 'Organization',
     name: SITE.title,
     url: `${SITE.url}/`,
     logo: {
       '@type': 'ImageObject',
-      url: `${SITE.url}/content/images/2024/07/android-chrome-512x512-1.png`,
-      width: 60,
-      height: 60,
+      url: abs(SITE.logo),
+      width: 512,
+      height: 512,
     },
   };
 
@@ -158,9 +160,9 @@ export default function Head(props: HeadProps) {
               name: author.name,
               image: {
                 '@type': 'ImageObject',
-                url: `${SITE.url}/content/images/size/w1200/2024/06/profile_small-1.png`,
-                width: 1200,
-                height: 1200,
+                // Derived from the author's real profile image (was a 404
+                // pointing at a nonexistent /size/w1200/ derivative).
+                url: abs(author.profileImage),
               },
               url: author.url,
               sameAs: author.sameAs,
@@ -194,7 +196,7 @@ export default function Head(props: HeadProps) {
       <title>{title}</title>
 
       {description && <meta name="description" content={description} />}
-      <link rel="icon" href="/content/images/2024/07/android-chrome-512x512.png" type="image/png" />
+      <link rel="icon" href={SITE.icon} type="image/png" />
       <link rel="canonical" href={canonical} />
       <meta name="referrer" content="no-referrer-when-downgrade" />
       {next && <link rel="next" href={next} />}
@@ -210,8 +212,8 @@ export default function Head(props: HeadProps) {
       {type === 'post' && publishedTime && <meta property="article:published_time" content={publishedTime} />}
       {type === 'post' && modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
       {type === 'post' && primaryTag && <meta property="article:tag" content={primaryTag} />}
-      <meta property="article:publisher" content={SITE.facebookUrl} />
-      {(type === 'post' || type === 'author') && <meta property="article:author" content={SITE.facebookUrl} />}
+      <meta property="article:publisher" content={SITE.social.facebook.url} />
+      {(type === 'post' || type === 'author') && <meta property="article:author" content={SITE.social.facebook.url} />}
 
       {/* Twitter card */}
       <meta name="twitter:card" content={resolvedTwitterCard} />
@@ -231,8 +233,8 @@ export default function Head(props: HeadProps) {
           <meta name="twitter:data2" content={primaryTag} />
         </>
       )}
-      <meta name="twitter:site" content={SITE.twitter} />
-      {(type === 'post' || type === 'author') && <meta name="twitter:creator" content={SITE.twitter} />}
+      <meta name="twitter:site" content={SITE.social.twitter.handle} />
+      {(type === 'post' || type === 'author') && <meta name="twitter:creator" content={SITE.social.twitter.handle} />}
       {type === 'home' && ogImageAbs && (
         <>
           <meta property="og:image:width" content="512" />
@@ -252,9 +254,6 @@ export default function Head(props: HeadProps) {
 
       <meta name="generator" content="Astro" />
       <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss/" />
-
-      {/* Accent color CSS variable — consumed by the theme CSS. */}
-      <style dangerouslySetInnerHTML={{ __html: `:root{--site-accent-color:${SITE.accentColor}}` }} />
 
       {/* Plausible analytics. */}
       <script defer data-domain={SITE.plausibleDomain} src="https://plausible.io/js/plausible.js"></script>

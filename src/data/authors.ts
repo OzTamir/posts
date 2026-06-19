@@ -1,8 +1,13 @@
 /**
  * Author definitions. The blog has a single author.
- * Bio text is preserved verbatim (including the "[REDACTED]" and the
- * "cybersecurtiy" typo — intentional).
+ * Bio text is preserved verbatim (the "[REDACTED]" is intentional).
+ *
+ * Social links are NOT hardcoded here — they derive from `SITE.social`
+ * (the single source of truth), so the footer, author card, and JSON-LD
+ * `sameAs` all stay in sync from one place.
  */
+import { SITE } from '../config';
+
 export interface Author {
   slug: string;
   name: string;
@@ -10,8 +15,12 @@ export interface Author {
   profileImage: string;
   location: string;
   website: string;
+  /** Bare Twitter handle (e.g. "@oztamir"), from SITE.social. */
   twitter: string;
+  /** Bare Facebook username, from SITE.social. */
   facebook: string;
+  /** LinkedIn profile URL, from SITE.social. */
+  linkedin: string;
   /** Absolute author archive URL. */
   url: string;
   /** schema.org sameAs links. */
@@ -22,18 +31,19 @@ export const AUTHORS: Record<string, Author> = {
   oz: {
     slug: 'oz',
     name: 'Oz Tamir',
-    bio: "I'm Oz, 2x Founding Engineer at cybersecurtiy companies like Blockaid and [REDACTED].\n\nI like to write about low level security stuff, build smart home (and adjacent) DIY projects, and shitpost about startup culture.",
+    bio: "I'm Oz, 2x Founding Engineer at cybersecurity companies like Blockaid and [REDACTED].\n\nI like to write about low level security stuff, build smart home (and adjacent) DIY projects, and shitpost about startup culture.",
     profileImage: '/content/images/2024/06/profile_small-1.png',
     location: 'Terminally Online, Physically TLV',
     website: 'https://oztamir.com/',
-    twitter: '@oztamir',
-    facebook: 'oztamir',
+    twitter: SITE.social.twitter.handle,
+    facebook: SITE.social.facebook.handle,
+    linkedin: SITE.social.linkedin.url,
     url: 'https://posts.oztamir.com/author/oz/',
     sameAs: [
       'https://oztamir.com/',
-      'https://www.facebook.com/oztamir',
-      'https://x.com/oztamir',
-      'https://www.linkedin.com/in/oz-tamir-7179b185',
+      SITE.social.facebook.url,
+      SITE.social.twitter.url,
+      SITE.social.linkedin.url,
     ],
   },
 };

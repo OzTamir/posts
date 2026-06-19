@@ -15,7 +15,7 @@ const MONTHS_SHORT = [
 
 /** Extract Y/M/D (in the site timezone) from a Date. */
 function ymd(date: Date): { year: number; month: number; day: number } {
-  const parts = new Intl.DateTimeFormat('en-US', {
+  const parts = new Intl.DateTimeFormat(SITE.locale, {
     timeZone: TZ,
     year: 'numeric',
     month: '2-digit',

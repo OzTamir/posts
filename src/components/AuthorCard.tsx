@@ -74,15 +74,17 @@ export default function AuthorCard({ author }: Props) {
             Twitter
           </a>
         )}
-        <a
-          className={`${shareLinkClass} share-link-linkedin`}
-          href="https://www.linkedin.com/in/oz-tamir-7179b185"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Linkedin />
-          LinkedIn
-        </a>
+        {author.linkedin && (
+          <a
+            className={`${shareLinkClass} share-link-linkedin`}
+            href={author.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Linkedin />
+            LinkedIn
+          </a>
+        )}
       </div>
     </section>
   );
