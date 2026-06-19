@@ -1,0 +1,33 @@
+---
+/**
+ * 404 page — Astro emits this as 404.html. The Dawn theme ships no
+ * custom error template (Ghost uses a built-in), so this is an on-theme
+ * minimal error page using the shared shell (header + footer) and the
+ * existing typography. Body class "error-template".
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config';
+
+const head = {
+  type: 'default',
+  title: `Error - ${SITE.title}`,
+  description: 'Page not found',
+  canonical: `${SITE.url}/404/`,
+  ogType: 'website',
+  twitterCard: 'summary',
+};
+---
+<BaseLayout head={head} bodyClass="error-template" isHome={false}>
+  <div class="site-content">
+    <main class="site-main">
+      <section class="tag">
+        <div class="gh-canvas" style="text-align: center;">
+          <h1 style="font-size: 3rem; color: var(--brand-color); margin-bottom: 0;">404</h1>
+          <p style="margin-top: 1.6rem; color: var(--secondary-text-color);">
+            Page not found. <a href="/" style="color: var(--brand-color);">Head home</a>.
+          </p>
+        </div>
+      </section>
+    </main>
+  </div>
+</BaseLayout>

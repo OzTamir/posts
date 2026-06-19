@@ -1,0 +1,74 @@
+---
+/**
+ * Home pagination — pages 2..N only (page 1 is index.astro; /page/1/ is
+ * intentionally NOT emitted, matching Ghost).
+ *
+ * In Ghost, `is "home"` is true only on page 1, so paginated index pages
+ * render through the `{{^is "home"}}` branch of default.hbs: the SITE
+ * HEADER is shown, the cover is NOT, `{{{body}}}` (empty for index.hbs)
+ * sits in an empty `.site-content`, then the post-feed + pager. Body
+ * class is "home-template paged". We reproduce that exactly.
+ *
+ * 41 posts / 5 per page = 9 pages → this generates /page/2/ … /page/9/.
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Pagination from '../../components/Pagination.astro';
+import { getSortedPosts } from '../../utils/posts';
+import { SITE } from '../../config';
+
+export const getStaticPaths = (async () => {
+  const all = await getSortedPosts();
+  const perPage = SITE.postsPerPage;
+  const totalPages = Math.max(1, Math.ceil(all.length / perPage));
+
+  const paths = [];
+  // Pages 2..N (skip page 1 → that is index.astro).
+  for (let page = 2; page <= totalPages; page++) {
+    const start = (page - 1) * perPage;
+    paths.push({
+      params: { page: String(page) },
+      props: {
+        pagePosts: all.slice(start, start + perPage),
+        page,
+        totalPages,
+      },
+    });
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+const { pagePosts, page, totalPages } = Astro.props;
+
+const canonical = `${SITE.url}/page/${page}/`;
+const nextUrl = page < totalPages ? `/page/${page + 1}/` : undefined;
+const prevUrl = page > 2 ? `/page/${page - 1}/` : '/';
+
+const head = {
+  type: 'home',
+  title: SITE.metaTitle,
+  description: SITE.metaDescription,
+  ogTitle: SITE.ogTitle,
+  ogDescription: SITE.ogDescription,
+  twitterTitle: SITE.twitterTitle,
+  twitterDescription: SITE.twitterDescription,
+  canonical,
+  next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
+  prev: `${SITE.url}${prevUrl}`, // page 2 → "/", page N → "/page/N-1/"
+  ogType: 'website',
+  ogImage: SITE.ogImage,
+  twitterImage: SITE.twitterImage,
+};
+---
+<BaseLayout head={head} bodyClass="home-template paged" isHome={false}>
+  <div class="site-content"></div>
+
+  <div class="post-feed gh-feed gh-canvas">
+    {pagePosts.map(({ post, readingTime }) => (
+      <PostCard post={post} readingTime={readingTime} />
+    ))}
+  </div>
+
+  <Pagination nextUrl={nextUrl} />
+</BaseLayout>

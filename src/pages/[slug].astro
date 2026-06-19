@@ -1,0 +1,74 @@
+---
+/**
+ * Single post — /<slug>/ (param = post.id, which IS the Ghost slug).
+ * Renders the Markdown body through PostLayout and builds the full
+ * per-post <head> (canonical, Open Graph, Twitter card, JSON-LD Article)
+ * to match live-post-hello-world.html.
+ *
+ * SEO precedence (Ghost posts_meta → sensible defaults):
+ *   title        = metaTitle  ?? title
+ *   description  = metaDescription ?? excerpt
+ *   og:title     = ogTitle    ?? title
+ *   og:image     = ogImage    ?? featureImage   (absolute, ORIGINAL path)
+ *   twitter:img  = twitterImage ?? featureImage  (absolute, ORIGINAL path)
+ *   canonical    = canonicalUrl ?? <site>/<slug>/
+ */
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import PostLayout from '../layouts/PostLayout.astro';
+import { getSortedPosts, getRelated } from '../utils/posts';
+import { getImageDimensions } from '../utils/imageSize';
+import { AUTHORS, DEFAULT_AUTHOR } from '../data/authors';
+import { SITE } from '../config';
+
+export const getStaticPaths = (async () => {
+  const all = await getSortedPosts();
+  return all.map(({ post, readingTime }) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      readingTime,
+      related: getRelated(all, post, 5),
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+const { post, readingTime, related } = Astro.props;
+const { Content } = await render(post);
+const d = post.data;
+
+const author = AUTHORS[d.author] ?? DEFAULT_AUTHOR;
+const primaryTag = d.tags?.[0];
+
+const canonical = d.canonicalUrl ?? `${SITE.url}/${post.id}/`;
+
+const description = d.metaDescription ?? d.excerpt ?? undefined;
+
+// og:image / twitter:image — original feature image as an absolute URL.
+const ogImage = d.ogImage ?? d.featureImage ?? null;
+const twitterImage = d.twitterImage ?? d.featureImage ?? null;
+const ogDims = ogImage ? getImageDimensions(ogImage) : null;
+
+const head = {
+  type: 'post',
+  title: d.metaTitle ?? d.title, // <title> = post title (no site suffix)
+  description,
+  ogTitle: d.ogTitle ?? d.title,
+  ogDescription: d.ogDescription ?? description,
+  twitterTitle: d.twitterTitle ?? d.title,
+  twitterDescription: d.twitterDescription ?? description,
+  canonical,
+  ogImage,
+  twitterImage,
+  ogImageWidth: ogDims?.width,
+  ogImageHeight: ogDims?.height,
+  publishedTime: d.pubDate.toISOString(),
+  modifiedTime: (d.updatedDate ?? d.pubDate).toISOString(),
+  primaryTag: primaryTag?.name,
+  authorName: author.name,
+  authorSlug: author.slug,
+};
+---
+<PostLayout post={post} readingTime={readingTime} related={related} head={head}>
+  <Content />
+</PostLayout>

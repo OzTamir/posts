@@ -1,0 +1,81 @@
+---
+/**
+ * Tag archive pagination — /tag/<slug>/page/N/ for pages 2..N only
+ * (page 1 is tag/[tag]/index.astro; /page/1/ is not emitted).
+ *
+ * Ghost renders the `{{#tag}}` header section on every page of a tag
+ * archive, so the tag name heading still appears here; only the feed
+ * posts differ. Body class = "tag-template tag-<slug> paged".
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import PostCard from '../../../../components/PostCard.astro';
+import Pagination from '../../../../components/Pagination.astro';
+import { getSortedPosts, filterByTag } from '../../../../utils/posts';
+import { getAllTags } from '../../../../utils/tags';
+import { SITE } from '../../../../config';
+
+export const getStaticPaths = (async () => {
+  const all = await getSortedPosts();
+  const tags = getAllTags(all);
+  const perPage = SITE.postsPerPage;
+  const paths = [];
+
+  for (const tag of tags) {
+    const posts = filterByTag(all, tag.slug);
+    const totalPages = Math.max(1, Math.ceil(posts.length / perPage));
+    for (let page = 2; page <= totalPages; page++) {
+      const start = (page - 1) * perPage;
+      paths.push({
+        params: { tag: tag.slug, page: String(page) },
+        props: {
+          tag,
+          pagePosts: posts.slice(start, start + perPage),
+          page,
+          totalPages,
+        },
+      });
+    }
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+const { tag, pagePosts, page, totalPages } = Astro.props;
+
+const canonical = `${SITE.url}/tag/${tag.slug}/page/${page}/`;
+const nextUrl = page < totalPages ? `/tag/${tag.slug}/page/${page + 1}/` : undefined;
+const prevUrl =
+  page > 2 ? `/tag/${tag.slug}/page/${page - 1}/` : `/tag/${tag.slug}/`;
+const title = `${tag.name} - ${SITE.title}`;
+
+const head = {
+  type: 'tag',
+  title,
+  description: SITE.metaDescription,
+  canonical,
+  next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
+  prev: `${SITE.url}${prevUrl}`,
+  ogType: 'website',
+  twitterCard: 'summary',
+  primaryTag: tag.name,
+};
+---
+<BaseLayout head={head} bodyClass={`tag-template tag-${tag.slug} paged`} isHome={false}>
+  <div class="site-content">
+    <main class="site-main">
+      <section class="tag">
+        <div class="gh-canvas">
+          <h1 class="tag-name">{tag.name}</h1>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="post-feed gh-feed gh-canvas">
+    {pagePosts.map(({ post, readingTime }) => (
+      <PostCard post={post} readingTime={readingTime} />
+    ))}
+  </div>
+
+  <Pagination nextUrl={nextUrl} />
+</BaseLayout>

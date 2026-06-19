@@ -1,0 +1,78 @@
+---
+/**
+ * Author archive pagination — /author/<slug>/page/N/ for pages 2..N only
+ * (page 1 is author/[author]/index.astro; /page/1/ is not emitted).
+ *
+ * Ghost renders the author header section on every page of the author
+ * archive, so the AuthorCard still appears here. Body class =
+ * "author-template author-<slug> paged".
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import AuthorCard from '../../../../components/AuthorCard.astro';
+import PostCard from '../../../../components/PostCard.astro';
+import Pagination from '../../../../components/Pagination.astro';
+import { getSortedPosts, filterByAuthor } from '../../../../utils/posts';
+import { AUTHORS } from '../../../../data/authors';
+import { SITE } from '../../../../config';
+
+export const getStaticPaths = (async () => {
+  const all = await getSortedPosts();
+  const perPage = SITE.postsPerPage;
+  const paths = [];
+
+  for (const author of Object.values(AUTHORS)) {
+    const posts = filterByAuthor(all, author.slug);
+    const totalPages = Math.max(1, Math.ceil(posts.length / perPage));
+    for (let page = 2; page <= totalPages; page++) {
+      const start = (page - 1) * perPage;
+      paths.push({
+        params: { author: author.slug, page: String(page) },
+        props: {
+          author,
+          pagePosts: posts.slice(start, start + perPage),
+          page,
+          totalPages,
+        },
+      });
+    }
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+const { author, pagePosts, page, totalPages } = Astro.props;
+
+const canonical = `${SITE.url}/author/${author.slug}/page/${page}/`;
+const nextUrl =
+  page < totalPages ? `/author/${author.slug}/page/${page + 1}/` : undefined;
+const prevUrl =
+  page > 2 ? `/author/${author.slug}/page/${page - 1}/` : `/author/${author.slug}/`;
+const title = `${author.name} - ${SITE.title}`;
+
+const head = {
+  type: 'author',
+  title,
+  description: author.bio,
+  canonical,
+  next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
+  prev: `${SITE.url}${prevUrl}`,
+  ogType: 'profile',
+  twitterCard: 'summary',
+  authorSlug: author.slug,
+};
+---
+<BaseLayout head={head} bodyClass={`author-template author-${author.slug} paged`} isHome={false}>
+  <div class="site-content">
+    <main class="site-main">
+      <AuthorCard author={author} />
+    </main>
+  </div>
+
+  <div class="post-feed gh-feed gh-canvas">
+    {pagePosts.map(({ post, readingTime }) => (
+      <PostCard post={post} readingTime={readingTime} />
+    ))}
+  </div>
+
+  <Pagination nextUrl={nextUrl} />
+</BaseLayout>

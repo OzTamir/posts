@@ -1,0 +1,69 @@
+---
+/**
+ * Author archive page 1 — /author/<slug>/ (one author: "oz").
+ * Ports author.hbs: an AuthorCard header (avatar, name, location, bio,
+ * social links) followed by the post-feed + pager. Structure + body class
+ * match live-author-oz.html ("author-template author-<slug>").
+ *
+ * Title: "<Author> - 0xZ"; og:type=profile; description = bio;
+ * twitter card = summary.
+ */
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AuthorCard from '../../../components/AuthorCard.astro';
+import PostCard from '../../../components/PostCard.astro';
+import Pagination from '../../../components/Pagination.astro';
+import { getSortedPosts, filterByAuthor } from '../../../utils/posts';
+import { AUTHORS } from '../../../data/authors';
+import { SITE } from '../../../config';
+
+export const getStaticPaths = (async () => {
+  const all = await getSortedPosts();
+  const perPage = SITE.postsPerPage;
+
+  return Object.values(AUTHORS).map((author) => {
+    const posts = filterByAuthor(all, author.slug);
+    const totalPages = Math.max(1, Math.ceil(posts.length / perPage));
+    return {
+      params: { author: author.slug },
+      props: {
+        author,
+        pagePosts: posts.slice(0, perPage),
+        totalPages,
+      },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { author, pagePosts, totalPages } = Astro.props;
+
+const canonical = `${SITE.url}/author/${author.slug}/`;
+const nextUrl = totalPages > 1 ? `/author/${author.slug}/page/2/` : undefined;
+const title = `${author.name} - ${SITE.title}`;
+
+const head = {
+  type: 'author',
+  title,
+  description: author.bio,
+  canonical,
+  next: nextUrl ? `${SITE.url}${nextUrl}` : undefined,
+  ogType: 'profile',
+  twitterCard: 'summary',
+  authorSlug: author.slug,
+};
+---
+<BaseLayout head={head} bodyClass={`author-template author-${author.slug}`} isHome={false}>
+  <div class="site-content">
+    <main class="site-main">
+      <AuthorCard author={author} />
+    </main>
+  </div>
+
+  <div class="post-feed gh-feed gh-canvas">
+    {pagePosts.map(({ post, readingTime }) => (
+      <PostCard post={post} readingTime={readingTime} />
+    ))}
+  </div>
+
+  <Pagination nextUrl={nextUrl} />
+</BaseLayout>
