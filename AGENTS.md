@@ -132,6 +132,13 @@ const x: number = 42;
   `sitemap*.xml.ts` endpoints.
 - **RSS** feed is at `/rss.xml`; `public/_redirects` keeps `/rss/ → /rss.xml` (301)
   forever so old subscribers never break.
+- **Agent discovery** is intentionally minimal, matching a static content blog:
+  `robots.txt` carries a `Content-Signal` line (search/AI-input yes, AI-training no);
+  `public/.well-known/api-catalog` is an RFC 9727 `linkset+json` advertising the real
+  feeds (`/posts.json`, `/rss.xml`) + sitemap; `_headers` adds a `Link:` header
+  (`rel="api-catalog"`, `rel="sitemap"`) on every response and sets the catalog's
+  content type. We deliberately do **not** publish OAuth/OIDC, MCP, `auth.md`, or
+  WebMCP metadata — there are no APIs, auth, or tools behind them to advertise.
 - This is a **static content blog**. Members, newsletter, comments, and server-side search
   were intentionally dropped — do not reintroduce them.
 
