@@ -5,10 +5,15 @@
 
 # Baseline security headers on every response. Cloudflare merges headers from
 # all matching rules, so these combine with the cache rules below.
+#
+# The Link header advertises agent-discovery resources (RFC 8288 / RFC 9727):
+# the API catalog and the sitemap. Both are site-wide, so they are valid on
+# every response (including the homepage, which is what discovery tools probe).
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
+  Link: </.well-known/api-catalog>; rel="api-catalog", </sitemap-index.xml>; rel="sitemap"
 
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
@@ -22,3 +27,11 @@
 /posts.json
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=600, stale-while-revalidate=86400
+
+# API catalog (RFC 9727) for agent discovery. Served as a static file (it has
+# no extension, so Cloudflare won't infer a type), hence the explicit
+# linkset+json content type. Public, read-only; allow any origin.
+/.well-known/api-catalog
+  Content-Type: application/linkset+json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600

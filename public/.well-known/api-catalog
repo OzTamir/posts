@@ -1,0 +1,31 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://posts.oztamir.com/posts.json",
+      "service-doc": [
+        {
+          "href": "https://posts.oztamir.com/",
+          "type": "text/html",
+          "title": "0xZ — human-readable blog"
+        }
+      ],
+      "describedby": [
+        {
+          "href": "https://posts.oztamir.com/sitemap-index.xml",
+          "type": "application/xml",
+          "title": "Sitemap index"
+        }
+      ]
+    },
+    {
+      "anchor": "https://posts.oztamir.com/rss.xml",
+      "service-doc": [
+        {
+          "href": "https://posts.oztamir.com/",
+          "type": "text/html",
+          "title": "0xZ — human-readable blog"
+        }
+      ]
+    }
+  ]
+}
