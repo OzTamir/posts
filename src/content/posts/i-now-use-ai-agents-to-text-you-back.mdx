@@ -18,7 +18,7 @@ tags:
 author: oz
 featured: false
 excerpt: Automating Social Checkups with n8n, Claude, and a WhatsApp MCP
-featureImage: /content/images/2025/04/n8n.png
+featureImage: /content/images/posts/i-now-use-ai-agents-to-text-you-back/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -29,7 +29,7 @@ People will text me, and I’ll read it, maybe even think of a reply, and then j
 
 It’s not that I’m avoiding anyone - on the contrary. It’s almost always people I like that I ghost. Friends, close family, people I genuinely want to keep in touch with. But if the conversation doesn’t require a reply right that second, odds are, I’ll forget.
 
-<Figure src="2025/04/texts.png" alt="" caption={"<span style=\"white-space: pre-wrap;\">Many of my friends have got this image when I first </span><a href=\"https://x.com/OzTamir/status/1880636601350725861\" rel=\"noreferrer\"><span style=\"white-space: pre-wrap;\">saw it on X</span></a>"} />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/why-i-didnt-text-back.png" alt="" caption={"<span style=\"white-space: pre-wrap;\">Many of my friends have got this image when I first </span><a href=\"https://x.com/OzTamir/status/1880636601350725861\" rel=\"noreferrer\"><span style=\"white-space: pre-wrap;\">saw it on X</span></a>"} />
 
 So I figured: can this be automated? Can I build a system that knows who messaged me, who I haven’t replied to in a while, and gently reminds me to say hi before I have to begin my reply with "sorry for not getting back to you sooner"?
 
@@ -68,11 +68,11 @@ While the n8n team is offering hosted versions, these don't support community no
 
 That was fine - I always have a spare Raspberry Pi lying around for emergencies like these. I quickly 3D printed a case and was ready to go.
 
-<Figure src="2025/04/image-2.png" alt="" />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/raspberry-pi-on-desk.png" alt="" />
 
 For the actual setup, I followed this excellent guide, which walks you through installing n8n. It's not anything special - basically installing Raspberry Pi OS, installing `node`, and downloading `n8n` through `npm`. To make sure things are persistent, I used the `pm2` setup that makes sure `n8n` runs on boot.
 
-<Figure src="2025/04/image-3.png" alt="" />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/n8n-terminal-install.png" alt="" />
 
 A good tip I got was to use `pm2`'s configuration file to pass environment variables to `n8n`. Specifically, I needed to give a parameter that allows insecure (http-based) access to the system. Since I only intend to access this setup locally for now, this is OK. To pass the variable, I used this `ecosystem.config.js` setup:
 
@@ -109,11 +109,11 @@ Or at least, that's the idea - at the time of writing, `n8n` does not have a nat
 
 Installing a new node is very easy - you can do it in the GUI:
 
-<Figure src="2025/04/image-4.png" alt="" />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/n8n-mcp-node-install-dialog.png" alt="" />
 
 Or simply by going to `~/.n8n/nodes` and running `npm install n8n-nodes-mcp`. Once the installation is complete, you can verify that the new node is up and running by navigating to `/settings/community-nodes` and confirming that it shows up in the list:
 
-<Figure src="2025/04/image-5.png" alt="" />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/n8n-mcp-community-node-installed.png" alt="" />
 
 ## Installing the WhatsApp MCP Server
 
@@ -147,11 +147,11 @@ go run ./whatsapp-bridge/main.go
 
 On the first run, it displays a QR code in the terminal - you need to scan it with the WhatsApp app on your phone (it's essentially the same process as pairing with WA Web):
 
-<Figure src="2025/04/image-8.png" alt="" caption={"<span style=\"white-space: pre-wrap;\">This QR code will let you log into my WhatsApp, you should scan it!</span>"} />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/whatsapp-bridge-qr-terminal.png" alt="" caption={"<span style=\"white-space: pre-wrap;\">This QR code will let you log into my WhatsApp, you should scan it!</span>"} />
 
 Within a few seconds the sync started. From that point forward, the server quietly indexed all my messages into a local SQLite database.
 
-<Figure src="2025/04/whatsapp-mcp-ezgif.com-resize.gif" alt="" />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/whatsapp-mcp-demo.gif" alt="" />
 
 ## Connecting the WhatsApp MCP to n8n
 
@@ -161,7 +161,7 @@ Instead of using the HTTP interface, I opted to connect it through the STDIO API
 
 To do that, I first went to the Credentials section in n8n, created a new credential of type MCP Client (STDIO) API, and filled in the following (taken from the `whatsapp-mcp` docs):
 
-<Figure src="2025/04/image-9.png" alt="" />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/whatsapp-mcp-credential-config.png" alt="" />
 
 This tells n8n to use `uv` to run the WhatsApp MCP server locally via its Python entrypoint. Since the server is structured as a Python module, this works out of the box.
 
@@ -182,7 +182,7 @@ To start simple, I made a basic agent flow that could receive a message and call
 3.  A memory node to give the agent short-term recall
 4.  Two MCP tool nodes wired into the agent - one to register the available WhatsApp tools, and one to actually execute them
 
-<Figure src="2025/04/image-10.png" alt="" />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/n8n-agent-workflow-diagram.png" alt="" />
 
 Here’s the system message I gave the agent:
 
@@ -196,7 +196,7 @@ For context, the current date is: {{ new Date().toDateTime() }}.
 
 To test this setup, I started small - I asked the agent to check what was the latest message I got from my partner. I had asked her to close the bedroom window, and hold and behold - the bot caught it instantly.
 
-<Figure src="2025/04/image-11.png" alt="" />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/agent-chat-fetch-message.png" alt="" />
 
 The integration is working! Then came the real test: Could it figure out who I genuinely needed to respond to?
 
@@ -207,7 +207,7 @@ So I asked it:
 
 And the result was...very good?!
 
-<Figure src="2025/04/image-12.png" alt="" />
+<Figure src="posts/i-now-use-ai-agents-to-text-you-back/agent-chat-priority-list.png" alt="" />
 
 it pulled a few one-on-one threads where I had clearly dropped the ball, summarized the last thing said, and even proposed short replies. It's working!
 

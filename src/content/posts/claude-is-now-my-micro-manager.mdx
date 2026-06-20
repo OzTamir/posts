@@ -12,7 +12,7 @@ tags:
 author: oz
 featured: false
 excerpt: "OR: How to hit your OKRs with AI and MCPs"
-featureImage: /content/images/2025/04/claude_header_image.png
+featureImage: /content/images/posts/claude-is-now-my-micro-manager/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -66,7 +66,7 @@ Make sure you take into account both the target dates in the OKR and the fact th
 
 The result wasn’t magic - but it was good. It was good enough that with just a little bit of back-and-forth, I had something that looked like an actual, trackable plan.
 
-<Figure src="2025/04/o1_plan.png" alt="" />
+<Figure src="posts/claude-is-now-my-micro-manager/quarterly-okr-plan.png" alt="" />
 
 Each KR had a timeline. Each task had a clear outcome. And most importantly, I could look at any given week and know exactly what I needed to do.
 
@@ -89,7 +89,7 @@ There are a few Todoist MCP servers available. I used [this one](https://github.
 I like Smithery because their CLI makes installing MCPs super easy - all you need to do is run the following command:  
 `npx -y @smithery/cli@latest install @Chrusic/todoist-mcp-server-extended --client claude`
 
-<Figure src="2025/04/install.png" alt="" />
+<Figure src="posts/claude-is-now-my-micro-manager/todoist-mcp-install.png" alt="" />
 
 Once installed, the only extra thing you’ll need is a Todoist API token:
 
@@ -102,7 +102,7 @@ Paste it when prompted, and you're good to go.
 
 Open the [Claude app](https://claude.ai/download), and behold - it can now access Todoist on your behalf.
 
-<Figure src="2025/04/tools.png" alt="" />
+<Figure src="posts/claude-is-now-my-micro-manager/available-mcp-tools.png" alt="" />
 
 ## Watching the Magic Happen
 
@@ -125,11 +125,11 @@ If you are not sure about something, don't assume my intent - ask me how to proc
 
 Claude handled the whole thing in one go - no errors, no re-prompts.  
 
-<Figure src="2025/04/okr_todoist.png" alt="" />
+<Figure src="posts/claude-is-now-my-micro-manager/claude-creating-okr-tasks.png" alt="" />
 
 It created the projects, slotted each task under the correct KR, and populated the fields precisely as instructed. Start dates, descriptions, labels, priorities - it all showed up as expected in Todoist.
 
-<Figure src="2025/04/todoist.png" alt="" />
+<Figure src="posts/claude-is-now-my-micro-manager/okr-project-todoist.png" alt="" />
 
 There’s something very satisfying about opening the app and seeing a full quarter of structured, scoped, and scheduled work already laid out - without having to touch an API or spend an afternoon babysitting a migration script.
 

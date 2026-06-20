@@ -12,7 +12,7 @@ tags:
 author: oz
 featured: false
 excerpt: Looking at my phone is hard - so I built a bus stop screen
-featureImage: /content/images/2021/12/IMG_1593-1.jpg
+featureImage: /content/images/posts/cubus-getting-to-work-on-time/featured.jpg
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -21,7 +21,7 @@ Recently, I’ve been struggling to get to work on time. It’s not a transporta
 
 The problem, rather, is me - [I’m lazy](/xiaomi-mi-box-cellcomtv-automation/), and it’s hard to get out of bed in the morning. I usually stall for time until the bus is almost here - which is when I frantically dress and run out the door to get on it in time. Not ideal.
 
-<Figure src="2021/12/fleur-nIhYL6IpHoI-unsplash.jpg" alt="It's winter! Getting out of the bed is HARD!" caption="It's winter! Getting out of the bed is HARD!" />
+<Figure src="posts/cubus-getting-to-work-on-time/rainy-bedroom-window.jpg" alt="It's winter! Getting out of the bed is HARD!" caption="It's winter! Getting out of the bed is HARD!" />
 
 What _does_ get me out of bed in the end is seeing the numbers drop on my commute app - I know more or less how many minutes it takes me to get out of bed, get ready, and get to the bus stop on time. Therefore, I know when I **have** to leave my bed in order to make it on time.
 
@@ -39,7 +39,7 @@ The first thing I had to do was to get the information - when is the bus set to 
 
 So I thought about it and I figured - those apps have all got this information from somewhere, why won’t I find out where from, and get it myself - right from the source?
 
-<Figure src="2021/12/Screen-Shot-2021-12-05-at-15.39.40-1.png" alt="Real Time in Moovit" caption="Real Time in Moovit" />
+<Figure src="posts/cubus-getting-to-work-on-time/moovit-bus-route.png" alt="Real Time in Moovit" caption="Real Time in Moovit" />
 
 After a bit of Googling, I’ve discovered that as I’ve suspected, all these apps get their information from the same place - the Israeli Ministry of Transportation (surprise surprise, I know).
 
@@ -107,7 +107,7 @@ The “client side” is a [Raspberry Pi Zero W](https://www.raspberrypi.com/pro
 
 The display is [Waveshare’s EPD 2.13inch](http://waveshare.com/wiki/2.13inch_e-Paper_HAT_%28B%29) model, which hooks into the Pi’s GPIO ports without needing for any other connector:
 
-<Figure src="2021/12/3335_iso_demo_ORIG.jpg" alt="Image by Adafruit" caption="Image by Adafruit" />
+<Figure src="posts/cubus-getting-to-work-on-time/adafruit-eink-featherwing.jpg" alt="Image by Adafruit" caption="Image by Adafruit" />
 
 The code is rather simple - I’ve used Waveshare’s [python library](https://github.com/waveshare/e-Paper) to write a wrapper class for the screen, which includes partial refresh:
 
@@ -160,7 +160,7 @@ def display_tts(epd, tts_in_minutes):
 
 This is how it looks in practice:
 
-<Figure src="2021/12/IMG_BEF291D0D3F4-1.jpeg" alt="" />
+<Figure src="posts/cubus-getting-to-work-on-time/eink-four-minutes-prototype.jpeg" alt="" />
 
 The fonts I’ve used are [Azeret](https://fonts.google.com/specimen/Azeret+Mono?selection.family=Montserrat) and [Alef](https://fonts.google.com/specimen/Alef?selection.family=Montserrat&query=Alef), both are available on the Google Fonts page. The code is available [here](https://gist.github.com/OzTamir/f7c103ff1b933d18a428d92df0e598f2) (note that you need to edit it to use your own server and to display the bus _you_ want).
 
@@ -168,11 +168,11 @@ The fonts I’ve used are [Azeret](https://fonts.google.com/specimen/Azeret+Mono
 
 Finally, I’ve decided to put this little baby in a case and used the [PWNAGOTCHI](https://pwnagotchi.ai) design to find a suitable [design](https://www.thingiverse.com/thing:4608240). I’ve printed it:
 
-<Figure src="2021/12/GIF-2021-12-05-15-32-26.gif" alt="" />
+<Figure src="posts/cubus-getting-to-work-on-time/prusa-3d-printing.gif" alt="" />
 
 And got the final “product”:
 
-<Figure src="2021/12/IMG_1590-1.jpg" alt="" />
+<Figure src="posts/cubus-getting-to-work-on-time/cubus-on-laptop.jpg" alt="" />
 
 # Conclusion
 
@@ -182,4 +182,4 @@ It’s is one of these useless-at-first-look projects, but it’s also one of th
 
 And isn’t that what’s being a programmer really about?
 
-<Figure src="2021/12/IMG_1597.jpg" alt="Easily seen from my bed!" caption="Easily seen from my bed!" />
+<Figure src="posts/cubus-getting-to-work-on-time/cubus-on-desk-shelf.jpg" alt="Easily seen from my bed!" caption="Easily seen from my bed!" />

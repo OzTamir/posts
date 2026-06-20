@@ -10,7 +10,7 @@ tags:
 author: oz
 featured: false
 excerpt: My advantures trying to install postmarketOS on a Nokia N900
-featureImage: /content/images/2020/07/D1D0D475-8A1F-4A6D-BBA2-446404792C1F.png
+featureImage: /content/images/posts/running-postmarketos-on-a-nokia-n900/featured.png
 metaDescription: My advantures trying to install postmarketOS on a Nokia N900
 ---
 
@@ -35,27 +35,27 @@ Therefor, I found myself reading about an open-source project called **postmarke
 
 The installation process for pmOS is pretty straight forward:
 
-<Figure src="2020/07/DraggedImage-3.png" alt="" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/pmos-wiki-install-steps.png" alt="" />
 
 or… so I thought ☹️
 
 After running the `init` script and creating the config, trying to build the image for the Nokia results in an error:
 
-<Figure src="2020/07/DraggedImage-1-1.png" alt="" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/pmbootstrap-install-terminal.png" alt="" />
 
 I checked out the issues on the project’s [GitLab page](https://gitlab.com/postmarketOS/pmbootstrap), and as they say - timing _is_ everything in life.
 
-<Figure src="2020/07/DraggedImage-2-1.png" alt="" caption="I picked the wrong day to receive that phone 🙃" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/apkindex-missing-github-issue.png" alt="" caption="I picked the wrong day to receive that phone 🙃" />
 
 ### Installing pmOS (Thanos Edition)
 
-<Figure src="2020/07/GrossDentalIlladopsis-size_restricted.gif" alt="" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/sci-fi-robot-meme.gif" alt="" />
 
 Let’s start by figuring out what the problem is. As the log tells us, seems like the script can’t find a package that is required for installation. Trying to browse to that URL using a reguler browser ([http://postmarketos1.brixit.nl/postmarketos/master/armv7/APKINDEX.tar.gz](http://postmarketos1.brixit.nl/postmarketos/master/)) _does_ seems to result in a 404. As a matter of face, the entire armv7 folder is inaccessible (Which makes sense, given the above information about armv7 needing a rebuilt).
 
 So what is accessible? Well, if we go just `cd ../..` , we will find that the master branch does in fact hold an [armv7 folder](http://postmarketos1.brixit.nl/postmarketos/v20.05/armv7/). However, trying to run the init script (`pmbootstrap init`) tells us that this is an invalid option - since there is no available build for the N900:
 
-<Figure src="2020/07/DraggedImage-3-1.png" alt="Dude where's my N900?" caption="Dude where's my N900?" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/pmos-release-channel-select.png" alt="Dude where's my N900?" caption="Dude where's my N900?" />
 
 So we have a place from which we can get the packages from, however the script won’t allow it.
 
@@ -69,9 +69,9 @@ I went with option 3, obviously.
 
 If we go to the root of the repository, we will find out that this mirror supports replication using the `rsync` utility. This is nice - it means we can setup our own repository on the local machine! And if we swap the v20.05 with the master folder, we could trick the script into fetching whatever it needs from this repository instead. How? we will edit our `/etc/hosts` file and point `postmarketos1.brixit.nl` at our local machine. We will than run a web server on localhost, and voila! - The installation script now fetches it’s files from our machine! I tried it, and it worked…almost.
 
-<Figure src="2020/07/DraggedImage-4.png" alt="rsyncing to the incorrect path on purpose" caption="rsyncing to the incorrect path on purpose" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/rsync-pmos-packages-terminal.png" alt="rsyncing to the incorrect path on purpose" caption="rsyncing to the incorrect path on purpose" />
 
-<Figure src="2020/07/DraggedImage-5.png" alt="" caption="Fooling the script to use a local server" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/pmbootstrap-local-http-server.png" alt="" caption="Fooling the script to use a local server" />
 
 Still missing packages. Dang.
 
@@ -79,23 +79,23 @@ Still missing packages. Dang.
 
 I was about to give up and wait, but than I entered pmOS’s IRC channel and asked around, and I got a tip - [this page](http://images.postmarketos.org/nokia-n900/). I downloaded one of the images, and burned it onto my microSD using [Etcher](https://www.balena.io/etcher/):
 
-<Figure src="2020/07/DraggedImage-6.png" alt="" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/etcher-flashing-sdcard.png" alt="" />
 
 Afterwards, I tried installing U-Boot (required to boot from the microSD card) using the installer, however…
 
-<Figure src="2020/07/IMG_4740.png" alt="" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/n900-uboot-policy-warning.png" alt="" />
 
 Another solution was to install using apt-get. Sadly, this required root access and I am but a normal user…oh wait right this is a phone from 2009, before security was a thing. One Google later, and I found out that you can literally install root. Yup:
 
-<Figure src="2020/07/IMG_4741.png" alt="" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/n900-uboot-install-details.png" alt="" />
 
-<Figure src="2020/07/IMG_4743.png" alt="" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/n900-maemo-terminal.png" alt="" />
 
 Amazing. One boot later, and…
 
-<Figure src="2020/07/99CCA884-2C68-4D19-BAA6-A1AE0E1E5760.GIF" alt="Booting..." caption="Booting..." />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/n900-linux-boot-log.gif" alt="Booting..." caption="Booting..." />
 
-<Figure src="2020/07/2893FE38-9A4B-4220-98C9-167B092A5591.jpeg" alt="Victory!" caption="Victory!" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/n900-postmarketos-boot-closeup.jpeg" alt="Victory!" caption="Victory!" />
 
 ## Conclusion
 
@@ -105,4 +105,4 @@ This was a wild ride. I think the key takeaways I have from this quest are the f
 2.  **Ask around** - My breakthrough was reached when I went out to the IRC to ask the people who actually maintain this project. Not everything needs to be done on a DIY approach, sometimes asking for help can save you quite a bit of time.
 3.  **Timing is everything** - As I said already, timing is everything. Had I started out three hours earlier, this whole mess would've been averted. But hey, it wouldn't be fun if everything would just work, now would it?
 
-<Figure src="2020/07/861B02F7-A8EF-422D-85D5-E837C91B6C8E.png" alt="" />
+<Figure src="posts/running-postmarketos-on-a-nokia-n900/n900-in-box-text-editor.png" alt="" />

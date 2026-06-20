@@ -5,6 +5,7 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import pruneUnusedJs from './src/integrations/prune-unused-js.mjs';
+import stripImageMetadata from './src/integrations/strip-image-metadata.mjs';
 
 // Fully static output served from Cloudflare Workers Static Assets.
 export default defineConfig({
@@ -38,6 +39,9 @@ export default defineConfig({
     // Drop the orphaned React client-runtime chunk: nothing hydrates, so it's
     // never referenced and never loads — this keeps the deploy free of dead JS.
     pruneUnusedJs(),
+    // Strip EXIF/XMP/IPTC from emitted raster images (privacy backstop; the
+    // committed sources are also scrubbed with exiftool).
+    stripImageMetadata(),
   ],
   // Code blocks highlighted by Shiki with the Nord theme.
   markdown: {

@@ -30,10 +30,10 @@ export const SITE = {
    * `src/data/site-images.ts`; these public paths are the raw originals used
    * for the `<head>` favicon link and the absolute social-image URLs.
    */
-  logo: '/content/images/2024/07/android-chrome-512x512-1.png',
-  icon: '/content/images/2024/07/android-chrome-512x512.png',
-  ogImage: '/content/images/2020/07/android-chrome-512x512.png',
-  twitterImage: '/content/images/2024/07/android-chrome-512x512-1.png',
+  logo: '/content/images/site/logo.png',
+  icon: '/content/images/site/icon.png',
+  ogImage: '/content/images/site/og-default.png',
+  twitterImage: '/content/images/site/logo.png',
 
   /**
    * Single source of truth for social / identity links.

@@ -6,7 +6,7 @@ tags: []
 author: oz
 featured: false
 excerpt: EIP-6963 isn’t just another Ethereum standard—it’s a powerful tool for building trust. We used it for social proof.
-featureImage: /content/images/2025/02/eip6963.png
+featureImage: /content/images/posts/using-eip-6963-for-marketing/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -39,13 +39,13 @@ My idea? Use EIP-6963 to provide social proof to our website visitors.
 
 By highlighting that the wallets they use are likely already compatible with Blockaid, we can build trust and assure them of their choice of us as their security provider—the same idea that is powering our messaging around the Blockaid Network.
 
-<Figure src="2025/02/Network-2.png" alt="" />
+<Figure src="posts/using-eip-6963-for-marketing/blockaid-network-protection-pitch.png" alt="" />
 
 ## The Integration Process
 
 Integrating support for this standard was surprisingly easy. The injected providers that support EIP-6963 publish a window event with a simple interface providing necessary information, including the provider's name and icon.
 
-<Figure src="2025/02/interface-2.png" alt="" />
+<Figure src="posts/using-eip-6963-for-marketing/eip6963-provider-interface-code.png" alt="" />
 
 With this interface, the integration is very straightforward - all you need to do is to listen for window events that contain a provider announcement, make sure that the announced provider is one of our supported providers (list of our customers that integrated EIP-6963 into their extension), and set the state of the banner:
 

@@ -12,7 +12,7 @@ tags:
 author: oz
 featured: false
 excerpt: How I used NFC tags and iOS's Shortcuts App to automate my sleep routine
-featureImage: /content/images/2021/05/IMG_1373.png
+featureImage: /content/images/posts/automating-routine-ios-nfc/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -21,7 +21,7 @@ After moving into a new place recently, I’ve found myself tinkering with a lot
 
 All of these can be controlled in two ways - the first, obviously, is their respective manufacturer apps, and the second is by using a voice-controlled personal assistant (I’ve gone with Google’s platform due to my disappointment with Apple’s Siri).
 
-<Figure src="2021/05/Lights-4.gif" alt="" caption="LIFX Bulb at my room" />
+<Figure src="posts/automating-routine-ios-nfc/red-pendant-light.gif" alt="" caption="LIFX Bulb at my room" />
 
 So it was only natural that once I bought all of these devices, I’d want to start using the smart bits to automate stuff. I’ve already tried several workflows that proved to be extremely useful - the most significant one that comes to mind was using Geofences to turn on the AC whenever I got to a distance of 2km from my home, which made sure that even when the temperature outside is unbearably hot I would always come to a cool house.
 
@@ -54,25 +54,25 @@ Previously I’ve had little interest in this app since it mostly required user 
 
 However, things changed this past week when I discovered a feature called “[Automations](https://support.apple.com/en-il/guide/shortcuts/apdfbdbd7123/4.0/ios/14.0)” which was added to Shortcuts with iOS 14. This feature allows Shortcuts to run based on triggers supplied by the OS rather than by the user. These include triggers such as time, location and more.
 
-<Figure src="2021/05/a648bc612e8b971aa79020a8f85eec1f-4.png" alt="" />
+<Figure src="posts/automating-routine-ios-nfc/shortcuts-automation-triggers.png" alt="" />
 
 ## Using NFC
 
 The automation type that struck me the most was NFC triggers. While it might not be the most useful one, I’ve been dreaming about NFC automation [for years now](https://www.pocket-lint.com/phones/news/sony-mobile/114030-sony-xperia-s-nfc-smarttags), so I figured I’d give it a shot. After a quick Google search I found a store that sells packs of those, and within two days I had a 5-pack of these bad boys on my desk.
 
-<Figure src="2021/05/Screen-Shot-2021-05-22-at-16.59.49.png" alt="" caption="One of the NFC Tags (Type: NXP Mifare Ultralight)" />
+<Figure src="posts/automating-routine-ios-nfc/nfc-tag-on-laptop.png" alt="" caption="One of the NFC Tags (Type: NXP Mifare Ultralight)" />
 
 I’ve opened the shortcuts app, and configured the tags:
 
-<Figure src="2021/05/Image-3.GIF" alt="" />
+<Figure src="posts/automating-routine-ios-nfc/shortcuts-nfc-trigger-list.gif" alt="" />
 
 All I had to do now is to configure my shortcuts with the specification I’ve previously mentioned:
 
-<Figure src="2021/05/Screen-Shot-2021-05-22-at-17.54.43-3.png" alt="" />
+<Figure src="posts/automating-routine-ios-nfc/morning-automation-edit.png" alt="" />
 
 And that’s all! I’ve placed the tags (one for the morning routine, one for nighttime) on the corner of my bed, for easy access from the bed:
 
-<Figure src="2021/05/Screen-Shot-2021-05-22-at-17.54.06.png" alt="" />
+<Figure src="posts/automating-routine-ios-nfc/two-nfc-stickers-headboard.png" alt="" />
 
 And that was it! Two tips that could’ve saved me **a lot** of debugging:
 
@@ -83,6 +83,6 @@ And that was it! Two tips that could’ve saved me **a lot** of debugging:
 
 This was a fun exercise for me, which showed me again that going with a smart home strategy was a good idea. The magic of just touching a sticker with my phone and have the room around me change mood, play music, turn lights on and off - it really is a great demonstration of the power of IoT and smart appliances, and it’s a great party trick.
 
-<Figure src="2021/05/ezgif-4-fe7869d7c64c-min.gif" alt="" />
+<Figure src="posts/automating-routine-ios-nfc/phone-tapping-nfc-tag.gif" alt="" />
 
 Onwards to the next tag!

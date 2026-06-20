@@ -16,7 +16,7 @@ tags:
 author: oz
 featured: false
 excerpt: Using whatsmeow, n8n, and a Gemini-based agent, my WhatsApp commitments are now synced to Todoist.
-featureImage: /content/images/2025/10/whatsapp-todoist.png
+featureImage: /content/images/posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -49,7 +49,7 @@ Turns out, there’s no “nice” way to monitor your own WhatsApp messages. Th
 
 If you recall, in a [previous post](/i-now-use-ai-agents-to-text-you-back/) I used a WhatsApp MCP server to do something similar. So you might ask - why not use it again?
 
-<Figure src="2025/10/DraggedImage.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/whatsapp-mcp-server-readme.png" alt="" />
 
 Well, unlike in the previous post, this project was meant to run in a cloud hosted VPS. Now, while I trust in my ability to secure servers, this means that the risk is higher - and I wouldn't want my entire WhatsApp history sitting in a VPS.
 
@@ -61,7 +61,7 @@ So, what did I do?
 
 I read through the [MCP Server documentation](https://github.com/lharries/whatsapp-mcp), and found out that it is using a Go package called [whatsmeow](https://github.com/tulir/whatsmeow) that implements a WhatsApp client using their Web MultiDevice APIs.
 
-<Figure src="2025/10/DraggedImage-1.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/whatsmeow-library-docs.png" alt="" />
 
 So, I took the example code for this package and hacked together a small Dockerized application called [`whatsapp-aggregator`](https://github.com/OzTamir/whatsapp-aggragetor/).
 
@@ -101,7 +101,7 @@ Like in previous cases, I decided that I would use `n8n` for the workflow, but q
 
 Luckily, the `n8n` community nodes came to the rescue - and I found a simple node that allowed me the query the DB called [`n8n-node-sqlite3`](https://github.com/DangerBlack/n8n-node-sqlite3).
 
-<Figure src="2025/10/DraggedImage-2.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/n8n-fetch-messages-subworkflow.png" alt="" />
 
 Next order of business was getting existing TODOs out from Todoist. I didn't want to get duplicates - so if there's already a task for something I mentioned on WhatsApp, I didn't want the agent to create another one.
 
@@ -109,11 +109,11 @@ To get the existing tasks, I initially used the [n8n Todoist node](https://docs.
 
 To go around this issue, I used a custom HTTP node that directly called [the API](https://developer.todoist.com/api/v1/#tag/Tasks/operation/tasks_completed_by_completion_date_api_v1_tasks_completed_by_completion_date_get) to get the completed tasks.
 
-<Figure src="2025/10/DraggedImage-3.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/todoist-api-docs.png" alt="" />
 
 Once I had both the completed tasks, the open tasks, and the messages history, I had all the context I needed to fire up the agent itself.
 
-<Figure src="2025/10/DraggedImage-4.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/n8n-main-workflow-partial.png" alt="" />
 
 ## Creating a Gemini Agent...using Claude???
 
@@ -121,11 +121,11 @@ Now, I knew I wanted to use Gemini as the LLM for this agent because I had good 
 
 Instead, I decided to use another LLM! I fired up Claude Sonnet, and fed it instructions on how I want this agent to work.
 
-<Figure src="2025/10/DraggedImage-5.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/ai-agent-system-prompt.png" alt="" />
 
 In addition to my instructions, I gave it this screenshot, from the Anthropic talk [`Prompting 101`](https://youtu.be/ysPbXH0LpIE) - which I recommend watching for everyone working on agents.
 
-<Figure src="2025/10/DraggedImage-6.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/prompt-structure-diagram.png" alt="" />
 
 Basically, this is the structure recommended by Anthropic researchers for how to construct a prompt - including things like context engineering, giving the model concrete examples, and more.
 
@@ -140,20 +140,20 @@ Once the agent had came up with a list of tasks, all that's left to be done is t
 
 For this I am once again using the Todoist node - and I make sure to add the `n8n-generated` label to ensure that I know that these tasks were auto-generated.
 
-<Figure src="2025/10/DraggedImage-7.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/n8n-create-todoist-task-node.png" alt="" />
 
 Once the task had been created, I added one final node that uses [Pushover](https://pushover.net/) to sends out a notification about the new task with a link to the task in Todoist.
 
-<Figure src="2025/10/DraggedImage-8.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/n8n-pushover-notify-node.png" alt="" />
 
 This is useful to allow me to get feedback that the system is running properly and that new tasks are being added.
 
-<Figure src="2025/10/DraggedImage-9.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/pushover-task-notification.png" alt="" />
 
 ## Conclusion
 
 And that’s it. My "personal assistant" now quietly listens to my WhatsApp chats, figures out what I’ve committed to, and keeps Todoist up to date. This is what the final `n8n` workflow looks like:
 
-<Figure src="2025/10/DraggedImage-10.png" alt="" />
+<Figure src="posts/from-whatsapp-to-todoist-an-n8n-whatsmeow-automation/n8n-full-workflow.png" alt="" />
 
 It’s a small thing, but it echos my favorite type of hacks - ones that blend seamlessly into the background of your life, and help make them better - one message at a time.

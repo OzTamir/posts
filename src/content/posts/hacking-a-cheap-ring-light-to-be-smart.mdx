@@ -16,7 +16,7 @@ tags:
 author: oz
 featured: false
 excerpt: I wanted a ring light that turns on when I go on a call. So I hacked my dumb one into a smart one.
-featureImage: /content/images/2024/07/Screenshot-2024-07-04-at-21.08.16.png
+featureImage: /content/images/posts/hacking-a-cheap-ring-light-to-be-smart/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -24,13 +24,13 @@ import Video from '../../components/mdx/Video.astro';
 
 A few months ago, I noticed that the lightning at my workstation at my home office wasn’t that great - I realized that whenever I take a call from here, it looks bad. So, like every influencer, I quickly made my way to Amazon and purchased a simple, cheap, selfie-style ring light.
 
-<Figure src="2024/07/DraggedImage.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/amazon-ring-light-listing.png" alt="" />
 
 It arrived, and I was pretty happy with it -—the light quality was good, and it definitely improved the appearance of my video calls.  
   
 But there was one tiny problem: I kept forgetting to turn it on before joining calls. First-world problems, right?
 
-<Figure src="2024/07/DraggedImage-1.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/ring-light-on-desk.png" alt="" />
 
 That's when my tinkerer's brain kicked into high gear. I thought, "Wouldn't it be cool if this light could turn on automatically when I start a video call?" And just like that, a simple Amazon purchase turned into a full-blown DIY project.
 
@@ -42,15 +42,15 @@ First things first - before I could connect it to anything, I needed to understa
 2.  Buttons to increase or decrease brightness
 3.  A button to change the color temperature - the ring light supported 3 modes: Cold white, Warm white, and natural white (which was somewhat in the middle of the other two options)
 
-<Figure src="2024/07/DraggedImage-2.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/original-ring-light-controller.png" alt="" />
 
 To get things started, I used a screwdriver to open the controller:
 
-<Figure src="2024/07/DraggedImage-3.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/controller-jack-plug.png" alt="" />
 
-<Figure src="2024/07/DraggedImage-4.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/controller-pcb-buttons.png" alt="" />
 
-<Figure src="2024/07/DraggedImage-5.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/controller-pcb-open.png" alt="" />
 
 With the light disassembled and the controller pried open, I found myself staring at a small green PCB. The board had a few components that caught my eye:
 
@@ -80,19 +80,19 @@ Googling some more, I came across [this](https://www.reddit.com/r/led/comments/o
 > – A 75% duty cycle means the signal is on 75% of the time, resulting in higher brightness.  
 > – A 25% duty cycle means the signal is on 25% of the time, resulting in lower brightness.
 
-<Figure src="2024/07/DraggedImage-6.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/pwm-duty-cycle-diagram.png" alt="" />
 
 Armed with knowledge, I decided that the best way forward would be to desolder the PCB, hook the light directly to an Arduino or an ESP32, and just play with the pins until I figured out what was going on.
 
-<Figure src="2024/07/DraggedImage-7.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/pcb-in-helping-hands.png" alt="" />
 
-<Figure src="2024/07/DraggedImage-8.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/desoldered-pcb-wires.png" alt="" />
 
 To connect it properly to the ESP32, I took the raw wires and used a crimping kit to put them inside easily usable plastic pins. It was my first time doing this, and I’m delighted with how it turned out - it made the connection to the ESP32 **much easier**.
 
-<Figure src="2024/07/DraggedImage-9.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/crimping-tool.png" alt="" />
 
-<Figure src="2024/07/DraggedImage-10.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/wires-spliced-into-ring.png" alt="" />
 
 ## Debugging with Claude.ai
 
@@ -100,26 +100,26 @@ Once I had all the wires connected, I decided that this would be a good opportun
   
 I started by telling it my problem, and had it help me debug.
 
-<Figure src="2024/07/DraggedImage-11.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/chatgpt-wiring-prompt.png" alt="" />
 
 Sonnet did not disappoint. It gave me not only the code for the ESP, but also a wiring diagram, which came in really handy!
 
-<Figure src="2024/07/DraggedImage-12.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/chatgpt-esp32-wiring-diagram.png" alt="" />
 
 This began a cycle of debugging, with Sonnet as my pair-programmer. I must say that the whole experience was delightful - I kept toying around with the code it supplied me with, and it kept improving it based on my feedback:
 
-<Figure src="2024/07/DraggedImage-13.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/chatgpt-wire-role-discovery.png" alt="" />
 
-<Figure src="2024/07/DraggedImage-14.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/chatgpt-webserver-code.png" alt="" />
 
   
 After some back and forth, I had an idea - I asked Sonnet to create a Web server that would let me dynamically play with the values that the ESP was outputting via PWM:
 
-<Figure src="2024/07/DraggedImage-15.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/esp32-web-control-sliders.png" alt="" />
 
 The UI was simple, but it did the trick:
 
-<Figure src="2024/07/DraggedImage-16.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/chatgpt-dual-led-discovery.png" alt="" />
 
 After playing with it and trying to understand the effect of changing each scale, I finally figured it out!  
   
@@ -127,7 +127,7 @@ The ring light is made out of two separate sets of LEDs - half are cold white, a
   
 That was it! Excited, I shared the news with Sonnet:
 
-<Figure src="2024/07/DraggedImage-17.png" alt="" />
+<Figure src="posts/hacking-a-cheap-ring-light-to-be-smart/web-ui-on-monitor.png" alt="" />
 
 The code was pretty simple:
 
@@ -202,7 +202,7 @@ void loop() {
   
 I immediately tested the new UI, and it worked perfectly!
 
-<Video src="2024/07/MOV-to-MP4-conversion.mp4" poster="2024/07/MOV-to-MP4-conversion_thumb.jpg" />
+<Video src="posts/hacking-a-cheap-ring-light-to-be-smart/ring-light-glowing-webcam.mp4" poster="posts/hacking-a-cheap-ring-light-to-be-smart/ring-light-glowing-webcam-poster.jpg" />
 
 **_Success!_**  
   
@@ -296,7 +296,7 @@ if __name__ == "__main__":
 
 I ran it, and just like magic - it all came together!
 
-<Video src="2024/07/MOV-to-MP4-conversion--1-.mp4" poster="2024/07/MOV-to-MP4-conversion--1-_thumb.jpg" />
+<Video src="posts/hacking-a-cheap-ring-light-to-be-smart/ring-light-webcam-terminal.mp4" poster="posts/hacking-a-cheap-ring-light-to-be-smart/ring-light-webcam-terminal-poster.jpg" />
 
 ## Next Steps: Refining the Solution
 

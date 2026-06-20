@@ -12,7 +12,7 @@ tags:
 author: oz
 featured: false
 excerpt: The story of how I abused the Auth0's /authorize endpoint to pass parameters to an Action
-featureImage: /content/images/2023/11/Screenshot-2023-11-14-at-17.01.20-1.png
+featureImage: /content/images/posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -23,7 +23,7 @@ Recently, I was tasked with a small utility task at my job - we wanted to get a 
 
 However, I quickly encountered a problem - due to a design decision we took a while ago, an intermediate app is responsible for the login process of our apps - meaning that when accessing our SaaS, a server-side redirection takes the user to a dedicated login application, which handles the authentication process using Auth0. I will not go into the design decisions that inspired this process, but this is what I had to work with.
 
-<Figure src="2023/11/DraggedImage.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/saas-login-app-auth0-diagram.png" alt="" />
 
 This poses a problem with passing data to Auth0 from the SaaS application. Mainly, the data I wanted to pass was what application initiated the login process - we have many apps that are all using the login intermediate, and since the `redirect_uri` parameter passed to Auth0 is the URI of the login application (not the originating app), I had to find a way to pass data from the SaaS application to Auth0 using the two primitives I have - the redirection, and the `/authorize` endpoint.
 
@@ -35,13 +35,13 @@ It was the `/authorize` endpoint that was the real pain.
 
 As the [Auth0 code flow documentation](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow) explains, `/authorize` is the endpoint that apps wishing to use Auth0 authentication services should redirect to in order to start the process.
 
-<Figure src="2023/11/DraggedImage-1.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/oauth-authorization-code-sequence.png" alt="" />
 
 Since this is the first endpoint that the Auth0 server sees, I figured that Actions should be able to get data from this request - and they do.
 
 When scouting the Auth0 docs, I found an [example](https://auth0.com/docs/manage-users/access-control/sample-use-cases-actions-with-authorization#allow-access-only-to-users-who-are-inside-the-corporate-network) that mentioned that Actions can access the initial request in an object available as `event.request`, and by looking at the sample data available in the "Try" section of the action builder, we can see that it supplies our action with `query` params!
 
-<Figure src="2023/11/DraggedImage-2.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/action-event-request-object.png" alt="" />
 
 This is great! It means that if we can pass an additional query param to the `/authorize` endpoint, we can access it from the Action and win. Unfortunately, this is not that simple.
 
@@ -76,7 +76,7 @@ This one was the easier one.
 
 After looking at the [docs for this function's params](https://auth0.github.io/auth0-react/interfaces/RedirectLoginOptions.html), we can see that one of the options that this function accepts is called `openUrl`. As per the docs, this function can be used to control the redirect!
 
-<Figure src="2023/11/DraggedImage-3.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/auth0-sdk-openurl-docs.png" alt="" />
 
 This is great - we can use this to add our query parameters! Now, instead of simply calling `loginWithRedirect`, we can pass this as an option:
 
@@ -96,7 +96,7 @@ This is great - we can use this to add our query parameters! Now, instead of sim
 
 And indeed, we can take a look at the Action's logs:
 
-<Figure src="2023/11/DraggedImage-4.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/action-query-param-log.png" alt="" />
 
 Success!
 
@@ -106,7 +106,7 @@ This one's trickier. Since `loginWithRedirect` takes the user somewhere, it make
 
 We can confirm this is the case by taking a look at the SDK docs for this function - where we will see that no similar functionality is exposed:
 
-<Figure src="2023/11/DraggedImage-5.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/get-token-silently-interface.png" alt="" />
 
 Since all the available parameters are relevant to the auth process and can affect it, we can't use those to pass data - we need to go deeper.
 
@@ -116,23 +116,23 @@ Luckily, the SDK is [open source](https://github.com/auth0/auth0-react) - we can
 
 After taking a quick look at the react SDK, we can quickly [see](https://github.com/auth0/auth0-react/blob/main/src/auth0-context.tsx#L1) that it is only a wrapper around the `auth0-spa-js` SDK:
 
-<Figure src="2023/11/DraggedImage-6.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/auth0-spa-js-imports.png" alt="" />
 
 So, let's go into this instead. I opened up the repo for the SPA SDK and [tracked down](https://github.com/auth0/auth0-spa-js/blob/main/src/Auth0Client.ts#L639) the `getTokenSilently` function, which I figured is the place to go:
 
-<Figure src="2023/11/DraggedImage-7.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/get-token-silently-method.png" alt="" />
 
 By going into this function, we can see a few interesting insights about how tokens are obtained - first, we can [use a cache](https://github.com/auth0/auth0-spa-js/blob/main/src/Auth0Client.ts#L671) to locally store tokens:
 
-<Figure src="2023/11/DraggedImage-8.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/token-cache-check-code.png" alt="" />
 
 If the cache is disabled, or no cache entry is found, we do ￼one of two things￼ - either use a refresh token or call a function named `_getTokenFromIFrame` - which sounds intriguing!
 
-<Figure src="2023/11/DraggedImage-9.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/refresh-token-or-iframe.png" alt="" />
 
 I don't know the internals of refresh tokens and how they work, but as we see we can control the flow - and force it to use the iFrame option (by passing `cacheMode: off` and `useRefreshTokens: false`). Let's [take a look](https://github.com/auth0/auth0-spa-js/blob/main/src/Auth0Client.ts#L871) at what happens in this flow:
 
-<Figure src="2023/11/DraggedImage-10.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/prepare-authorize-url-iframe.png" alt="" />
 
 This is interesting - we can see that the `/authorize` call is done via an iFrame! If we take a look into `runIframe`, [we can see](https://github.com/auth0/auth0-spa-js/blob/main/src/utils.ts#L32) how it is done:
 
@@ -258,7 +258,7 @@ const hookAutorize = (initiatingApp) => {
 
 And, after running this, it works!
 
-<Figure src="2023/11/Screenshot-2023-11-14-at-16.28.05.png" alt="" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/authorize-url-custom-param.png" alt="" />
 
 This hook can be improved by using things like a [Proxy Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), but it was good enough for now.
 
@@ -268,4 +268,4 @@ This is another excellent example of why using open-source software is so great 
 
 It was a fun afternoon rabbit hole to go into - and now, I can go back to work. Victorious!
 
-<Figure src="2023/11/Screenshot-2023-11-14-at-18.28.06.png" alt="" caption="The resulting Slack bot" />
+<Figure src="posts/passing-context-to-auth0-actions-by-abusing-the-authorize-endpoint/slack-login-alerts-success-failure.png" alt="" caption="The resulting Slack bot" />

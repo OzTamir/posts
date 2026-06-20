@@ -18,7 +18,7 @@ tags:
 author: oz
 featured: false
 excerpt: I decided to make my own Lumon Macrodata Refinement terminal.
-featureImage: /content/images/2025/02/MDR_Header2.png
+featureImage: /content/images/posts/building-the-lumon-mdr-terminal-from-severance/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -39,31 +39,31 @@ So, naturally, I decided to make my own MDR terminal.
 
 To get started, I needed to build the physical enclosure of the MDR terminal. Instead of modeling it from scratch, I used this MagSafe charger modal from [@SeoulBrother](https://makerworld.com/en/models/1068075#profileId-1057392) - with slight modifications.
 
-<Figure src="2025/02/DraggedImage-3.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/printables-severance-dock-listing.png" alt="" />
 
 While the original modal is made to fit an iPhone and therefore is not hollow, I knew that I would need a lot of storage space for the electronics - so I used a negative cube to carve out a big chunk of the case. I will not upload this modified part to avoid breaking the license on the original upload - but here is how it looks like in my slicer. YMMY though.
 
-<Figure src="2025/02/DraggedImage-1-1.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/cad-model-slicer.png" alt="" />
 
 Next, I needed to recreate the front-facing part of the enclosure. To do so, I looked up promotional images from the series - luckily for me, Apple had run a [marketing campaign](https://forums.macrumors.com/threads/apple-continues-promoting-severance-ahead-of-season-2-premiere.2447547/) for the show which included an Apple-like product page for Lemon's stuff. This gave me this great reference image:
 
-<Figure src="2025/02/DraggedImage-2-1.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/lumon-promo-terminal.png" alt="" />
 
 Based on this reference, I fired up Fusion 360 and started modeling. Usually, when modeling off a reference image, I'll start from tracing the features of the image - this time, I started with the screen dimensions and traced based on the enclosure size I already had - which is why the proportions are a bit off.
 
-<Figure src="2025/02/DraggedImage-3-1.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/fusion360-keypad-top-view.png" alt="" />
 
 Of the flip side (literally...), I modeled a holder for the combined unit of the Raspberry Pi + screen:
 
-<Figure src="2025/02/DraggedImage-4.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/cad-base-with-screen-cutout.png" alt="" />
 
 One of the biggest reasons I am a strong believer in 3D printing is just how easy this manufacturing process is, and how this enables lighting fast iterations - within the two evenings I spent on this project, I went through quite a few iterations.
 
-<Figure src="2025/02/DraggedImage-5.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/printed-parts-disassembled.png" alt="" />
 
 One of the biggest issues I had was making sure that the Pi stays in place and is not pushed back. After trying multiple approaches, I ended up with placing overhangs above the unit and adding holes for fixing it in place with nuts and bolts.
 
-<Figure src="2025/02/bolts.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/screwdriver-on-pi-board.png" alt="" />
 
 For anyone interested in building this themselves - the final modal (and the Fusion project file!) is available for download [here](https://www.printables.com/model/1192369-lumon-mdr-terminal-faceplate-severance).
 
@@ -71,7 +71,7 @@ Another issue I faced was the tight space for cables. If you've ever worked on a
 
 No. Instead, I went ahead and got an angled cable, which is apparently a thing. I was very happy to discover that this is a solved problem, because I was inches away from splicing the cable and trying to make this on my own.
 
-<Figure src="2025/02/DraggedImage-6.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/raspberry-pi-in-blue-shell.png" alt="" />
 
 As a final touch, I added a small Pi-connected camera that I got a while back, accidentally broke, and never used again.
 
@@ -83,7 +83,7 @@ Due to the small space constraints, I opted for a Raspberry Pi Zero - the small 
 
 For the screen, I pulled an old touch display I had laying around for years. This display uses SPI for communications, and it seemed like a good fit. I connected the two, and started working on the software side of things.
 
-<Figure src="2025/02/DraggedImage-7.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/pi-tft-display-wired.png" alt="" />
 
 However, after some tinkering around, It turned out that both of these decisions were ill guided. The display, which is based on a driver called `IL9488`, turned out to be very badly supported - the required drivers were removed from the Pi main kernel back in 2015. While there _are_ a couple of projects that claim to solve this by providing their own drivers, after compiling a few It was clear that this avenue will be more hassle than reward - which is why I decided to drop it and just get a [Waveshare LCD screen](https://www.waveshare.com/wiki/3.5inch_RPi_LCD_\(A\)) instead.
 
@@ -91,7 +91,7 @@ However, this screen was now using HDMI instead of SPI. While, again, it looked 
 
 At the end of the day, I think this switch was the right call - it went from being a shit show to "just work". Since time is money, I am quite happy with this trade.
 
-<Figure src="2025/02/DraggedImage-8.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/screen-boot-log-partial.png" alt="" />
 
 ## Software
 
@@ -140,7 +140,7 @@ sudo systemctl enable nginx
 
 And indeed, serving to the Pi's IP address gave me the MDR interface:
 
-<Figure src="2025/02/DraggedImage-9.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/mdr-game-ui-numbers.png" alt="" />
 
 The only missing piece was to set the FullPageOS configuration to point to the site. To edit the URL loaded on boot, all needed is to edit a simple file:
 
@@ -153,15 +153,15 @@ echo 'http://localhost/' > /boot/firmware/fullpageos.txt
 
 Once all the printed parts, the electronics, and the software were all ready, it was time to put it all together. This took some back and forth, especially around getting the electronics to fit in the case.
 
-<Figure src="2025/02/DraggedImage-10.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/pi-inside-white-shell.png" alt="" />
 
 In fact, I ended up having to break a tiny bit of the printed part to fit it in. While I fixed it in the final modal I published, I didn't want to reprint - which is why the resulting terminal is using a broken part (as you can see in the "bolt" image above).
 
 However, it was all worth it. Because the final result is stunning.
 
-<Figure src="2025/02/MDR.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/finished-terminal-side-view.png" alt="" />
 
-<Figure src="2025/02/DraggedImage-13.png" alt="" />
+<Figure src="posts/building-the-lumon-mdr-terminal-from-severance/terminal-with-keyboard-angle.png" alt="" />
 
 ## Conclusion
 

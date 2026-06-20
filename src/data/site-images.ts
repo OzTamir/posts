@@ -10,10 +10,10 @@
  *
  * `.src` is the hashed asset URL; `.width`/`.height` are the intrinsics.
  */
-import logoImg from '../assets/content/images/2024/07/android-chrome-512x512-1.png';
-import iconImg from '../assets/content/images/2024/07/android-chrome-512x512.png';
-import ogDefaultImg from '../assets/content/images/2020/07/android-chrome-512x512.png';
-import profileImg from '../assets/content/images/2024/06/profile_small-1.png';
+import logoImg from '../assets/content/images/site/logo.png';
+import iconImg from '../assets/content/images/site/icon.png';
+import ogDefaultImg from '../assets/content/images/site/og-default.png';
+import profileImg from '../assets/content/images/site/avatar.png';
 
 export const SITE_IMAGES = {
   /** Header / cover logo (also the default Twitter image). */

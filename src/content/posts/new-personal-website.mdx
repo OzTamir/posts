@@ -12,15 +12,15 @@ tags:
 author: oz
 featured: false
 excerpt: I decided it was time to improve the site that sells the product I care about the most - me.
-featureImage: /content/images/2024/06/new-3.png
-twitterImage: /content/images/2024/06/new-2.png
+featureImage: /content/images/posts/new-personal-website/featured.png
+twitterImage: /content/images/posts/new-personal-website/twitter.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
 
 This is how my personal site, over at `https://oztamir.com`, looked like - until a few minutes ago, at least:
 
-<Figure src="2024/06/old.png" alt="" />
+<Figure src="posts/new-personal-website/old-site-photo-hero.png" alt="" />
 
 I created this homepage five years ago. I liked it—it was simple, had all the links I needed it to have, and, for some reason, I thought I looked cool in the image.
 
@@ -34,7 +34,7 @@ This experience opened my eyes to the power of a well-crafted, up-to-date brand.
 
 This is how my personal website looks now:
 
-<Figure src="2024/06/new.png" alt="" />
+<Figure src="posts/new-personal-website/new-site-full-layout.png" alt="" />
 
 The new design is sleek, modern, and, most importantly, a better representation of who I am today. But beyond the visual refresh, I’ve finally sat down and implemented the features I’ve wanted to implement for years.
 
@@ -107,13 +107,13 @@ const BlogPosts = () => {
 };
 ```
 
-<Figure src="2024/06/Screenshot-2024-06-29-at-18.51.10.png" alt="" />
+<Figure src="posts/new-personal-website/new-blog-posts-section.png" alt="" />
 
 Another feature I'm happy with is the dark mode support. While styling the HTML to deal with dark mode is quite easy with Tailwind, I found myself facing a problem with the main image - The image cannot be styled with CSS to have a different background when the browser is in dark mode.
 
 To address this issue, I started by creating two images with Photoshop—one is the original image, with a bright background, and another one that has a dark background to match the background color of the site when it’s in dark mode.
 
-<Figure src="2024/06/dark_bright.png" alt="" />
+<Figure src="posts/new-personal-website/photo-dark-light-compare.png" alt="" />
 
 Once I had both images, I used [Claude.ai](claude.ai) to create a React hook ([useDarkMode.ts](https://github.com/OzTamir/Homepage/blob/main/src/hooks/useDarkMode.ts)) that will help me detect when the browser is in dark mode:
 

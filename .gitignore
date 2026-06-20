@@ -23,3 +23,6 @@ scratchpad/
 .DS_Store
 .DS_STORE
 *.log
+
+# local planning/design docs (kept on disk, not committed)
+docs/superpowers/
