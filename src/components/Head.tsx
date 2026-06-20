@@ -257,6 +257,8 @@ export default function Head(props: HeadProps) {
       {/* Point the feed-discovery link at /rss.xml directly. The /rss/ -> /rss.xml
           301 in public/_redirects keeps old feed links resolving forever. */}
       <link rel="alternate" type="application/rss+xml" title={SITE.title} href={SITE.social.rss.url} />
+      {/* Bespoke JSON feed of the latest posts (powers the homepage section). */}
+      <link rel="alternate" type="application/json" title={SITE.title} href="/posts.json" />
 
       {/* Plausible analytics. */}
       <script defer data-domain={SITE.plausibleDomain} src="https://plausible.io/js/plausible.js"></script>

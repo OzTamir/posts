@@ -8,3 +8,10 @@
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Latest-posts JSON feed (/posts.json) — read cross-origin by the homepage.
+# Public, read-only metadata, so allow any origin. Not fingerprinted, so a
+# short revalidating cache keeps it fresh after a deploy.
+/posts.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=600, stale-while-revalidate=86400
