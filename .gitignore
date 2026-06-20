@@ -31,5 +31,5 @@ scripts/rename-plan.json
 scripts/briefs.json
 scripts/names/
 
-# local planning docs (kept on disk, not committed)
-docs/superpowers/plans/
+# local planning/design docs (kept on disk, not committed)
+docs/superpowers/
