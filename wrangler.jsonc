@@ -18,11 +18,32 @@
   // which differs from the repo/package name ("oz-blog").
   "name": "posts",
   "compatibility_date": "2026-06-19",
-  // NO "main" field — purely static, no Worker script required.
-  // Assets are served directly without counting as Worker invocations.
+  // Thin content-negotiation Worker: serves the build-time Markdown sibling of
+  // a page when an agent sends `Accept: text/markdown`, otherwise passes through
+  // to the static assets (HTML stays the default). See worker/index.ts.
+  "main": "./worker/index.ts",
   "assets": {
     // Astro writes the static build output here.
     "directory": "./dist",
+    // The Worker reaches the assets (and the .md siblings) through this binding.
+    "binding": "ASSETS",
+    // Run the Worker first ONLY for HTML page routes, so it can inspect Accept.
+    // Fingerprinted/static assets (/_astro/*, /fonts/*, /content/*) and the
+    // feeds/icons keep being served directly — no Worker hop, no extra cost.
+    "run_worker_first": [
+      "/*",
+      "!/_astro/*",
+      "!/fonts/*",
+      "!/content/*",
+      "!/*.xml",
+      "!/*.json",
+      "!/*.txt",
+      "!/*.md",
+      "!/*.ico",
+      "!/*.png",
+      "!/*.svg",
+      "!/.well-known/*"
+    ],
     // Return the nearest 404.html with HTTP 404 for unmatched routes.
     // Use "single-page-application" instead if/when the site moves to SPA mode.
     "not_found_handling": "404-page",

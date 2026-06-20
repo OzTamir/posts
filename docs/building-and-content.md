@@ -1,8 +1,9 @@
 # Building the site & working with content
 
 This is **0xZ** (`posts.oztamir.com`) — a personal blog built as a fully static **Astro**
-site, deployed on **Cloudflare Workers Static Assets**. There is no server runtime: every
-page is prerendered to HTML at build time. Most of the site ships **no client JS**;
+site, deployed on **Cloudflare Workers Static Assets**. Every page is prerendered to HTML
+at build time; a thin Worker (`worker/index.ts`) handles only `Accept: text/markdown`
+content negotiation. Most of the site ships **no client JS**;
 interactivity comes from React islands hydrated with `client:*` (the feed pager,
 `Feed.tsx`), plus a couple of tiny inline `<script is:inline>` blocks (theme toggle,
 social-embed loaders).
@@ -25,7 +26,8 @@ social-embed loaders).
 ```
 .
 ├── astro.config.mjs         # static output, trailing-slash:always, Tailwind, Shiki(nord), sitemap, MDX, React
-├── wrangler.jsonc           # Cloudflare Workers Static Assets config
+├── wrangler.jsonc           # Cloudflare Workers Static Assets config (+ markdown Worker)
+├── worker/index.ts          # thin Worker: Accept: text/markdown content negotiation
 ├── tsconfig.json            # extends astro/tsconfigs/strict
 ├── .github/workflows/ci.yml # CI: astro check + build + link check + Lighthouse
 ├── .lighthouserc.json       # Lighthouse performance/a11y/SEO budget
