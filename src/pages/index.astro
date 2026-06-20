@@ -19,9 +19,11 @@ import { SITE } from '../config';
 const all = await getSortedPosts();
 const { pagePosts, nextUrl } = paginatePosts(all, 1, SITE.postsPerPage, '');
 
-// Home social images become optimized /_astro assets (absolute URLs).
-const ogImg = await socialImageUrl(SITE.url, SITE.ogImage);
-const twImg = await socialImageUrl(SITE.url, SITE.twitterImage);
+// Home social images become optimized /_astro assets (absolute URLs). The OG
+// art (og-default) has transparent corners, so keep it PNG. The Twitter card
+// shares that same image — the bare square logo looked wrong on a large card.
+const ogImg = await socialImageUrl(SITE.url, SITE.ogImage, 'png');
+const twImg = ogImg;
 
 const head = {
   type: 'home',

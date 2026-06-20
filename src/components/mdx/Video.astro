@@ -27,9 +27,11 @@ interface Props {
    * original auto-playing look while shipping as a far smaller MP4.
    */
   autoplay?: boolean;
+  /** Optional caption rendered under the video (matches <Figure>'s figcaption). */
+  caption?: string;
 }
 
-const { src, poster, title, autoplay = false } = Astro.props;
+const { src, poster, title, autoplay = false, caption } = Astro.props;
 
 const videoUrl = resolveVideo(src);
 
@@ -46,7 +48,7 @@ if (poster) {
   }
 }
 ---
-<figure class="video-card relative">
+<figure class={`video-card relative${caption ? ' has-caption' : ''}`}>
   <video
     src={videoUrl}
     poster={posterUrl}
@@ -58,4 +60,5 @@ if (poster) {
     playsinline
     aria-label={title}
     class="block h-auto w-full max-w-full"></video>
+  {caption && <figcaption set:html={caption} />}
 </figure>
