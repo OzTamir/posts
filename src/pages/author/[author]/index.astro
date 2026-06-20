@@ -2,8 +2,8 @@
 /**
  * Author archive page 1 — /author/<slug>/ (one author: "oz").
  * Ports author.hbs: an AuthorCard header (avatar, name, location, bio,
- * social links) followed by the post-feed + pager. Structure + body class
- * match live-author-oz.html ("author-template author-<slug>").
+ * social links) followed by the feed (with in-place "Load more"). Structure +
+ * body class match live-author-oz.html ("author-template author-<slug>").
  *
  * Title: "<Author> - 0xZ"; og:type=profile; description = bio;
  * twitter card = summary.
@@ -11,8 +11,7 @@
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import AuthorCard from '../../../components/AuthorCard';
-import PostFeed from '../../../components/PostFeed';
-import Pagination from '../../../components/Pagination';
+import Feed from '../../../components/Feed';
 import { getSortedPosts, filterByAuthor, paginatePosts, toPostCardData } from '../../../utils/posts';
 import { AUTHORS } from '../../../data/authors';
 import { SITE } from '../../../config';
@@ -27,7 +26,7 @@ export const getStaticPaths = (async () => {
 const { author } = Astro.props;
 const all = await getSortedPosts();
 const posts = filterByAuthor(all, author.slug);
-const { pagePosts, nextUrl } = paginatePosts(posts, 1, SITE.postsPerPage, `/author/${author.slug}`);
+const { nextUrl } = paginatePosts(posts, 1, SITE.postsPerPage, `/author/${author.slug}`);
 
 const canonical = `${SITE.url}/author/${author.slug}/`;
 const title = `${author.name} - ${SITE.title}`;
@@ -50,7 +49,5 @@ const head = {
     </main>
   </div>
 
-  <PostFeed posts={pagePosts.map(toPostCardData)} />
-
-  <Pagination nextUrl={nextUrl} />
+  <Feed client:visible posts={posts.map(toPostCardData)} perPage={SITE.postsPerPage} nextHref={nextUrl} />
 </BaseLayout>

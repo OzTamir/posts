@@ -2,7 +2,7 @@
 /**
  * Tag archive page 1 — /tag/<slug>/ (generated for every tag with ≥1 post).
  * Ports tag.hbs: a `.tag` section with the tag NAME as <h1 class="tag-name">
- * (the CSS prepends a "#"), followed by the post-feed + pager.
+ * (the CSS prepends a "#"), followed by the feed (with in-place "Load more").
  * Structure + body class match live-tag-technical.html
  * ("tag-template tag-<slug>").
  *
@@ -10,8 +10,7 @@
  */
 import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import PostFeed from '../../../components/PostFeed';
-import Pagination from '../../../components/Pagination';
+import Feed from '../../../components/Feed';
 import { getSortedPosts, filterByTag, paginatePosts, toPostCardData } from '../../../utils/posts';
 import { getAllTags } from '../../../utils/tags';
 import { SITE } from '../../../config';
@@ -24,7 +23,7 @@ export const getStaticPaths = (async () => {
 const { tag } = Astro.props;
 const all = await getSortedPosts();
 const posts = filterByTag(all, tag.slug);
-const { pagePosts, nextUrl } = paginatePosts(posts, 1, SITE.postsPerPage, `/tag/${tag.slug}`);
+const { nextUrl } = paginatePosts(posts, 1, SITE.postsPerPage, `/tag/${tag.slug}`);
 
 const canonical = `${SITE.url}/tag/${tag.slug}/`;
 const title = `${tag.name} - ${SITE.title}`;
@@ -51,7 +50,5 @@ const head = {
     </main>
   </div>
 
-  <PostFeed posts={pagePosts.map(toPostCardData)} />
-
-  <Pagination nextUrl={nextUrl} />
+  <Feed client:visible posts={posts.map(toPostCardData)} perPage={SITE.postsPerPage} nextHref={nextUrl} />
 </BaseLayout>
