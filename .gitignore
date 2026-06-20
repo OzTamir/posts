@@ -24,12 +24,5 @@ scratchpad/
 .DS_STORE
 *.log
 
-# asset-migration working files
-scripts/asset-map.json
-scripts/asset-names.json
-scripts/rename-plan.json
-scripts/briefs.json
-scripts/names/
-
 # local planning/design docs (kept on disk, not committed)
 docs/superpowers/
