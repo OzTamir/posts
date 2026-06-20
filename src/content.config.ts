@@ -7,8 +7,9 @@ import { z } from 'astro/zod';
  * The filename IS the slug (post.id === slug), so routes use post.id directly
  * to generate /<slug>/ URLs.
  *
- * Images are referenced by path (e.g. /content/images/2020/07/x.png) and served
- * verbatim from /public — no build-time transforms.
+ * Images are referenced by path (e.g. /content/images/posts/<slug>/featured.png)
+ * and resolved through Astro's asset pipeline (optimized + hashed) — see
+ * src/components/mdx/images.ts.
  */
 const posts = defineCollection({
   loader: glob({ base: './src/content/posts', pattern: '**/*.{md,mdx}' }),
@@ -23,7 +24,7 @@ const posts = defineCollection({
       .array(z.object({ slug: z.string(), name: z.string() }))
       .default([]),
     author: z.string().default('oz'),
-    // Absolute public path, e.g. "/content/images/2020/07/cover.png" (or null).
+    // Public path, e.g. "/content/images/posts/<slug>/featured.png" (or null).
     featureImage: z.string().nullable().optional(),
     featureImageAlt: z.string().nullable().optional(),
     featureImageCaption: z.string().nullable().optional(),
