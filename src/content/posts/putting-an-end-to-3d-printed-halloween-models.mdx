@@ -10,14 +10,14 @@ tags:
 author: oz
 featured: false
 excerpt: I was tired of seeing 3D Printed Halloween models - so I created a browser extension to fix it.
-featureImage: /content/images/2024/10/DALL-E-2024-10-05-17.02.23---A-wide-2D-abstract-image-for-a-blog-post-representing-a-3D-printer-creating-a-Halloween-themed-pumpkin-with-a-large-red--X--over-the-pumpkin--symboliz.png
+featureImage: /content/images/posts/putting-an-end-to-3d-printed-halloween-models/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
 
 Ah, October. It’s the time of year when every 3D printing model site goes Halloween-crazy. If you've been browsing [Printables](https://www.printables.com/model), [Thingiverse](https://www.thingiverse.com/), or [Makerworld](https://makerworld.com/en/3d-models) lately, you know what I'm talking about. Skeletons, witches, pumpkins—it’s as if every other model has been dipped in spooky sauce.
 
-<Figure src="2024/10/Screenshot-2024-10-05-at-17.14.08.png" alt="" />
+<Figure src="posts/putting-an-end-to-3d-printed-halloween-models/printables-halloween-models-grid.png" alt="" />
 
 Now, don’t get me wrong—Halloween's fun and all. But not when you’re just looking for cool new prints, and all you get is a flood of bats, cobwebs, and the same jack-o’-lantern model in 30 different styles. Since I’m not exactly in the Halloween spirit (being from a non-celebrating country and all), this overload felt more like spam.
 
@@ -35,7 +35,7 @@ Annoyed by this, I decided to take matters into my own hands and filter it all o
 
 So, how do you block out Halloween models without blocking the entire site? The solution was to create a [browser extension](https://github.com/OzTamir/FilterHalloweenModels/) that hides or removes items based on specific keywords, like "pumpkin," "witch," "ghost," "skeleton," etc.
 
-<Figure src="2024/10/icon2.png" alt="" caption={"<span style=\"white-space: pre-wrap;\">The icon ChatGPT helped me create</span>"} />
+<Figure src="posts/putting-an-end-to-3d-printed-halloween-models/extension-icon-halloween-filter.png" alt="" caption={"<span style=\"white-space: pre-wrap;\">The icon ChatGPT helped me create</span>"} />
 
 This extension works by running a background script that detects when a user is visiting one of the aforementioned 3D printing sites. For those unfamiliar, a background script in browser extensions runs in the background, waiting for specific events or actions to occur.
 
@@ -142,7 +142,7 @@ observer.observe(document.body, { childList: true, subtree: true });
 
 One of the nice parts of this extension is that the list of banned keywords is editable by the user. This way, it’s not just limited to Halloween. You can add keywords to filter out Christmas models in December or Valentine’s Day models in February.
 
-<Figure src="2024/10/image.png" alt="" />
+<Figure src="posts/putting-an-end-to-3d-printed-halloween-models/extension-settings-keyword-list.png" alt="" />
 
 The extension stores the user’s blacklist in `chrome.storage.local`, meaning it persists even after the browser is closed. This makes the extension highly adaptable for any kind of seasonal content—just add the words you want to avoid, and it’ll clean up your feed accordingly.
 
@@ -150,7 +150,7 @@ The extension stores the user’s blacklist in `chrome.storage.local`, meaning i
 
 While 3D printing model sites haven’t (yet) introduced features to filter out unwanted seasonal content, this extension fills that gap. With a dynamic, customizable keyword list, I can now look for new models to print - without being bombarded by pumpkins and witches in October.
 
-<Figure src="2024/10/Screenshot-2024-10-05-at-16.57.35.png" alt="Same page - with FHM extension enabled" caption={"<span style=\"white-space: pre-wrap;\">Same page - with FHM extension enabled</span>"} />
+<Figure src="posts/putting-an-end-to-3d-printed-halloween-models/printables-art-models-no-halloween.png" alt="Same page - with FHM extension enabled" caption={"<span style=\"white-space: pre-wrap;\">Same page - with FHM extension enabled</span>"} />
 
 The final extension is available on GitHub [here](https://github.com/OzTamir/FilterHalloweenModels/). Installation instructions are provided in the README file.
 

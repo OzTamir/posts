@@ -10,7 +10,7 @@ tags:
 author: oz
 featured: false
 excerpt: In Google Analytics you're the product, so why not use a privacy-minded analytics server?
-featureImage: /content/images/2020/07/DraggedImage-2.png
+featureImage: /content/images/posts/setting-up-analytics-with-matomo-2/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -19,7 +19,7 @@ Ever since I started getting into technology, I’ve always been obsessed with t
 
 As part of this data craze, obviously one of the first thing I would do after starting a blog is to set up **analytics**. What are analytics? Well, each time you visit a website, Some information about your device is sent by the browser to the server. What data? Here’s an example:
 
-<Figure src="2020/07/Screen-Shot-2020-07-07-at-20.06.42-2.png" alt="" />
+<Figure src="posts/setting-up-analytics-with-matomo-2/visitor-profile-detail.png" alt="" />
 
 There are three interesting pieces of data in this image (taken, as you can guess, from the analytics server for this site - this is me over there 🙂):
 
@@ -39,7 +39,7 @@ So why am I writing? Well, as I said, despite the privacy violations that are in
 
 ## Matomo
 
-<Figure src="2020/07/Screen-Shot-2020-07-07-at-21.04.42-2.png" alt="https://matomo.org/" caption="https://matomo.org/" />
+<Figure src="posts/setting-up-analytics-with-matomo-2/matomo-homepage.png" alt="https://matomo.org/" caption="https://matomo.org/" />
 
 Matomo, previously called Pwiki, is an open-source alternative with a focus on data ownership and privacy controls. I use it as a self-hosted system here on my website, since I want 100% control over the data.
 
@@ -54,7 +54,7 @@ To install, I’ve followed [this tutorial](https://www.scaleway.com/en/docs/set
 
 So let’s talk about why I like Matomo - **PRIVACY**. As I said, I have no intention of spying on my readers, and Matomo respects that. The Matomo server offers privacy tools I haven’t seen anywhere else, from [GDPR](https://en.wikipedia.org/wiki/General_Data_Protection_Regulation) Tools, regular deletion of users access data, and even full on user anonymization tools:
 
-<Figure src="2020/07/Screen-Shot-2020-07-07-at-21.16.20-2.png" alt="Yes, these are the actual settings from this site's analytics control panel 🙂" caption="Yes, these are the actual settings from this site's analytics control panel 🙂" />
+<Figure src="posts/setting-up-analytics-with-matomo-2/anonymize-tracking-settings.png" alt="Yes, these are the actual settings from this site's analytics control panel 🙂" caption="Yes, these are the actual settings from this site's analytics control panel 🙂" />
 
 Of course, There’s a debate to be had over whether or not it’s morally OK to track your users. However, this is a choice I made and I stand behind it, as it allows me to better understand what’s going on in my site. Normally, I would feel a bit bad about it - even though I know that this data isn’t used for anything other then giving me insights about my readers, I would fell bad because a random middleman (GA or others) will also read this data and use it for it’s own purposes. However, with Matomo, I couldn’t think of a better compromise that will allow me to both track what’s happening in my site while simultaneously keeping my reader’s privacy in check.
 

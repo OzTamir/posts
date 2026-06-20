@@ -20,14 +20,14 @@ tags:
 author: oz
 featured: false
 excerpt: How I used AWS Lambda To Toggle my Air Conditioner
-featureImage: /content/images/2022/10/LambdaSensibo2.png
+featureImage: /content/images/posts/toggling-sensibo-using-aws-lambda/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
 
 With the recent launch of iOS 16, a most welcomed addition to my life was introduced - the Lock Screen widgets.
 
-<Figure src="2022/10/IMG_D4CF81AB6759-1.jpeg" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/lock-screen-no-ac.jpeg" alt="" />
 
 These little widgets make access to data and actions much more accessible.
 
@@ -45,7 +45,7 @@ Alas, this wasn’t as trivial as it might seem to be. If we looked at the LIFX 
 
 [Sensibo’s API](https://sensibo.github.io/), on the other hand, does not provide such an endpoint ☹️
 
-<Figure src="2022/10/DraggedImage.png" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/sensibo-api-toggle-search.png" alt="" />
 
 Now, this is a problem that can be solved in many different ways. I could write a shortcut to query the device’s current status and trigger the correct call in response. I could use Home Assistant to run this as a Script for me. There are many solutions, and most would be more straightforward than what I’ve chosen.
 
@@ -57,7 +57,7 @@ What is Serverless computing? As Cloudflare [defines it](https://www.cloudflare.
 
 > Serverless computing is a method of providing backend services on an as-used basis. A serverless provider allows users to write and deploy code without the hassle of worrying about the underlying infrastructure. A company that gets backend services from a serverless vendor is charged based on their computation and do not have to reserve and pay for a fixed amount of bandwidth or number of servers, as the service is auto-scaling. Note that despite the name serverless, physical servers are still used but developers do not need to be aware of them.
 
-<Figure src="2022/10/DALL-E-2022-10-01-12.25.10---serverless.png" alt="serverless computing, medival era art, digital art, 4k (DALL-E 2)" caption="serverless computing, medival era art, digital art, 4k (DALL-E 2)" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/serverless-knight-art.png" alt="serverless computing, medival era art, digital art, 4k (DALL-E 2)" caption="serverless computing, medival era art, digital art, 4k (DALL-E 2)" />
 
 What does this have to do with my problem? While this might not be the perfect solution for this scenario, I was always fascinated by this technology, and I’ve long sought an opportunity to try it. And when this problem has risen, I thought - "Hey, why not?"
 
@@ -130,25 +130,25 @@ The service I choose to use for the Serverless function is AWS’s Lambda, as it
 
 After signing up, you need to create a lambda function in the [Lambda Console](https://console.aws.amazon.com/lambda):
 
-<Figure src="2022/10/Screen-Shot-2022-10-01-at-14.28.30.png" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/lambda-create-function.png" alt="" />
 
 Notice that I chose to make my function public, as I later wanted to use it straight from the Shortcut app without the need to authenticate - I am not sure this is the ideal choice, but I decided to roll with it.
 
 Next, we will add our script to the code editor, but now we will retrieve the parameters from the request:
 
-<Figure src="2022/10/DraggedImage-1.png" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/toggle-ac-lambda-code.png" alt="" />
 
 This is where I’ve hit an unexpected (or very much expected, depending on your point of view) - The HTTP package I’ve used, requests, is not natively available on Lambda.
 
-<Figure src="2022/10/3-1.jpg" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/lambda-import-error.jpg" alt="" />
 
 To use it, one must add it as another layer to the function - I’ve used [this tutorial](https://www.gcptutorials.com/article/how-to-use-requests-module-in-aws-lambda) to do so, and it worked!
 
-<Figure src="2022/10/DraggedImage-2.png" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/lambda-test-success.png" alt="" />
 
 Now, let’s expose the function using a regular HTTP request. To do so, we would need to create a trigger using AWS API Gateway:
 
-<Figure src="2022/10/Screen-Shot-2022-10-01-at-15.05.49.png" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/api-gateway-trigger-setup.png" alt="" />
 
 And finally, we would need to change our code to get the parameters as GET query string params:
 
@@ -165,7 +165,7 @@ def lambda_handler(event, context):
 
 Let’s test it! Here I am using [Postman](https://www.postman.com/) for easy debugging, but this is just a simple GET request behind the scenes:
 
-<Figure src="2022/10/2.jpg" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/postman-api-request.jpg" alt="" />
 
 It works! Making this HTTP request toggles the AC!
 
@@ -175,15 +175,15 @@ Now I can finally create the shortcut!
 
 Because this is wrapped behind an API, all I need to do in the shortcut is to trigger the URL:
 
-<Figure src="2022/10/3.jpg" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/ios-shortcut-toggle-ac.jpg" alt="" />
 
 And sure enough:
 
-<Figure src="2022/10/4.jpg" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/sensibo-ac-turned-on.jpg" alt="" />
 
 Now, I’ll add it to the Lock Screen:
 
-<Figure src="2022/10/IMG_5350.jpg" alt="" />
+<Figure src="posts/toggling-sensibo-using-aws-lambda/lock-screen-with-ac-widget.jpg" alt="" />
 
 Success!
 

@@ -12,7 +12,7 @@ tags:
 author: oz
 featured: false
 excerpt: Building a Raycast extension by reverse-engineering Wolt’s private API
-featureImage: /content/images/2025/12/Screenshot-2025-12-20-at-13.28.50.png
+featureImage: /content/images/posts/lets-create-a-wolt-extension-for-raycast/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -58,7 +58,7 @@ To kickoff the first step, I cloned the PyWolt repo and started Codex in it. I g
 
 Along the process, I also asked it to add `cURL` examples and to run these examples by itself beforehand to ensure that they work and that the document is accurate.
 
-<Figure src="2025/12/DraggedImage.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/claude-api-curl-verification.png" alt="" />
 
 The completed document is available as a gist [here](https://gist.github.com/OzTamir/7ed2b49b8628d88c086d65b0d1730c36).
 
@@ -66,11 +66,11 @@ The completed document is available as a gist [here](https://gist.github.com/OzT
 
 For the actual implementation of the spec, I choose to again deviate from Simon's article and used Cursor with `Composer 1` as the model. I had a good experience with it, its blazing fast, and since this project does not require a lot of heavy thinking, I figured I could get away with not using the SOTA thinking models in this project.
 
-<Figure src="2025/12/DraggedImage-1.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/wolt-typescript-library-summary.png" alt="" />
 
 Much to my delight, this proved to be a good decision - as Composer 1 was able to effectively one-shot this task. The only missing item was tests, but after pointing it out Composer stepped up and finished the job.
 
-<Figure src="2025/12/DraggedImage-2.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/vitest-setup-writing-tests.png" alt="" />
 
 After ensuring that everything work, I used `npm publish` to push the library to `npm`, where it is now [available to install](https://www.npmjs.com/package/wolt-api). The source code is available [here](https://github.com/OzTamir/wolt-api).
 
@@ -80,15 +80,15 @@ Once I had the library ready to go, it was time to get back to the main storylin
 
 [I read the documentation](https://developers.raycast.com/basics/create-your-first-extension) and learned that in order to create a Raycast extension, one should - how convenient - use Raycast! This is done through a command called "Create New Extension", which opens a configuration dialog.
 
-<Figure src="2025/12/DraggedImage-3.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/raycast-create-extension-form.png" alt="" />
 
 An interesting part of this process is that you can configure the commands and tools that will be made available through your extension through this creation command. While I will be adding multiple commands and tools, I elected to start with a simple one - venue search - in order to get acquainted with the SDK before diving into deep water.
 
-<Figure src="2025/12/DraggedImage-4.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/raycast-search-venues-command.png" alt="" />
 
 I let the wizard run, and was greeted with a new repository containing a template of a command that searches `npm` - exactly the same experience I wanted to replicate with my extension!
 
-<Figure src="2025/12/DraggedImage-5.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/search-venues-code-raycast-ui.png" alt="" />
 
 ## Implementing Commands and Tools
 
@@ -96,15 +96,15 @@ From that moment onwards, most of what I did was prompting an agent to wrap the 
 
 The first tool I implemented was the venue search - and it was a delight to create, as the Raycast SDK is very easy to use. It was simply about getting a response from the API and rendering it into a list view.
 
-<Figure src="2025/12/DraggedImage-6.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/wolt-api-search-venues-code.png" alt="" />
 
 Once I added the basic commands, I started adding more and more functionality - I added a way to pick a city (using the Raycast preferences APIs), I allowed users to view the menu of a venue through the extension, and more.
 
-<Figure src="2025/12/DraggedImage-7.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/wolt-venue-menu-action-code.png" alt="" />
 
 This was a really interesting experience because as I went along I found some issues in my library code. Luckily for me, I could simply use Cursor's browser tab to debug any API calls that did not work, which saved me a ton of time and effort.
 
-<Figure src="2025/12/DraggedImage-8.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/wolt-menu-browser-reverse-engineering.png" alt="" />
 
 ## Publishing the Extension
 
@@ -112,7 +112,7 @@ The last part of this process is to [publish the extension](https://developers.r
 
 Like the other steps in this process, this was also fairly easy - all it took was to run a pre-configured `npm` script that opens a pull request at the [Raycast Extensions repository](https://github.com/raycast/extensions) on Github.
 
-<Figure src="2025/12/DraggedImage-9.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/npm-run-publish-raycast-extension.png" alt="" />
 
 While this will (hopefully) be merge into the bigger repository soon, the code is also available on [my personal repository](https://github.com/OzTamir/wolt-raycast-extension).
 
@@ -120,7 +120,7 @@ While this will (hopefully) be merge into the bigger repository soon, the code i
 
 This was a fun project, and I'm very happy with the result - while not the most practical thing in the world, this was a good experience for trying out Raycasts extensions.
 
-<Figure src="2025/12/DraggedImage-10.png" alt="" />
+<Figure src="posts/lets-create-a-wolt-extension-for-raycast/raycast-wolt-pasta-search.png" alt="" />
 
 Additionally, I think that I might make a lot of use out of this API wrapper - I already have plans to play around with a Wolt MCP for automatic food ordering.
 

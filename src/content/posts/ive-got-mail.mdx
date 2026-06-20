@@ -10,7 +10,7 @@ tags:
 author: oz
 featured: false
 excerpt: I've decided to start using a custom email service - here's how, and why.
-featureImage: /content/images/2022/05/brett-jordan-LPZy4da9aRo-unsplash-1.jpg
+featureImage: /content/images/posts/ive-got-mail/featured.jpg
 ogDescription: I've decided to start using a custom email service - here's how, and why.
 twitterDescription: I've decided to start using a custom email service - here's how, and why.
 ---
@@ -33,7 +33,7 @@ First of all, I’ll start with a confession - I still don’t **own** my email.
 
 But still, owning your email isn’t just about running Dovecot on a VPS - it’s about trusting your email provider. Ever since I remember myself, I’ve been using Gmail as my email service provider - for most of my life, really. Why wouldn’t I? It’s free, it’s usable, and supported across every platform I’ve encountered.
 
-<Figure src="2022/05/justin-morgan-D2TZ-ashGzc-unsplash.jpg" alt="Source: Justin Morgan, Unsplash" caption="Source: Justin Morgan, Unsplash" />
+<Figure src="posts/ive-got-mail/gmail-inbox-laptop.jpg" alt="Source: Justin Morgan, Unsplash" caption="Source: Justin Morgan, Unsplash" />
 
 But as I’ve said - it’s weird to let a company that makes its revenue from selling your information have control over your entire email history. Think about it - your email is a goldmine for advertisers. Everything you’ve ever bought online, right there, ready to be harvested by Google. And this isn’t just a dystopian idea - it’s [a reality](https://www.wsj.com/articles/techs-dirty-secret-the-app-developers-sifting-through-your-gmail-1530544442).
 
@@ -49,7 +49,7 @@ For a domain, I’ve used [Hover](https://hover.com/bmUgIWNG) to purchase the do
 
 For the email provider, I’ve chosen [Fastmail](https://ref.fm/u28275181) as my email provider. Other than the warm recommendations from ATP’s hosts, I’ve read good stuff about them, and their privacy policy seemed reasonable - so I opened an account.
 
-<Figure src="2022/05/DraggedImage.png" alt="" />
+<Figure src="posts/ive-got-mail/fastmail-signup-custom-domain.png" alt="" />
 
 The first thing required to make the business tick is to change the domain’s MX records.
 
@@ -57,15 +57,15 @@ The first thing required to make the business tick is to change the domain’s M
 
 Luckily, the Fastmail onboarding process is very helpful, giving you a detailed tutorial on how to set up your email:
 
-<Figure src="2022/05/Screen-Shot-2022-05-10-at-20.39.26.png" alt="" />
+<Figure src="posts/ive-got-mail/fastmail-dns-setup-instructions.png" alt="" />
 
 Let’s do that! From Hover’s control panel:
 
-<Figure src="2022/05/DraggedImage-1.png" alt="" />
+<Figure src="posts/ive-got-mail/mx-records-table.png" alt="" />
 
 The next thing is to set a bunch of other records:
 
-<Figure src="2022/05/DraggedImage-2.png" alt="" />
+<Figure src="posts/ive-got-mail/spf-cname-dns-records.png" alt="" />
 
 ~Why are these required? Without these, I could register an account with any domain whose MX records point to Fastmail’s servers and get emails for this domain.  
 These records let Fastmail verify that I am in control of the domain that I wish to connect to my account. And why won’t I censor some of these so-called keys? Because they are to be set as DNS records - available for the whole world to see.~
@@ -76,33 +76,33 @@ These CNAME records are in fact a part of an authentication method called [DKIM]
 
 Now that we understand what these records are - let's apply these records:
 
-<Figure src="2022/05/DraggedImage-3.png" alt="" />
+<Figure src="posts/ive-got-mail/fastmail-check-now-button.png" alt="" />
 
 And ask Fastmail to check if we did everything right:
 
-<Figure src="2022/05/DraggedImage-4.png" alt="" />
+<Figure src="posts/ive-got-mail/fastmail-domain-verified.png" alt="" />
 
 And…Victory!
 
-<Figure src="2022/05/DraggedImage-5.png" alt="" />
+<Figure src="posts/ive-got-mail/first-test-email-received.png" alt="" />
 
 And after trying - it works!
 
-<Figure src="2022/05/DraggedImage-6.png" alt="" />
+<Figure src="posts/ive-got-mail/fastmail-import-providers.png" alt="" />
 
 ## What now?
 
 Another one of the features I’ve liked about Fastmail is the ability to import all of your emails over from other services:
 
-<Figure src="2022/05/Screen-Shot-2022-05-10-at-20.59.02.png" alt="" />
+<Figure src="posts/ive-got-mail/import-gmail-options.png" alt="" />
 
 And not only would they import historical information, but they’ll also set up forwarding for future emails!
 
-<Figure src="2022/05/DraggedImage-7.png" alt="" />
+<Figure src="posts/ive-got-mail/gmail-import-completed.png" alt="" />
 
 And the import process is blazing fast - I thought it would take a couple of days, but it was done within half an hour (or even less!)
 
-<Figure src="2022/05/DraggedImage-8.png" alt="" />
+<Figure src="posts/ive-got-mail/gmail-import-progress.png" alt="" />
 
 So what now?
 
@@ -114,7 +114,7 @@ Let’s see if I can keep it up.
 
 It’s scary to change your primary email address. As I’ve said - your email address is the key to your digital life. Changing it requires a leap of faith - the faith that everything will continue to function. But on the other hand, you must remember - the more control you have over it, the more control you have over your digital life and the less power you hand over to other companies.
 
-<Figure src="2022/05/onlineprinters-oIpJ8koLx_s-unsplash.jpg" alt="Source: Unsplash" caption="Source: Unsplash" />
+<Figure src="posts/ive-got-mail/orange-at-symbol-sign.jpg" alt="Source: Unsplash" caption="Source: Unsplash" />
 
 As it is always, control comes at the cost of comfort. Running your own server will give you total control, but you will lose the ease of a managed service. It’s a tradeoff - and while going to the extreme on the control front is probably not what most people want or need - neither is the total lack of one, which is what most of us do when we register our Gmail account.
 

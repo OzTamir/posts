@@ -10,7 +10,7 @@ tags:
 author: oz
 featured: false
 excerpt: "Tracking Home Assistant Data in Exist.io: Custom Integrations Made Easy"
-featureImage: /content/images/2024/11/ex-ha.png
+featureImage: /content/images/posts/syncing-home-assistant-states-to-exist_io/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -60,11 +60,11 @@ In this example, we’ll define `daily_print_time` as a custom attribute to log 
 
 To access Exist’s API, we need to set up an [OAuth2](https://developer.exist.io/reference/authentication/oauth2/#overview) client app. This involves [creating an app](https://exist.io/account/apps/) on Exist.io, and using a token to authenticate Home Assistant with Exist.io:
 
-<Figure src="2024/11/DraggedImage.png" alt="" />
+<Figure src="posts/syncing-home-assistant-states-to-exist_io/exist-oauth-app-setup.png" alt="" />
 
 Once the app is created, you will get an access token that will be used to authenticate the API calls done by Home Assistant.
 
-<Figure src="2024/11/DraggedImage-1.png" alt="" />
+<Figure src="posts/syncing-home-assistant-states-to-exist_io/exist-developer-token.png" alt="" />
 
 ## Making Home Assistant Talk to Exist.io
 
@@ -169,7 +169,7 @@ This is the one-time setup that registers our attribute—daily print time—in 
 2.  Under Action, select `rest_command.create_exist_attribute`.
 3.  Hit Perform Action to execute the command, creating the attribute in Exist.io.
 
-<Figure src="2024/11/DraggedImage-2.png" alt="" />
+<Figure src="posts/syncing-home-assistant-states-to-exist_io/ha-rest-command-create-attribute.png" alt="" />
 
 Based on the response, you can tell if the attribute was successfully created, Once it is, we can go ahead and create an automation to log 3D printing time in Exist.
 
@@ -205,13 +205,13 @@ mode: single
 
 To make things debugable, we will also be logging the response into the logbook service.
 
-<Figure src="2024/11/DraggedImage-3.png" alt="" />
+<Figure src="posts/syncing-home-assistant-states-to-exist_io/ha-automation-log-exist-sync.png" alt="" />
 
 Once this automation is active, you’ll start seeing your daily 3D printing time accumulate in Exist.io.
 
 With each print session, Home Assistant updates the `daily_print_time` attribute, providing you with a running total that you can view alongside other life metrics.
 
-<Figure src="2024/11/DraggedImage-4.png" alt="" />
+<Figure src="posts/syncing-home-assistant-states-to-exist_io/exist-daily-print-time-card.png" alt="" />
 
 # Conclusion
 

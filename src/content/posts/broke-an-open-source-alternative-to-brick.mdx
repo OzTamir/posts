@@ -16,7 +16,7 @@ tags:
 author: oz
 featured: false
 excerpt: "How I used AI to write Broke: an NFC tag that blocks distractions, inspired by Brick."
-featureImage: /content/images/2024/08/Brick-1.jpeg
+featureImage: /content/images/posts/broke-an-open-source-alternative-to-brick/featured.jpeg
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -36,7 +36,7 @@ To get started, I ordered some affordable NFC tags from AliExpress. I initially 
 
 I also spent some time creating a 3D Printed case, to allow for a sleek experience. After a few iterations, I built a case that had magnet holes (to allow leaving it on the fridge) and a keychain hole, to allow carrying it around.
 
-<Figure src="2024/08/IMG_3457.jpeg" alt="It took multiple tries, but I'm really happy with the end product" caption={"<span style=\"white-space: pre-wrap;\">It took multiple tries, but I'm really happy with the end product</span>"} />
+<Figure src="posts/broke-an-open-source-alternative-to-brick/3d-printed-case-prototypes.jpeg" alt="It took multiple tries, but I'm really happy with the end product" caption={"<span style=\"white-space: pre-wrap;\">It took multiple tries, but I'm really happy with the end product</span>"} />
 
 ## Writing the iOS app, with a little help
 
@@ -46,25 +46,25 @@ However, I did had a good idea of how I wanted the app to work. I knew that it w
 
 Armed with this outline, I embarked on a quest that I suspect would be my first foray into the future of programming, and how it's gonna look like for all code projects in the not so distant future - pair programming with AI. I used Claude, my LLM of choice, to start building the user interface.
 
-<Figure src="2024/08/DraggedImage.png" alt="" />
+<Figure src="posts/broke-an-open-source-alternative-to-brick/claude-writing-swiftui-code.png" alt="" />
 
 Working with Claude was great - I was quickly able to put a basic PoC that allowed me to demonstrate that the app worked.
 
-<Figure src="2024/08/poc.png" alt="" caption={"<span style=\"white-space: pre-wrap;\">The Proof of concept design</span>"} />
+<Figure src="posts/broke-an-open-source-alternative-to-brick/broke-app-poc-screens.png" alt="" caption={"<span style=\"white-space: pre-wrap;\">The Proof of concept design</span>"} />
 
 But the real game changer was when I followed a recommendation from a fellow developer on Twitter - which prompted me to start using [Cursor](https://www.cursor.com/) - a VS Code-based AI IDE allowed me to "talk" with my codebase (using embeddings), which made understanding and navigating the code so much easier. With Cursor, I was able to quickly transform my basic proof of concept into a functional, polished app—something that actually feels like it could belong on the App Store.
 
-<Figure src="2024/08/Screenshot-2024-08-23-at-10.46.36.png" alt="" />
+<Figure src="posts/broke-an-open-source-alternative-to-brick/xcode-broke-app-with-claude.png" alt="" />
 
 ## Final Touches
 
 Once I was done with the core functionality, I took some time to design something that would look presentable. I never designed for iOS before, but after playing in Figma for a while I got to result I was OK with. If this was a full time product, I'd probably give it some more refinement - but for a pet-project, this was good enough.
 
-<Figure src="2024/08/DraggedImage.492185d805134a97b29739c7e60516c9.png" alt="" />
+<Figure src="posts/broke-an-open-source-alternative-to-brick/broke-icon-color-variants.png" alt="" />
 
 This is how the final experience looks like:
 
-<Video src="2024/08/Broke.mp4" poster="2024/08/Screenshot-2024-08-24-at-19.54.16.png" />
+<Video src="posts/broke-an-open-source-alternative-to-brick/iphone-nfc-scan-ready.mp4" poster="posts/broke-an-open-source-alternative-to-brick/iphone-nfc-scan-ready-poster.png" />
 
 ## Sharing Broke
 

@@ -12,7 +12,7 @@ tags:
 author: oz
 featured: false
 excerpt: A look at Google's FLoC - its proposed replacement for third-party cookies
-featureImage: /content/images/2021/04/chrome-floc.png
+featureImage: /content/images/posts/go-floc-yourself/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -27,13 +27,13 @@ But this market is currently undergoing a major shift, with the deprecation of o
 
 While tracking users and selling their data (or rather, their _metadata_ - habits, interests and so on) is the way many of the key players in the internet landscape make their money, I think that the most prominent examples of this behavior are Google and Facebook. Let’s take a look at what Facebook has to offer for any potential product maker who wants to get his product to the hands of willing customers:
 
-<Figure src="2021/04/saved-audience-example.png" alt="Image by SproutSocial" caption="Image by SproutSocial" />
+<Figure src="posts/go-floc-yourself/facebook-saved-audience-form.png" alt="Image by SproutSocial" caption="Image by SproutSocial" />
 
 Seems pretty reasonable, right? Allowing advertisers to target people from specific countries isn’t very privacy violating, and the same goes for age information - especially given the fact that this is all information that Facebook already have by choice - most users will let Facebook have these data points without a second thought, and it’s not any kind of tracking.
 
 Ok. What about these options?
 
-<Figure src="2021/04/tracking-events-example.png" alt="Image by SproutSocial" caption="Image by SproutSocial" />
+<Figure src="posts/go-floc-yourself/facebook-custom-audience-pixel.png" alt="Image by SproutSocial" caption="Image by SproutSocial" />
 
 But wait - how can Facebook know which websites the current user has been visiting? Unlike the previous example, this information shouldn’t be in Facebook’s hands!
 
@@ -41,11 +41,11 @@ To understand how this information reaches the likes of Facebook, let’s take a
 
 ## Cookies
 
-<Figure src="2021/04/8637635412_e3d55bcb10_b.jpg" alt="Image by Jana Reifegerste" caption="Image by Jana Reifegerste" />
+<Figure src="posts/go-floc-yourself/cookie-monster-puppet.jpg" alt="Image by Jana Reifegerste" caption="Image by Jana Reifegerste" />
 
 The current method most websites use to track users across the vest regions of the internet are cutely named “cookies”. The idea is simple - whenever you visit a website, you issue an HTTP request for the server’s content. In its response, alongside the actual content, the sever can set a header called `Set-Cookie` which asks the client’s browser to save a tiny, unique piece of information and associate it with the current website (more on that last sentence in a bit):
 
-<Figure src="2021/04/http-cookies.png" alt="Image by Network Encyclopedia" caption="Image by Network Encyclopedia" />
+<Figure src="posts/go-floc-yourself/http-cookie-request-diagram.png" alt="Image by Network Encyclopedia" caption="Image by Network Encyclopedia" />
 
 Once set, the client will use this cookie on every subsequent request to the server, allowing the server to retain the session’s state over the otherwise stateless HTTP protocol.
 
@@ -83,7 +83,7 @@ By offering an alternative, of course.
 
 In March, [Google have announced](https://blog.google/products/chrome/privacy-sustainability-and-the-importance-of-and/) that they will start “an online trial” (which is basically a washed-up term for A/B testing against Google Chrome’s user base) for a new technology called “Federated Learning of Cohorts”, or FLoC, for short.
 
-<Figure src="2021/04/GA543wiVTwpbwp6Zmw0H.jpg" alt="Image taken from Google's FLoC blogpost" caption="Image taken from Google's FLoC blogpost" />
+<Figure src="posts/go-floc-yourself/bird-flock-at-sunset.jpg" alt="Image taken from Google's FLoC blogpost" caption="Image taken from Google's FLoC blogpost" />
 
 The idea behind this technology is quite simple - instead of tracking specific users with a unique, per user identifier, Google aims to divide users into cohorts (another way of saying groups). These cohorts are used to group users with similar interests and browsing habits. Adtech companies (we will later define this term) can then use this information - the knowledge that a user of their site is a member of a given cohort to - to match users with products that are known to be liked by other members of the user’s cohort.
 
@@ -101,7 +101,7 @@ In order to understand how FLoC works, we will first need to understand a couple
 -   **Publisher** - A site that gets payed to display ads for advertisers.
 -   **Adtech** - A company that makes its money by getting linking customers that are interested in a specific advertiser’s products with publishers where these customers typically browse.
 
-<Figure src="2021/04/wnJ1fSECf5STngywgE7V.png" alt="Image by Google" caption="Image by Google" />
+<Figure src="posts/go-floc-yourself/floc-pipeline-diagram.png" alt="Image by Google" caption="Image by Google" />
 
 Let’s look at the example scenario from Google’s doc:
 
@@ -148,7 +148,7 @@ The idea is that this space is than segmented into a couple of thousands of regi
 
 > Each segment represents a cluster of thousands of similar browsing histories. These groupings aren't based on knowing any actual browsing histories; they're simply based on picking random centers in "cohort space" or cutting up the space with random lines.
 
-<Figure src="2021/04/32k5jByqLrgwSMwb9mqo.png" alt="" />
+<Figure src="posts/go-floc-yourself/cohort-map-numbered.png" alt="" />
 
 While Google has yet to formally announce which algorithm they will use, a white paper was [published](https://github.com/google/ads-privacy/raw/master/proposals/FLoC/FLOC-Whitepaper-Google.pdf) which stated that their current algorithm of choice is an algorithm called [SimHash](http://benwhitmore.altervista.org/simhash-and-solving-the-hamming-distance-problem-explained/):
 

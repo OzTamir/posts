@@ -12,7 +12,7 @@ tags:
 author: oz
 featured: false
 excerpt: Why would an ARP entry conatin a netmask?
-featureImage: /content/images/2021/08/Screen-Shot-2021-08-19-at-23.42.24-1.png
+featureImage: /content/images/posts/the-curious-case-of-arp-netmask/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -25,7 +25,7 @@ Searching Google for code examples that parse the ARP table on Linux systems lea
 
 While writing the code, I noticed something strange in this file - something that felt like it doesn't belong here. Can you spot it?
 
-<Figure src="2021/08/Screen-Shot-2021-08-19-at-23.20.40.png" alt="Hint: Does one of the fields looks out of place?" caption="Hint: Does one of the fields looks out of place?" />
+<Figure src="posts/the-curious-case-of-arp-netmask/proc-net-arp-table.png" alt="Hint: Does one of the fields looks out of place?" caption="Hint: Does one of the fields looks out of place?" />
 
 ## ARP Protocol
 
@@ -35,7 +35,7 @@ As anyone who ever took even the most basic networking class can tell you, ARP (
 
 ARP is a very simple protocol. In the ARP protocol, each message contains either a single request or a single response - no more, no less. Whenever a host needs to know what is the MAC address that an IP on the network resolves to, it sends an ARP request - “who-has”, which is exactly what the host is asking - “who has this IP address?”. This message is broadcasted across the LAN until someone who posses the queried IP address responds with an “is-at” reply, which contains their MAC address.
 
-<Figure src="2021/08/6a4a49_a2483e8dd4004c12b1105b855054cddd-mv2.png" alt="Image by www.hackers-arise.com" caption="Image by www.hackers-arise.com" />
+<Figure src="posts/the-curious-case-of-arp-netmask/arp-request-reply-diagram.png" alt="Image by www.hackers-arise.com" caption="Image by www.hackers-arise.com" />
 
 This protocol is of course vulnerable to an attack known as [“ARP Spoofing”](https://en.wikipedia.org/wiki/ARP_spoofing), wherein a malicious host responds to the “who-has” request, thus impersonating the target computer and intercepting packets meant to be sent to the target computer. But this is not the focal point of this post, so let’s ignore that.
 
@@ -53,13 +53,13 @@ I figured that the best place to learn more about this field would be at the man
 
 Scrolling to the part about `/proc/net/arp`:
 
-<Figure src="2021/08/Screen-Shot-2021-08-19-at-23.40.04.png" alt="" />
+<Figure src="posts/the-curious-case-of-arp-netmask/proc-arp-man-page.png" alt="" />
 
 As you can see, I saw no mention of the mysterious Mask field.
 
 But it did lead me on to the headers of the relevant kernel headers (those that define ARP structs), where I found this comment:
 
-<Figure src="2021/08/Screen-Shot-2021-08-19-at-23.42.24.png" alt="/usr/include/linux/if_arp.h" caption="/usr/include/linux/if_arp.h" />
+<Figure src="posts/the-curious-case-of-arp-netmask/arpreq-struct-source.png" alt="/usr/include/linux/if_arp.h" caption="/usr/include/linux/if_arp.h" />
 
 ## Proxy ARP
 
@@ -69,9 +69,9 @@ Apparently, Proxy ARP (Defined in [RFC 925](https://datatracker.ietf.org/doc/htm
 
 I’ve found this example, taken from [here](https://ipcisco.com/lesson/proxy-arp-hcna/), to explain where Proxy ARP is needed:
 
-<Figure src="2021/08/how-proxy-arp-works-2.jpg" alt="" />
+<Figure src="posts/the-curious-case-of-arp-netmask/proxy-arp-broadcast-request.jpg" alt="" />
 
-<Figure src="2021/08/how-proxy-arp-works-3.jpg" alt="" />
+<Figure src="posts/the-curious-case-of-arp-netmask/proxy-arp-router-reply.jpg" alt="" />
 
 After reading a bit about this extension to the ARP protocol, I immediately understood why the mask field is there and what is it used for - the idea is to allow network applianced to answer ARP requests with a net mask that states what part of the network this appliance can proxy L2 traffic for.
 

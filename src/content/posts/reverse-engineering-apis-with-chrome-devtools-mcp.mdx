@@ -16,7 +16,7 @@ tags:
 author: oz
 featured: false
 excerpt: Why should I go through network requests when an agent can do it for me?
-featureImage: /content/images/2025/09/endpoints-1.png
+featureImage: /content/images/posts/reverse-engineering-apis-with-chrome-devtools-mcp/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -39,7 +39,7 @@ The Chrome team [had just announced](https://developer.chrome.com/blog/chrome-de
 
 Reading through their announcement, one feature immediately caught my attention: the MCP provided tools for inspecting network requests.
 
-<Figure src="2025/09/network_tools.png" alt="" />
+<Figure src="posts/reverse-engineering-apis-with-chrome-devtools-mcp/devtools-mcp-network-tools.png" alt="" />
 
 Could this be exactly what I needed? Instead of manually digging through requests in DevTools, could I just point an agent at the site and ask it to figure out the meme website’s API for me?
 
@@ -71,7 +71,7 @@ In reality, it failed almost immediately.
 
 The problem was that the website was sending too many requests, and when the agent used the MCP tool to get information, it would immediately hit it's token limits.
 
-<Figure src="2025/09/token_limit.png" alt="" />
+<Figure src="posts/reverse-engineering-apis-with-chrome-devtools-mcp/token-limit-error.png" alt="" />
 
 The experiment had technically worked — the MCP was capturing requests just fine — but there was simply too much noise for the LLM to handle.
 
@@ -87,7 +87,7 @@ The main issue was that the `list_network_requests` tool returned everything in 
 
 Half an hour later, I had a [pull request open](https://github.com/ChromeDevTools/chrome-devtools-mcp/pull/145) - and not long after, it was merged.
 
-<Figure src="2025/09/pagination-merged.png" alt="" />
+<Figure src="posts/reverse-engineering-apis-with-chrome-devtools-mcp/pagination-pr-merged.png" alt="" />
 
 For me, this was yet another cool demonstration of how open source tools are the best - if something ain't working for you, you can simply jump to the trenches and fix it for you and for everyone.
 
@@ -101,15 +101,15 @@ IT CRUSHED IT.
 
 First, it identified the endpoints behind the meme feed:
 
-<Figure src="2025/09/endpoints.png" alt="" />
+<Figure src="posts/reverse-engineering-apis-with-chrome-devtools-mcp/agent-network-inspection.png" alt="" />
 
 Then, it mapped out how the site organized categories, how the JSON payloads looked, and where the images were actually hosted:
 
-<Figure src="2025/09/network_requests.png" alt="" />
+<Figure src="posts/reverse-engineering-apis-with-chrome-devtools-mcp/discovered-api-endpoints.png" alt="" />
 
 And once it had a clear enough picture, it went ahead and started generating the Python API client:
 
-<Figure src="2025/09/api_client.png" alt="" />
+<Figure src="posts/reverse-engineering-apis-with-chrome-devtools-mcp/generated-python-client.png" alt="" />
 
 Boom. Nearly 300 lines of clean, working code. A fully reverse-engineered client for an undocumented API, generated in one shot.
 

@@ -16,7 +16,7 @@ tags:
 author: oz
 featured: false
 excerpt: The same model sits behind Cursor, Claude Code, and most other agents. What makes them different isn't the brain - it's the harness. So let's write one.
-featureImage: /content/images/2026/06/harnesses-101-opengraph-1200x630.png
+featureImage: /content/images/posts/lets-write-a-harness-or-harness-engineering-101/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -45,7 +45,7 @@ Before any code, one piece of vocabulary - and it's worth borrowing the real-wor
 
 A harness, the original kind, is the rig of straps you put on a horse. It doesn't make the animal any stronger - it gives you reins, so all that power goes where you want it. Without it you've got a very capable animal and no way to steer.
 
-<Figure src="2026/06/horse-harness.jpg" alt="" />
+<Figure src="posts/lets-write-a-harness-or-harness-engineering-101/saddled-horse-arena.jpg" alt="" />
 
 An agentic harness is the same idea, pointed at a model instead of a horse.
 
@@ -154,7 +154,7 @@ while True:
 
 There's the "memory." It's a list. Nobody's keeping your conversation in some clever store in the server - the harness hangs onto every message and ships the entire transcript back, top to bottom, on every call. The model re-reads the whole thing each time and picks up where it left off.
 
-<Figure src="2026/06/context-window.png" alt="" />
+<Figure src="posts/lets-write-a-harness-or-harness-engineering-101/context-window-turns-diagram.png" alt="" />
 
 It's also why a long session gets slow and pricey, and why the agent eventually "forgets" something you said an hour ago. It's all riding in that one list, and the list has a ceiling. More on that later.
 
@@ -164,7 +164,7 @@ For now: the agent has a job and a memory. It still can't touch a single file.
 
 Here's the thing that took me longest to internalize: the model genuinely cannot do anything except produce text. It’s like a brain in a jar - it can think, but without the harness it cannot see or interact with the real world.
 
-<Figure src="2026/06/brain_jar_no_background-copy.png" alt="" />
+<Figure src="posts/lets-write-a-harness-or-harness-engineering-101/brain-in-jar-robot.png" alt="" />
 
 Which means tools aren't a feature we're bolting on for power. They're the model's only window onto the world. No tools, no eyes.
 
@@ -302,7 +302,7 @@ Read it slowly, because that inner loop is the entire game
 4.  The model sees the result, decides what's next, and around it goes.
 5.  Read, run, observe, repeat, until it's got what it needs and finally just talks to you.
 
-<Figure src="2026/06/DraggedImage.png" alt="" />
+<Figure src="posts/lets-write-a-harness-or-harness-engineering-101/agent-loop-sequence-diagram.png" alt="" />
 
 That's a complete coding agent. After we added some more tools (`ls` tool, `write_file` tool, and some other basic ones) we can try to give it the bug again:
 
@@ -414,7 +414,7 @@ _Probably safe._ On a question about whether it's safe to change shared behavior
 
 And it's not that the model got dumber. Look at what we did to it. Every one of those eighteen files got read into the same conversation, and that conversation is the only thing the model sees on each turn. By the time it reached `feeds.py`, the window looked like this:
 
-<Figure src="2026/06/DraggedImage-1.png" alt="" />
+<Figure src="posts/lets-write-a-harness-or-harness-engineering-101/parent-context-token-breakdown.png" alt="" />
 
 Thousands of tokens for file contents, and somewhere in the middle of it the actual question - _does anyone rely on the double hyphen?_ - got buried under a landslide of imports and helper functions it didn't need. The thing it was supposed to be reasoning about was a needle in a haystack the model built for itself.
 
@@ -587,13 +587,13 @@ Here's what that buys, concretely. Same request, two harnesses.
 
 A generic agent, pointed at the same tools over MCP:
 
-<Figure src="2026/06/DraggedImage-2.png" alt="" />
+<Figure src="posts/lets-write-a-harness-or-harness-engineering-101/acme-call-prep-failing.png" alt="" />
 
 Six round trips, ~18k tokens, about two minutes, and it dead-ends on an auth prompt the AE can't clear. So they close the tab and do it by hand. That's the setup wall winning.
 
 `gtm-os`, same prompt:
 
-<Figure src="2026/06/DraggedImage-3.png" alt="" />
+<Figure src="posts/lets-write-a-harness-or-harness-engineering-101/acme-call-prep-succeeding.png" alt="" />
 
 One tool call, ~3k tokens, about six seconds, done. Nothing about the model changed between those two runs. It's the same brain. Every bit of that difference - the instant recognition, the silent auth, the answer instead of the shrug - lives in the harness.
 

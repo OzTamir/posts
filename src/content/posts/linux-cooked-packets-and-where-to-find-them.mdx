@@ -10,7 +10,7 @@ tags:
 author: oz
 featured: false
 excerpt: How to capture packets from every possible interface and maintain your sanity
-featureImage: /content/images/2020/07/Screen-Shot-2020-07-29-at-20.26.54.png
+featureImage: /content/images/posts/linux-cooked-packets-and-where-to-find-them/featured.png
 metaDescription: How to capture packets from every possible interface and maintain your sanity
 ---
 
@@ -36,15 +36,15 @@ Because every interface might provide a different link-layer header, libcap’s 
 
 So let’s take a look at this protocol, described in full details [here](https://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html).
 
-<Figure src="2020/07/image-3.png" alt="" />
+<Figure src="posts/linux-cooked-packets-and-where-to-find-them/sll-packet-type-description.png" alt="" />
 
 In order to create a PCAP file containing packets with SLL headers, all you have to do is, as mentioned, to start capturing packets on the `any` interface. For example, here’s a tcpdump command that will capture every packet that has a Layer-4 payload directed at port 4590:
 
-<Figure src="2020/07/Screen-Shot-2020-07-29-at-19.16.23-1.png" alt="" caption={"<code>tcpdump -i any -w sniff.pcap port 4590</code>"} />
+<Figure src="posts/linux-cooked-packets-and-where-to-find-them/tcpdump-any-interface-capture.png" alt="" caption={"<code>tcpdump -i any -w sniff.pcap port 4590</code>"} />
 
 Now, let’s take a look at the resulting PCAP file using our favourite packet analyser, Wireshark:
 
-<Figure src="2020/07/DraggedImage-8.png" alt="" />
+<Figure src="posts/linux-cooked-packets-and-where-to-find-them/wireshark-linux-cooked-frame.png" alt="" />
 
 As we can see, despite the packet being sent as a normal, Ethernet based packet, `any` has transformed the header into an SLL header. This SLL header, detailed at the link above, tries to answer the questions most link layer headers answer - Who sent this packet, to whom, and from where (again, for more information - [RTFM ❤️](https://www.tcpdump.org/linktypes/LINKTYPE_LINUX_SLL.html)).
 

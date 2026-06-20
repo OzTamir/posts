@@ -14,7 +14,7 @@ tags:
 author: oz
 featured: false
 excerpt: I kept forgetting to turn on the heater before I shower—until I decided to automate it once and for all.
-featureImage: /content/images/2025/02/shower-1.png
+featureImage: /content/images/posts/beating-the-cold-room-syndrome-with-zigbee/featured.png
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
@@ -39,7 +39,7 @@ Another option I briefly considered using a motion sensor, but that would trigge
 
 I wanted something smarter; something that knows I’m showering without creeping on me. Luckily for me, I had the perfect device for this use case laying around.
 
-<Figure src="2025/02/humidity.png" alt="" />
+<Figure src="posts/beating-the-cold-room-syndrome-with-zigbee/zigbee-sensor-wall-mounted.png" alt="" />
 
 ## Tracking showers using Zigbee Humidity sensor
 
@@ -47,17 +47,17 @@ I originally bought the [SONOFF's Humidity and Temperature Sensor](https://sonof
 
 But now, I finally found a usage for it - I can use it to try and detect sharp changes in the humidity of the bathroom to detect when one of us is in the shower.
 
-<Figure src="2025/02/DraggedImage.png" alt="" />
+<Figure src="posts/beating-the-cold-room-syndrome-with-zigbee/sonoff-device-info-zigbee2mqtt.png" alt="" />
 
 After setting up the sensor and pairing it with Home Assistant (via [ZHA](https://www.home-assistant.io/integrations/zha/)), we can take a look at the humidity history:
 
-<Figure src="2025/02/DraggedImage-1.png" alt="" />
+<Figure src="posts/beating-the-cold-room-syndrome-with-zigbee/humidity-two-day-graph.png" alt="" />
 
 It's not hard to see that there are obvious upticks in the graph, and these indeed map directly to our recent showers. Looking over the last month of data, the pattern was very clear—whenever someone showered, the humidity spiked past 85%.
 
 It was a clean, repeatable cutoff, which meant that the solution was very easy - all I need is to set my automation to trigger when it crossed that threshold.
 
-<Figure src="2025/02/DraggedImage-2.png" alt="" />
+<Figure src="posts/beating-the-cold-room-syndrome-with-zigbee/humidity-eleven-day-graph.png" alt="" />
 
 I should note that I've played around with derived sensors to try and see if we can optimize this flow (I assumed that by measuring the rate of change we might be able to detect a shower faster, thus giving us more time to heat up the room). However, these did very little to help, which is why I decided to stick with the simple solution.
 
