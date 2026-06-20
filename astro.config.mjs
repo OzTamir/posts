@@ -4,7 +4,6 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
-import pruneUnusedJs from './src/integrations/prune-unused-js.mjs';
 import stripImageMetadata from './src/integrations/strip-image-metadata.mjs';
 
 // Fully static output served from Cloudflare Workers Static Assets.
@@ -25,8 +24,9 @@ export default defineConfig({
     layout: 'constrained',
   },
   // UI is authored in React (.tsx) and rendered to static HTML at build time.
-  // Components ship zero client JS (no `client:*` hydration anywhere); the
-  // theme toggle + social-embed loaders are tiny inline scripts.
+  // Most of it ships no client JS; the interactive feed pager hydrates as a
+  // `client:visible` island (Feed.tsx), and the theme toggle + social-embed
+  // loaders are tiny inline scripts.
   integrations: [
     react(),
     // MDX so posts can use the semantic <Figure>/<Video>/<Tweet>/<Instagram>
@@ -36,9 +36,6 @@ export default defineConfig({
     // the hand-rolled sitemap*.xml.ts endpoints. It inherits the site's
     // trailingSlash:"always" from the top-level config, so URLs stay canonical.
     sitemap(),
-    // Drop the orphaned React client-runtime chunk: nothing hydrates, so it's
-    // never referenced and never loads — this keeps the deploy free of dead JS.
-    pruneUnusedJs(),
     // Strip EXIF/XMP/IPTC from emitted raster images (privacy backstop; the
     // committed sources are also scrubbed with exiftool).
     stripImageMetadata(),

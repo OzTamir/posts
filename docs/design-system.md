@@ -97,9 +97,10 @@ Dark/light values live in `global.css` under `.theme-dark:root` and `.theme-ligh
 | `SiteHeader` | `src/components/SiteHeader.tsx` | — | Header with logo; renders `SITE.navigation` items if any |
 | `SiteFooter` | `src/components/SiteFooter.tsx` | `{ isPost? }` | Social links (Twitter/LinkedIn/RSS from `SITE.social`) + theme toggle |
 | `Cover` | `src/components/Cover.tsx` | — | Home hero (site icon + `# cat /dev/brain >> posts`) |
-| `PostCard` | `src/components/PostCard.tsx` | `{ post, readingTime }` | Feed row: title, excerpt, date, reading time |
-| `PostFeed` | `src/components/PostFeed.tsx` | `{ posts: FeedItem[] }` | Shared feed grid used by all paginated routes |
-| `Pagination` | `src/components/Pagination.tsx` | `{ nextUrl? }` | "Load more" link to the next page |
+| `PostCard` | `src/components/PostCard.tsx` | `{ data: PostCardData }` | Feed row: title, excerpt, date, reading time (flat, serializable shape) |
+| `PostFeed` | `src/components/PostFeed.tsx` | `{ posts: PostCardData[] }` | Shared `.post-feed` grid of `PostCard`s |
+| `Feed` | `src/components/Feed.tsx` | `{ posts, perPage, nextHref? }` | Client island (`client:visible`): renders the feed and reveals more posts in place on "Load more" |
+| `Pagination` | `src/components/Pagination.tsx` | `{ nextUrl? }` | Plain "Load more" link (the no-JS `/page/N/` fallback) |
 | `AuthorCard` | `src/components/AuthorCard.tsx` | `{ author }` | Author archive header (avatar, name, bio, social links) |
 | `RelatedPosts` | `src/components/RelatedPosts.tsx` | `{ related }` | "Hungry for more?" related-posts block under a post |
 | `icons/*.tsx` | `src/components/icons/` | — | Inline SVGs (Twitter, LinkedIn, RSS, Sun, Moon, Facebook) |

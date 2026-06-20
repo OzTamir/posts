@@ -1,23 +1,24 @@
 ---
 /**
- * Home page (page 1) — cover hero + newest `postsPerPage` posts + pager.
- *   <div class="home-content"> cover · post-feed · pagination </div>
+ * Home page (page 1) — cover hero + the feed (newest `postsPerPage` posts,
+ * with in-place "Load more") inside <div class="home-content">.
  * The header is absent (home uses the Cover component instead).
  * Body class = "home-template".
  *
  * Thin Astro shell: loads content + builds the <head> props, then renders the
- * React components (Cover / PostCard / Pagination) inside BaseLayout.
+ * React components (Cover / Feed) inside BaseLayout. The Feed island is given
+ * the whole post list and reveals more on demand; the static /page/N/ routes
+ * remain the no-JS / crawler fallback.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Cover from '../components/Cover';
-import PostFeed from '../components/PostFeed';
-import Pagination from '../components/Pagination';
-import { getSortedPosts, paginatePosts } from '../utils/posts';
+import Feed from '../components/Feed';
+import { getSortedPosts, paginatePosts, toPostCardData } from '../utils/posts';
 import { socialImageUrl } from '../utils/images';
 import { SITE } from '../config';
 
 const all = await getSortedPosts();
-const { pagePosts, nextUrl } = paginatePosts(all, 1, SITE.postsPerPage, '');
+const { nextUrl } = paginatePosts(all, 1, SITE.postsPerPage, '');
 
 // Home social images become optimized /_astro assets (absolute URLs). The OG
 // art (og-default) has transparent corners, so keep it PNG. The Twitter card
@@ -45,8 +46,6 @@ const head = {
   <div class="home-content">
     <Cover />
 
-    <PostFeed posts={pagePosts} />
-
-    <Pagination nextUrl={nextUrl} />
+    <Feed client:visible posts={all.map(toPostCardData)} perPage={SITE.postsPerPage} nextHref={nextUrl} />
   </div>
 </BaseLayout>

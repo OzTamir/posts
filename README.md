@@ -2,7 +2,7 @@
 
 The source for **0xZ**, a personal blog (`# cat /dev/brain >> posts`). Fully static
 **Astro** site deployed on **Cloudflare Workers Static Assets** — prerendered HTML,
-no server runtime, zero client JS.
+no server runtime, and only the interactive bits ship JS (React islands).
 
 ## Quick start
 
@@ -27,7 +27,7 @@ npm run preview    # http://localhost:4321
 | | |
 | --- | --- |
 | Framework | Astro 6 (`output: "static"`) |
-| UI | React `.tsx` components (static, no hydration) |
+| UI | React `.tsx` components (static HTML; hydrated as islands where interactive) |
 | Styling | Tailwind v4 (`@theme` tokens) + `@tailwindcss/typography` |
 | Content | MDX content collections (`src/content/posts/*.mdx`) |
 | Images | Astro asset pipeline (`src/assets/content/images/**` → WebP + srcset; GIFs preserved) |

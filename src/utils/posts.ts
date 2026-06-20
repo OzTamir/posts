@@ -5,11 +5,41 @@
  * from each post's raw body (see utils/format).
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { readingTimeMinutes } from './format';
+import { readingTimeMinutes, formatFeedDate } from './format';
 
 export interface PostWithMeta {
   post: CollectionEntry<'posts'>;
   readingTime: number;
+}
+
+/**
+ * Flat, serializable projection of a post for feed cards. `PostWithMeta`
+ * carries the full content entry, which cannot cross an island boundary, so
+ * `PostCard` and the client `Feed` island consume this view instead.
+ */
+export interface PostCardData {
+  /** Canonical post URL, root-relative (e.g. "/my-post/"). */
+  url: string;
+  title: string;
+  excerpt: string;
+  /** Pre-formatted feed date, e.g. "Jun 6, 2026". */
+  date: string;
+  /** Reading time in whole minutes. */
+  readingTime: number;
+  /** Tag slugs, used for the `.tag-<slug>` card classes. */
+  tagSlugs: string[];
+}
+
+/** Project a `PostWithMeta` into the flat, serializable card view. */
+export function toPostCardData({ post, readingTime }: PostWithMeta): PostCardData {
+  return {
+    url: `/${post.id}/`,
+    title: post.data.title,
+    excerpt: post.data.excerpt ?? '',
+    date: formatFeedDate(post.data.pubDate),
+    readingTime,
+    tagSlugs: (post.data.tags ?? []).map((t) => t.slug),
+  };
 }
 
 /** All posts, newest-first, each paired with its reading time (minutes). */
