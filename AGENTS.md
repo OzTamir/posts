@@ -8,10 +8,12 @@ blog. This file is the source of truth for conventions; read it before making ch
 - **Astro 6**, `output: "static"` — prerendered HTML, no server runtime. Deployed to
   **Cloudflare Workers Static Assets** (`./dist`).
 - TypeScript (strict), **Tailwind v4** (CSS-first `@theme`), MDX content collections.
-- UI components are **React `.tsx`**; route files are thin **`.astro` shells**. The only
-  Astro layout component is `BaseLayout.astro` (the `<html>`/`<head>` shell + inline
-  theme script). Everything visual is authored in `.tsx` and rendered to static HTML —
-  **zero client JS** (no `client:*` hydration anywhere).
+- UI components are **React `.tsx`**; route files are thin **`.astro` shells**
+  (`BaseLayout.astro` owns the `<html>`/`<head>` shell + inline theme script). Most of the
+  UI renders to **static HTML with no client JS**; interactive pieces hydrate as **React
+  islands** via `client:*` (today: the feed pager, `Feed.tsx`). Small inline scripts cover
+  the theme toggle + social embeds. Reach for an island when something needs to be
+  interactive — don't contort it to avoid JS.
 - Design intent: **preserve the established look**. Do **not** redesign, restyle, or
   "modernize." When unsure about a visual detail, match what is already there.
 
@@ -160,7 +162,6 @@ CI does **not** deploy; Cloudflare's Git integration deploys on push to `main`.
 
 - `astro.config.mjs`, `tsconfig.json`, `wrangler.jsonc` — infra; change deliberately.
 - URL structure and the trailing-slash config — see above.
-- `src/integrations/prune-unused-js.mjs` — drops the orphan React chunk at build time.
 
 ## Gotchas
 
@@ -175,3 +176,7 @@ CI does **not** deploy; Cloudflare's Git integration deploys on push to `main`.
 - `SiteHeader` renders `SITE.navigation`; the default empty array means no nav links show.
 - The `PostFeed` component and `paginatePosts`/`pageCount` helpers (in `src/utils/posts.ts`)
   are shared by all paginated routes (home, tag, author).
+- The feed pager is progressive enhancement: a section's first page renders the `Feed`
+  island (`client:visible`), which is handed the whole feed and reveals more posts in
+  place. "Load more" is a real link to `/…/page/N/`, so without JS it just navigates
+  there — those static `/page/N/` routes are the no-JS / crawler fallback, so keep them.

@@ -2,8 +2,10 @@
 
 This is **0xZ** (`posts.oztamir.com`) — a personal blog built as a fully static **Astro**
 site, deployed on **Cloudflare Workers Static Assets**. There is no server runtime: every
-page is prerendered to HTML at build time. The site ships **zero client JS** — the theme
-toggle and social-embed loaders are tiny inline `<script is:inline>` blocks, not bundles.
+page is prerendered to HTML at build time. Most of the site ships **no client JS**;
+interactivity comes from React islands hydrated with `client:*` (the feed pager,
+`Feed.tsx`), plus a couple of tiny inline `<script is:inline>` blocks (theme toggle,
+social-embed loaders).
 
 ## Stack
 
@@ -11,7 +13,7 @@ toggle and social-embed loaders are tiny inline `<script is:inline>` blocks, not
 | --- | --- |
 | Framework | [Astro](https://astro.build) 6 (`output: "static"`) |
 | Language | TypeScript (strict) |
-| UI components | React `.tsx` (static, un-hydrated — rendered to HTML at build time) |
+| UI components | React `.tsx` — rendered to static HTML; interactive pieces hydrate as islands (`client:*`) |
 | Styling | Tailwind CSS v4 (CSS-first `@theme`) + `@tailwindcss/typography` |
 | Content | Astro MDX content collections (`src/content/posts/*.mdx`) |
 | Images | Astro asset pipeline — source in `src/assets/content/images/**`; output to hashed `/_astro/*` URLs as WebP + responsive `srcset` (GIFs preserved) |
@@ -54,9 +56,10 @@ toggle and social-embed loaders are tiny inline `<script is:inline>` blocks, not
 │   │   ├── SiteHeader.tsx   # header (renders SITE.navigation)
 │   │   ├── SiteFooter.tsx   # footer (social links + theme toggle)
 │   │   ├── Cover.tsx        # home hero (logo + tagline)
-│   │   ├── PostCard.tsx     # feed row (title, excerpt, date, reading time)
-│   │   ├── PostFeed.tsx     # shared feed grid (used by all paginated routes)
-│   │   ├── Pagination.tsx   # "Load more" pager
+│   │   ├── PostCard.tsx     # feed row (serializable PostCardData: title, excerpt, date)
+│   │   ├── PostFeed.tsx     # shared `.post-feed` grid of PostCards
+│   │   ├── Feed.tsx         # client island: feed + in-place "Load more"
+│   │   ├── Pagination.tsx   # plain "Load more" link (static /page/N/ fallback)
 │   │   ├── AuthorCard.tsx   # author archive header
 │   │   ├── RelatedPosts.tsx # related-posts block on single posts
 │   │   ├── icons/           # inline SVGs (Twitter, LinkedIn, RSS, Sun, Moon, Facebook)
@@ -68,7 +71,7 @@ toggle and social-embed loaders are tiny inline `<script is:inline>` blocks, not
 │   │       ├── images.ts        # eager glob → resolveImage() used by Figure + routes
 │   │       └── media.ts         # video/poster asset resolution
 │   ├── integrations/
-│   │   └── prune-unused-js.mjs  # build integration: drops the orphan React chunk
+│   │   └── strip-image-metadata.mjs  # build integration: strip EXIF/XMP from images
 │   ├── styles/
 │   │   └── global.css       # SINGLE CSS entry: @theme tokens, dark mode, @layer components
 │   └── utils/
