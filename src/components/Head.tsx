@@ -199,7 +199,10 @@ export default function Head(props: HeadProps) {
       {description && <meta name="description" content={description} />}
       <link rel="icon" href={SITE_IMAGES.icon.src} type="image/png" />
       <link rel="canonical" href={canonical} />
-      <meta name="referrer" content="no-referrer-when-downgrade" />
+      <meta name="referrer" content="strict-origin-when-cross-origin" />
+      {/* Browser UI tint — follows the OS scheme (the site's default). */}
+      <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+      <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1a1a" />
       {next && <link rel="next" href={next} />}
       {prev && <link rel="prev" href={prev} />}
 

@@ -62,15 +62,24 @@ export async function optimizeFeatureImage(
 export async function socialImageUrl(
   siteUrl: string,
   path?: string | null,
+  format: 'jpeg' | 'png' = 'jpeg',
 ): Promise<{ url: string; width: number; height: number } | null> {
   if (!path) return null;
   if (/^https?:\/\//.test(path)) return { url: path, width: 0, height: 0 };
 
   const asset = resolveImage(path);
-  // GIFs: use the hashed original; otherwise a single large WebP.
+  // Social scrapers (Facebook, LinkedIn) don't reliably render WebP, so emit a
+  // widely-supported raster: JPEG for photographic feature images (small, well
+  // under platform size limits), PNG for brand art that needs transparency.
+  // GIFs: use the hashed original.
   const optimized = isGif(asset)
     ? { src: asset.src }
-    : await getImage({ src: asset, format: 'webp', width: Math.min(asset.width, 1600) });
+    : await getImage({
+        src: asset,
+        format,
+        ...(format === 'jpeg' ? { quality: 82 } : {}),
+        width: Math.min(asset.width, 1600),
+      });
   const rel = optimized.src;
   return {
     url: rel.startsWith('http') ? rel : `${siteUrl}${rel}`,

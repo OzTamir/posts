@@ -3,6 +3,13 @@
 # are now hashed assets under /_astro/* (a content change yields a new hash);
 # fonts are stable. HTML is intentionally NOT cached long-term here.
 
+# Baseline security headers on every response. Cloudflare merges headers from
+# all matching rules, so these combine with the cache rules below.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 

@@ -26,6 +26,7 @@ featureImage: /content/images/posts/whose-turn-is-it-any-way-tracking-with-zigbe
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
+import Video from '../../components/mdx/Video.astro';
 
 A few months ago, I made a dream come true and moved in with my girlfriend, Tali. It was a long process; apartment hunting was the worst, but after a few months of searching, we finally had our dream house.
 
@@ -68,7 +69,7 @@ In addition, by using a Zigbee sensor, I gained a couple of additional benefits:
 
 The setup was straightforward but effective. I attached a Zigbee sensor to the litter box lid, ensuring it would trigger whenever it opened or closed. This action was logged as an event in our Home Assistant setup, which I've been using to centralize all our smart home activities. The idea was simple: every open-close cycle would indicate a cleaning session.
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/litter-box-sensor-demo.gif" alt="Note the red light blink - indicating that an event was logged" caption="Note the red light blink - indicating that an event was logged" />
+<Video src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/litter-box-sensor-demo.mp4" autoplay title="Litter box sensor logging an event" caption="Note the red light blink - indicating that an event was logged" />
 
 Writing the automation was also very easy:
 
@@ -116,7 +117,7 @@ After successfully implementing the monitoring of cleanouts, it was time to addr
 
 Up until this point, Tali and I had been using a simple but somewhat archaic system—a 3D-printed wheel that we would manually turn to indicate who was responsible for the next cleanout.
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/espresense-tracking-demo.gif" alt="" />
+<Video src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/espresense-tracking-demo.mp4" autoplay title="ESPresense tracking a phone between rooms" />
 
 While this method had its charm, it was prone to human error and forgetfulness. I realized that we could leverage technology to track when the litter box was cleaned and by whom.
 

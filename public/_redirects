@@ -4,6 +4,10 @@
 # The RSS feed is served at /rss.xml; keep /rss/ working for existing subscribers.
 /rss/  /rss.xml  301
 
+# Ghost served the sitemap at /sitemap.xml; Astro emits /sitemap-index.xml.
+# Keep the old URL (indexed + submitted in Search Console) resolving forever.
+/sitemap.xml  /sitemap-index.xml  301
+
 # Canonicalize paginated first pages to their base URL.
 /page/1/  /  301
 /tag/:tag/page/1/  /tag/:tag/  301
