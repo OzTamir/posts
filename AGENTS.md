@@ -5,8 +5,10 @@ blog. This file is the source of truth for conventions; read it before making ch
 
 ## What this is
 
-- **Astro 6**, `output: "static"` — prerendered HTML, no server runtime. Deployed to
-  **Cloudflare Workers Static Assets** (`./dist`).
+- **Astro 6**, `output: "static"` — prerendered HTML. Deployed to **Cloudflare Workers
+  Static Assets** (`./dist`). A thin Worker (`worker/index.ts`) sits in front purely for
+  `Accept: text/markdown` content negotiation; everything else is static. Fingerprinted
+  assets are still served directly (see `run_worker_first` in `wrangler.jsonc`).
 - TypeScript (strict), **Tailwind v4** (CSS-first `@theme`), MDX content collections.
 - UI components are **React `.tsx`**; route files are thin **`.astro` shells**
   (`BaseLayout.astro` owns the `<html>`/`<head>` shell + inline theme script). Most of the
@@ -37,6 +39,7 @@ Full docs: [`docs/building-and-content.md`](./docs/building-and-content.md),
 | Change design tokens / dark mode | `src/styles/global.css` (single CSS entry — no `content.css`) |
 | Source images for posts | `src/assets/content/images/**` (goes through the optimizer) |
 | Deploy config | `wrangler.jsonc`, `public/_redirects`, `public/_headers` |
+| Edit the markdown-negotiation Worker | `worker/index.ts` (+ `src/utils/post-markdown.ts`) |
 | CI config | `.github/workflows/ci.yml`, `.lighthouserc.json` |
 
 ## Adding content (the common task)
@@ -142,6 +145,13 @@ const x: number = 42;
   (`rel="api-catalog"`, `rel="sitemap"`) on every response and sets the catalog's
   content type. We deliberately do **not** publish OAuth/OIDC, MCP, `auth.md`, or
   WebMCP metadata — there are no APIs, auth, or tools behind them to advertise.
+- **Markdown for Agents** is served natively (Cloudflare's zone feature needs a paid plan):
+  `worker/index.ts` answers `Accept: text/markdown` with the build-time Markdown sibling of
+  a page (`Content-Type: text/markdown`, `x-markdown-tokens`, `Vary: Accept`); HTML stays
+  the browser default. The Markdown is generated at build by `src/pages/[slug].md.ts` and
+  `src/pages/index.md.ts` (via `src/utils/post-markdown.ts`, which rewrites the MDX body's
+  `<Figure>/<Video>/<Tweet>/<Instagram>` to Markdown using the real asset resolvers). Each
+  post is also directly fetchable at `/<slug>.md`.
 - This is a **static content blog**. Members, newsletter, comments, and server-side search
   were intentionally dropped — do not reintroduce them.
 

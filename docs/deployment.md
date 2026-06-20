@@ -1,8 +1,11 @@
 # Deployment & CI/CD (Cloudflare Workers)
 
-The site ships as **static assets on Cloudflare Workers** (Workers Static Assets). There
-is **no Worker script** — Cloudflare serves the prerendered files in `./dist` directly,
-so there's no server runtime and asset requests don't count as Worker invocations.
+The site ships as **static assets on Cloudflare Workers** (Workers Static Assets):
+Cloudflare serves the prerendered files in `./dist` directly. A **thin Worker**
+(`worker/index.ts`) sits in front for one job — answering `Accept: text/markdown` with a
+page's Markdown sibling (see "Markdown for Agents" below). `run_worker_first` scopes the
+Worker to HTML page routes, so fingerprinted assets are still served directly and don't
+count as Worker invocations.
 
 Deploys are driven by the **Cloudflare Workers ↔ GitHub (Git) integration**: push to
 `main`, Cloudflare builds it and deploys.
@@ -11,17 +14,22 @@ Deploys are driven by the **Cloudflare Workers ↔ GitHub (Git) integration**: p
 
 ```jsonc
 {
-  "name": "oz-blog",
+  "name": "posts",
   "compatibility_date": "2026-06-19",
-  // NO "main" — purely static, no Worker script.
+  "main": "./worker/index.ts",              // markdown-negotiation Worker
   "assets": {
     "directory": "./dist",                  // Astro's build output
+    "binding": "ASSETS",                     // Worker reaches assets via env.ASSETS
+    "run_worker_first": ["/*", "!/_astro/*", "..."], // HTML routes only
     "not_found_handling": "404-page",        // serve dist/404.html with HTTP 404
     "html_handling": "auto-trailing-slash"   // /slug → /slug/ (trailing-slash canonical)
   }
 }
 ```
 
+- `main` + `binding` add the content-negotiation Worker; `run_worker_first` lists the
+  routes it runs on (HTML pages), excluding `/_astro/*`, `/fonts/*`, `/content/*`, and
+  file types so those are served directly.
 - `not_found_handling: "404-page"` serves the prerendered `404.html` with a real 404
   status.
 - `html_handling: "auto-trailing-slash"` pairs with Astro's `trailingSlash: "always"` so
