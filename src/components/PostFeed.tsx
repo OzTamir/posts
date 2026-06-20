@@ -1,32 +1,26 @@
 /**
- * PostFeed.tsx — the shared `.post-feed` grid used by every paginated view
- * (home, tag archive, author archive, and their /page/N/ pages).
+ * PostFeed.tsx — the shared `.post-feed` grid: a `.post-feed gh-feed gh-canvas`
+ * wrapper with one `<PostCard>` per item.
  *
- * Previously each of the six route files inlined the same
- * `<div class="post-feed gh-feed gh-canvas">{posts.map(<PostCard/>)}</div>`.
- * Centralising it here keeps the markup in one place; the output is byte-for-
- * byte identical to the prior inline version.
+ * Used directly by the static /page/N/ routes, and by the client `Feed`
+ * island to render the slice of posts currently revealed. Takes the flat,
+ * serializable `PostCardData` so both paths share it.
  *
- * The `.post-feed.gh-feed.gh-canvas` styling (the named-grid + responsive
- * font cascade) lives in @layer components.
+ * The `.post-feed.gh-feed.gh-canvas` styling (named-grid + responsive font
+ * cascade) lives in @layer components.
  */
-import type { CollectionEntry } from 'astro:content';
+import type { PostCardData } from '../utils/posts';
 import PostCard from './PostCard';
 
-interface FeedItem {
-  post: CollectionEntry<'posts'>;
-  readingTime: number;
-}
-
 interface Props {
-  posts: FeedItem[];
+  posts: PostCardData[];
 }
 
 export default function PostFeed({ posts }: Props) {
   return (
     <div className="post-feed gh-feed gh-canvas">
-      {posts.map(({ post, readingTime }) => (
-        <PostCard key={post.id} post={post} readingTime={readingTime} />
+      {posts.map((post) => (
+        <PostCard key={post.url} data={post} />
       ))}
     </div>
   );

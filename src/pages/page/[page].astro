@@ -10,7 +10,7 @@ import type { GetStaticPaths } from 'astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostFeed from '../../components/PostFeed';
 import Pagination from '../../components/Pagination';
-import { getSortedPosts, paginatePosts, pageCount } from '../../utils/posts';
+import { getSortedPosts, paginatePosts, pageCount, toPostCardData } from '../../utils/posts';
 import { socialImageUrl } from '../../utils/images';
 import { SITE } from '../../config';
 
@@ -54,7 +54,7 @@ const head = {
 <BaseLayout head={head} bodyClass="home-template paged" isHome={false}>
   <div class="site-content"></div>
 
-  <PostFeed posts={pagePosts} />
+  <PostFeed posts={pagePosts.map(toPostCardData)} />
 
   <Pagination nextUrl={nextUrl} />
 </BaseLayout>

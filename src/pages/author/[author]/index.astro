@@ -13,7 +13,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import AuthorCard from '../../../components/AuthorCard';
 import PostFeed from '../../../components/PostFeed';
 import Pagination from '../../../components/Pagination';
-import { getSortedPosts, filterByAuthor, paginatePosts } from '../../../utils/posts';
+import { getSortedPosts, filterByAuthor, paginatePosts, toPostCardData } from '../../../utils/posts';
 import { AUTHORS } from '../../../data/authors';
 import { SITE } from '../../../config';
 
@@ -50,7 +50,7 @@ const head = {
     </main>
   </div>
 
-  <PostFeed posts={pagePosts} />
+  <PostFeed posts={pagePosts.map(toPostCardData)} />
 
   <Pagination nextUrl={nextUrl} />
 </BaseLayout>

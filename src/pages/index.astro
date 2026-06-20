@@ -6,13 +6,13 @@
  * Body class = "home-template".
  *
  * Thin Astro shell: loads content + builds the <head> props, then renders the
- * React components (Cover / PostCard / Pagination) inside BaseLayout.
+ * React components (Cover / PostFeed / Pagination) inside BaseLayout.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Cover from '../components/Cover';
 import PostFeed from '../components/PostFeed';
 import Pagination from '../components/Pagination';
-import { getSortedPosts, paginatePosts } from '../utils/posts';
+import { getSortedPosts, paginatePosts, toPostCardData } from '../utils/posts';
 import { socialImageUrl } from '../utils/images';
 import { SITE } from '../config';
 
@@ -45,7 +45,7 @@ const head = {
   <div class="home-content">
     <Cover />
 
-    <PostFeed posts={pagePosts} />
+    <PostFeed posts={pagePosts.map(toPostCardData)} />
 
     <Pagination nextUrl={nextUrl} />
   </div>
