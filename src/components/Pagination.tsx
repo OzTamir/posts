@@ -19,7 +19,7 @@ export default function Pagination({ nextUrl }: Props) {
     <nav className="load-more mt-[48px] flex justify-center">
       <a
         href={nextUrl}
-        className="button button-secondary gh-loadmore inline-flex h-[36px] cursor-pointer items-center justify-center rounded-[3px] border border-light-gray bg-bg px-[15px] text-[11px] font-extrabold uppercase tracking-[.5px] text-darker-gray transition-colors hover:border-brand hover:text-brand hover:opacity-100"
+        className="button button-secondary load-more inline-flex h-[36px] cursor-pointer items-center justify-center rounded-[3px] border border-light-gray bg-bg px-[15px] text-[11px] font-extrabold uppercase tracking-[.5px] text-darker-gray transition-colors hover:border-brand hover:text-brand hover:opacity-100"
       >
         Load more
       </a>
