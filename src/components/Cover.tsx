@@ -11,7 +11,7 @@ import { SITE_IMAGES } from '../data/site-images';
 
 export default function Cover() {
   return (
-    <div className="cover gh-outer mt-[48px]">
+    <div className="cover page-gutter mt-[48px]">
       <div className="cover-content mx-auto flex max-w-[520px] flex-col items-center text-center">
         <div className="cover-icon relative mb-[32px]">
           <img className="cover-icon-image w-[120px]" src={SITE_IMAGES.icon.src} alt={SITE.title} />

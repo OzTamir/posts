@@ -5,11 +5,11 @@
  *   <div class="site-content">
  *     <main class="site-main">
  *       <article class="single post tag-…">
- *         <header class="single-header gh-canvas"> meta · title · excerpt · feature image </header>
- *         <div class="single-content gh-content gh-canvas"> {children} + FIN divider </div>
+ *         <header class="single-header content-grid"> meta · title · excerpt · feature image </header>
+ *         <div class="single-content post-body content-grid"> {children} + FIN divider </div>
  *       </article>
  *       <RelatedPosts/>            (related-wrapper)
- *       <div class="gh-canvas"><footer class="single-footer"> author bio </footer></div>
+ *       <div class="content-grid"><footer class="single-footer"> author bio </footer></div>
  *     </main>
  *   </div>
  *
@@ -66,7 +66,7 @@ export default function PostLayout({ post, readingTime, related, feature, childr
     <div className="site-content">
       <main className="site-main">
         <article className={`single post ${tagClasses}`.trim()}>
-          <header className="single-header gh-canvas">
+          <header className="single-header content-grid">
             <div className="single-meta">
               <span className="single-meta-item single-meta-date">
                 <time dateTime={dateAttr(d.pubDate)}>{formatPostDate(d.pubDate)}</time>
@@ -107,7 +107,7 @@ export default function PostLayout({ post, readingTime, related, feature, childr
             )}
           </header>
 
-          <div className="single-content gh-content gh-canvas">
+          <div className="single-content post-body content-grid">
             {children}
             {/* End-of-post "FIN" divider. */}
             <div style={{ marginTop: '3rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem' }}>
@@ -120,7 +120,7 @@ export default function PostLayout({ post, readingTime, related, feature, childr
 
         <RelatedPosts related={related} />
 
-        <div className="gh-canvas">
+        <div className="content-grid">
           <footer className="single-footer">
             <div className="single-footer-author">
               <div className="author-image-column">
