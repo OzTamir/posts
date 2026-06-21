@@ -12,33 +12,33 @@ tags:
     name: Cloudflare
 author: oz
 featured: false
-excerpt: "Why I ditched Ghost for a static Astro site — and the malware I found on the way out."
+excerpt: "Why I ditched Ghost for a static Astro site, and the malware I found on the way out."
 featureImage: null
 ---
 
 import Figure from '../../components/mdx/Figure.astro';
 
-Back in 2020, in the thick of COVID quarantine, I started this blog. I wrote about it in my very first post, [Hello World](https://posts.oztamir.com/hello-world/) — two weeks stuck at home, rediscovering how much I love messing with technology, and finally deciding to write some of it down.
+Back in 2020, in the thick of COVID quarantine, I started this blog. I wrote about it in my very first post, [Hello World](https://posts.oztamir.com/hello-world/): two weeks stuck at home, rediscovering how much I love messing with technology, and finally deciding to write some of it down.
 
 I needed somewhere to put the words. I picked [Ghost](https://ghost.org).
 
-It was, honestly, the path of least resistance. Ghost was the easy answer in 2020 — spin up a VPS, install it, convert a theme into something I actually liked in an afternoon, and start typing. And for years, it delivered. It got out of my way. I wrote, it published, the thing just worked. I have zero complaints about Ghost as a writing experience. None.
+It was, honestly, the path of least resistance. Ghost was the easy answer in 2020: spin up a VPS, install it, convert a theme into something I actually liked in an afternoon, and start typing. And for years, it delivered. It got out of my way. I wrote, it published, the thing just worked. I have zero complaints about Ghost as a writing experience. None.
 
-But over the past few months, something shifted. A string of nasty exploits started landing for Ghost — serious ones, the kind that let a stranger [read your entire database](https://www.sentinelone.com/vulnerability-database/cve-2026-26980/) or [run their own code on your server](https://www.endorlabs.com/learn/rce-in-ghost-cms-ghsa-cgc2-rcrh-qr5x). And at some point I just stopped and asked myself the obvious question:
+But over the past few months, something shifted. A string of nasty exploits started landing for Ghost. Serious ones, the kind that let a stranger [read your entire database](https://www.sentinelone.com/vulnerability-database/cve-2026-26980/) or [run their own code on your server](https://www.endorlabs.com/learn/rce-in-ghost-cms-ghsa-cgc2-rcrh-qr5x). And at some point I just stopped and asked myself the obvious question:
 
 *Why is my blog running on a CMS in this day and age?*
 
-I mean — really. It's a stack of articles that never change after I hit publish. There's no reason for it to be a living, internet-facing server that I rent, patch, and pray over. I could just… vibe-code a static site. A whole class of these problems evaporates the second there's no server to attack and no database to read. And going static would come with a pile of other benefits I'd been wanting anyway:
+I mean, really. It's a stack of articles that never change after I hit publish. There's no reason for it to be a living, internet-facing server that I rent, patch, and pray over. I could just… vibe-code a static site. A whole class of these problems evaporates the second there's no server to attack and no database to read. And going static would come with a pile of other benefits I'd been wanting anyway:
 
-- **No server to babysit.** A blog is text. It should be a folder of files a CDN hands out — nothing to log into, nothing to exploit, nothing to patch at 11pm.
-- **Hosting I'm already using.** I've got a bunch of projects running on Cloudflare already, and the experience has been fantastic — fast, painless, and costing me exactly nothing. Meanwhile I was paying for a VPS just to keep Ghost alive. It wasn't a lot of money, but it had started to feel like a bill I had no business still paying.
+- **No server to babysit.** A blog is text. It should be a folder of files a CDN hands out: nothing to log into, nothing to exploit, nothing to patch at 11pm.
+- **Hosting I'm already using.** I've got a bunch of projects running on Cloudflare already, and the experience has been fantastic: fast, painless, and costing me exactly nothing. Meanwhile I was paying for a VPS just to keep Ghost alive. It wasn't a lot of money, but it had started to feel like a bill I had no business still paying.
 - **Total control.** My markup, my styles, my routes, my rules. If I want the blog to do something weird, it should do something weird.
-- **Markdown for the robots.** I wanted agents — crawlers, LLMs, whatever — to be able to ask for a post and get clean Markdown back instead of a soup of HTML. Ghost [flat-out can't do this](https://forum.ghost.org/t/ghost-posts-to-markdown-for-ai-bots-and-others/62135), and it bugged me more than it probably should have.
-- **A modern stack.** I wanted to build on the tools I actually enjoy using now — [Astro](https://astro.build), [Tailwind](https://tailwindcss.com), the modern web — instead of living inside Ghost's theme world. (And sure, open-sourcing the result on [GitHub](https://github.com/OzTamir/posts) was a nice bonus — but that was a side perk, not the point.)
+- **Markdown for the robots.** I wanted agents (crawlers, LLMs, whatever) to be able to ask for a post and get clean Markdown back instead of a soup of HTML. Ghost [flat-out can't do this](https://forum.ghost.org/t/ghost-posts-to-markdown-for-ai-bots-and-others/62135), and it bugged me more than it probably should have.
+- **A modern stack.** I wanted to build on the tools I actually enjoy using now ([Astro](https://astro.build), [Tailwind](https://tailwindcss.com), the modern web) instead of living inside Ghost's theme world. (And sure, open-sourcing the result on [GitHub](https://github.com/OzTamir/posts) was a nice bonus, but that was a side perk, not the point.)
 
-I'd been circling this idea for a while without actually doing anything about it. What finally tipped me over wasn't the blog at all — it was a side-quest. Last week I built myself a new site, [talks.oztamir.com](https://talks.oztamir.com), a little home for my public-speaking stuff — talk pages, slides, recordings, the works. A single Cloudflare Worker, dark theme, warm-yellow accent, no CMS in sight. Once that was live, I had to circle back and tweak my homepage so it spoke the same design language.
+I'd been circling this idea for a while without actually doing anything about it. What finally tipped me over wasn't the blog at all. It was a side-quest. Last week I built myself a new site, [talks.oztamir.com](https://talks.oztamir.com), a little home for my public-speaking stuff: talk pages, slides, recordings, the works. A single Cloudflare Worker, dark theme, warm-yellow accent, no CMS in sight. Once that was live, I had to circle back and tweak my homepage so it spoke the same design language.
 
-Two static, hand-built, Cloudflare-hosted sites later, I was on a roll. And you know how this goes — "eh, now's as good a time as any to finally do that blog migration I keep postponing."
+Two static, hand-built, Cloudflare-hosted sites later, I was on a roll. And you know how this goes: "eh, now's as good a time as any to finally do that blog migration I keep postponing."
 
 So I did.
 
@@ -48,59 +48,59 @@ First, the boring-but-important question: what do you build a blog out of?
 
 Three real contenders:
 
-1. **[Hugo](https://gohugo.io)** — the old reliable. Fast, battle-tested, boring in the good way.
-2. **A vibe-coded, self-made generator** — roll my own from scratch. Maximum control, maximum yak-shaving.
-3. **[Astro](https://astro.build)** — component-based, content collections built in, ships zero JS by default.
+1. **[Hugo](https://gohugo.io).** The old reliable. Fast, battle-tested, boring in the good way.
+2. **A vibe-coded, self-made generator.** Roll my own from scratch. Maximum control, maximum yak-shaving.
+3. **[Astro](https://astro.build).** Component-based, content collections built in, ships zero JS by default.
 
-I went back and forth longer than I'd like to admit. What tipped it was [this write-up](https://www.millerdatabases.com/migrating-from-ghost-to-astro-with-claude-code/) on migrating from Ghost to Astro with Claude Code — it walked almost exactly the path I was about to take. Astro it was.
+I went back and forth longer than I'd like to admit. What tipped it was [this write-up](https://www.millerdatabases.com/migrating-from-ghost-to-astro-with-claude-code/) on migrating from Ghost to Astro with Claude Code. It walked almost exactly the path I was about to take. Astro it was.
 
-So now it was time to actually build the thing — and, frankly, it wasn't much to write home about. I fired up Claude, wrote a careful spec, and set it running.
+So now it was time to actually build the thing, and, frankly, it wasn't much to write home about. I fired up Claude, wrote a careful spec, and set it running.
 
-One choice that mattered: I asked it to operate as an orchestrator and lean heavily on sub-agents. And the single most important instruction I gave — the thing that kept the output high-quality — was that it should **not port any of Ghost's code**. It had to rebuild the behavior natively, as if the site had always been Astro. That turned out to be the challenging part: Ghost CSS styles and other cruft kept sneaking back in, and it took a long session with Claude before we'd scrubbed all of it out.
+One choice that mattered: I asked it to operate as an orchestrator and lean heavily on sub-agents. And the single most important instruction I gave, the thing that kept the output high-quality, was that it should **not port any of Ghost's code**. It had to rebuild the behavior natively, as if the site had always been Astro. That turned out to be the challenging part: Ghost CSS styles and other cruft kept sneaking back in, and it took a long session with Claude before we'd scrubbed all of it out.
 
-There were also some decisions around JavaScript. I build the site to fully static output, and by default Astro ships no JavaScript to the client — but I did want a little interactivity. The simplest example is the "load more" button. Luckily, Astro has a feature called [islands](https://docs.astro.build/en/concepts/islands/): tiny bits of JavaScript, shipped only where needed, which let the site eat the cake and have it too.
+There were also some decisions around JavaScript. I build the site to fully static output, and by default Astro ships no JavaScript to the client. But I did want a little interactivity. The simplest example is the "load more" button. Luckily, Astro has a feature called [islands](https://docs.astro.build/en/concepts/islands/): tiny bits of JavaScript, shipped only where needed, which let the site eat the cake and have it too.
 
-Beyond that it was a long tail of small details: fixing some styles, swapping out a few broken fonts, making sure none of my assets were too heavy — and, while I was at it, renaming them from `Screenshot 2021…` and `WhatsApp Web` into something readable. Finally, I built a set of Astro MDX components to hold all the various elements my posts rely on — figures, videos, embedded tweets, and the like.
+Beyond that it was a long tail of small details: fixing some styles, swapping out a few broken fonts, making sure none of my assets were too heavy, and (while I was at it) renaming them from `Screenshot 2021…` and `WhatsApp Web` into something readable. Finally, I built a set of Astro MDX components to hold all the various elements my posts rely on: figures, videos, embedded tweets, and the like.
 
 The result builds to a folder of static files that Cloudflare serves on every push. No server, no database, nothing to patch.
 
 ## Plot twist: I was already haunted
 
-Partway through the migration, while Claude was going through my old Ghost export to port the posts over, it flagged something: every single one of my 41 posts had the same obfuscated `<script>` tucked into its footer — not in the post bodies, but in Ghost's per-post "code injection" field, the kind of thing you'd never notice unless you went looking. It was base64-encoded. When I decoded it, it pointed at a domain I'd never seen, pulling a remote script onto my blog for anyone who visited. It was also built to be quiet — it fired only once per visitor — which is part of why I'd never caught it myself.
+Partway through the migration, while Claude was going through my old Ghost export to port the posts over, it flagged something: every single one of my 41 posts had the same obfuscated `<script>` tucked into its footer, not in the post bodies but in Ghost's per-post "code injection" field, the kind of thing you'd never notice unless you went looking. It was base64-encoded. When I decoded it, it pointed at a domain I'd never seen, pulling a remote script onto my blog for anyone who visited. It was also built to be quiet (it fired only once per visitor), which is part of why I'd never caught it myself.
 
 <Figure src="posts/shell-in-the-ghost-migrating-to-astro/claude-malware-alert.png" alt="Claude's security finding: every one of the 41 posts has an identical obfuscated codeinjection_foot that decodes to malware, injecting a remote script on every page." caption="Not the way you want to find out. Claude flagged it mid-migration, while reading the old Ghost export." />
 
-My blog — the one I was in the middle of leaving *because* Ghost sites were under attack — had already been compromised. What are the odds, right?
+My blog, the one I was in the middle of leaving *because* Ghost sites were under attack, had already been compromised. What are the odds, right?
 
 But once the irony wore off, it stopped being funny. This wasn't a defaced homepage or a cosmetic prank. Code I hadn't written was running in my readers' browsers.
 
-<Figure src="posts/shell-in-the-ghost-migrating-to-astro/malware-payload.png" alt="The stored malware: an obfuscated, self-executing script that base64-decodes a URL and injects it as a remote script, guarded by a localStorage flag so it runs once per visitor." caption="The actual thing, sitting in the footer of every post — obfuscated just enough that a glance at the page source wouldn't catch it." />
+<Figure src="posts/shell-in-the-ghost-migrating-to-astro/malware-payload.png" alt="The stored malware: an obfuscated, self-executing script that base64-decodes a URL and injects it as a remote script, guarded by a localStorage flag so it runs once per visitor." caption="The actual thing, sitting in the footer of every post, obfuscated just enough that a glance at the page source wouldn't catch it." />
 
-So I sat down and did some research with Claude, and what I found made it worse, not better: this wasn't personal. My blog hadn't been singled out — it had been swept up in a [broad, automated campaign](https://blog.xlab.qianxin.com/ghost-cms-mass-compromised-via-cve-2026-26980-now-fueling-clickfix-attacks/) that hit hundreds of Ghost sites, Oxford and Harvard among them. The injected script was a loader for a [**ClickFix**](https://guard.io/labs/captchageddon-unmasking-the-viral-evolution-of-the-clickfix-browser-based-threat) attack — the kind that shows a visitor a fake "verify you're human" box and tricks them into pasting a command that quietly installs malware on their own machine.
+So I sat down and did some research with Claude, and what I found made it worse, not better: this wasn't personal. My blog hadn't been singled out. It had been swept up in a [broad, automated campaign](https://blog.xlab.qianxin.com/ghost-cms-mass-compromised-via-cve-2026-26980-now-fueling-clickfix-attacks/) that hit hundreds of Ghost sites, Oxford and Harvard among them. The injected script was a loader for a [**ClickFix**](https://guard.io/labs/captchageddon-unmasking-the-viral-evolution-of-the-clickfix-browser-based-threat) attack: the kind that shows a visitor a fake "verify you're human" box and tricks them into pasting a command that quietly installs malware on their own machine.
 
-For some stretch of time, a real person could have landed on one of my posts and walked away infected — because of my blog. I genuinely, deeply hope nobody did. If you ever visited the site and saw a prompt telling you to press Win+R and paste something to "verify" yourself — don't, and run a scan.
+For some stretch of time, a real person could have landed on one of my posts and walked away infected, because of my blog. I genuinely, deeply hope nobody did. If you ever visited the site and saw a prompt telling you to press Win+R and paste something to "verify" yourself: don't, and run a scan.
 
-I take this kind of thing seriously; it's literally my field. So I didn't wait. Even though I was only hours away from replacing the whole site with the clean static version, I stopped everything, went into the live Ghost install, and stripped the malware out of all 41 posts by hand, right then. Every extra minute it stayed up was another minute a reader could get hurt — and that's not a trade I was willing to make for a few hours of convenience.
+I take this kind of thing seriously; it's literally my field. So I didn't wait. Even though I was only hours away from replacing the whole site with the clean static version, I stopped everything, went into the live Ghost install, and stripped the malware out of all 41 posts by hand, right then. Every extra minute it stayed up was another minute a reader could get hurt, and that's not a trade I was willing to make for a few hours of convenience.
 
-If anything, finding this on the way out didn't shake my decision to migrate — it validated it. The whole problem traces back to one thing: a server. Ghost is software, running on a machine, exposed to the internet — and software running on a server is something that can be attacked and compromised. A static site has none of that. There's no application to exploit and no database to read — just plain web pages sitting in storage, handed out exactly as they are. No server means no attack surface, and with no attack surface there's nothing there to compromise in the first place. That's why static is so much harder to mess with.
+If anything, finding this on the way out didn't shake my decision to migrate. It validated it. The whole problem traces back to one thing: a server. Ghost is software, running on a machine, exposed to the internet, and software running on a server is something that can be attacked and compromised. A static site has none of that. There's no application to exploit and no database to read: just plain web pages sitting in storage, handed out exactly as they are. No server means no attack surface, and with no attack surface there's nothing there to compromise in the first place. That's why static is so much harder to mess with.
 
 ## A blog the robots can read
 
-Remember the "Markdown for the robots" bullet from way back at the top? This is where it pays off — and it's the part I'm most pleased with.
+Remember the "Markdown for the robots" bullet from way back at the top? This is where it pays off, and it's the part I'm most pleased with.
 
-Quick context. There's a growing push to make websites legible to AI agents — not just human browsers, but the crawlers and LLMs that increasingly read the web on our behalf. Cloudflare wrote up a good framing of this they call ["agent readiness"](https://blog.cloudflare.com/agent-readiness/): the idea that a modern site should present itself cleanly to machines, not only people. There's even a checker, [isitagentready.com](https://isitagentready.com), that audits your site against a pile of emerging standards.
+Quick context. There's a growing push to make websites legible to AI agents: not just human browsers, but the crawlers and LLMs that increasingly read the web on our behalf. Cloudflare wrote up a good framing of this they call ["agent readiness"](https://blog.cloudflare.com/agent-readiness/): the idea that a modern site should present itself cleanly to machines, not only people. There's even a checker, [isitagentready.com](https://isitagentready.com), that audits your site against a pile of emerging standards.
 
 I ran my freshly-migrated blog through it and, naturally, set out to turn every red X green.
 
-<Figure src="posts/shell-in-the-ghost-migrating-to-astro/agent-readiness-score.png" alt="Agent-readiness scan of posts.oztamir.com: overall score 50, Level 4 'Agent-Integrated', with Discoverability 75, Content 100, Bot Access Control 100, API/Auth/MCP/Skill Discovery 14, and Commerce not checked." caption="Where I landed after the pass — 'Agent-Integrated.' Commerce is greyed out because, well, I don't sell anything." />
+<Figure src="posts/shell-in-the-ghost-migrating-to-astro/agent-readiness-score.png" alt="Agent-readiness scan of posts.oztamir.com: overall score 50, Level 4 'Agent-Integrated', with Discoverability 75, Content 100, Bot Access Control 100, API/Auth/MCP/Skill Discovery 14, and Commerce not checked." caption="Where I landed after the pass: 'Agent-Integrated.' Commerce is greyed out because, well, I don't sell anything." />
 
 A few were easy, static wins:
 
-- **[llms.txt](https://llmstxt.org)** — a plain-text index of the whole blog (every post, newest first, with excerpts), [generated](https://github.com/OzTamir/posts/blob/main/src/pages/llms.txt.ts) from the same content collection that powers the RSS feed, so it can never drift out of sync.
-- **Content signals in [`robots.txt`](https://github.com/OzTamir/posts/blob/main/src/pages/robots.txt.ts)** — explicitly telling crawlers what they may do: yes to search, yes to being cited in AI answers, *no* to training models on my writing.
-- **Discovery headers** — an [RFC 8288](https://www.rfc-editor.org/rfc/rfc8288) [`Link` header](https://github.com/OzTamir/posts/blob/main/public/_headers) and a [`.well-known` API catalog](https://github.com/OzTamir/posts/blob/main/public/.well-known/api-catalog) pointing agents at the endpoints that actually exist (`/posts.json`, the sitemap, the RSS feed) and nothing else.
+- **[llms.txt](https://llmstxt.org)** is a plain-text index of the whole blog (every post, newest first, with excerpts), [generated](https://github.com/OzTamir/posts/blob/main/src/pages/llms.txt.ts) from the same content collection that powers the RSS feed, so it can never drift out of sync.
+- **Content signals in [`robots.txt`](https://github.com/OzTamir/posts/blob/main/src/pages/robots.txt.ts)** explicitly tell crawlers what they may do: yes to search, yes to being cited in AI answers, *no* to training models on my writing.
+- **Discovery headers**: an [RFC 8288](https://www.rfc-editor.org/rfc/rfc8288) [`Link` header](https://github.com/OzTamir/posts/blob/main/public/_headers) and a [`.well-known` API catalog](https://github.com/OzTamir/posts/blob/main/public/.well-known/api-catalog) pointing agents at the endpoints that actually exist (`/posts.json`, the sitemap, the RSS feed) and nothing else.
 
-The content signals are my favorite of the bunch — three lines that just say what I want out loud:
+The content signals are my favorite of the bunch, three lines that just say what I want out loud:
 
 ```
 User-agent: *
@@ -108,15 +108,15 @@ Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 ```
 
-Search engines, welcome. Cite me in AI answers, sure. Train a model on my writing? No thanks. It's advisory, not enforcement — but it's nice to be able to state the preference at all.
+Search engines, welcome. Cite me in AI answers, sure. Train a model on my writing? No thanks. It's advisory, not enforcement. But it's nice to be able to state the preference at all.
 
-That "nothing else" matters to me. A lot of the checklist is about advertising APIs, OAuth flows, and tool endpoints — none of which a static blog has. The honest move isn't to publish that metadata anyway; pointing an agent at endpoints that don't exist is worse than staying quiet. So I shipped what's real and skipped what isn't.
+That "nothing else" matters to me. A lot of the checklist is about advertising APIs, OAuth flows, and tool endpoints, none of which a static blog has. The honest move isn't to publish that metadata anyway; pointing an agent at endpoints that don't exist is worse than staying quiet. So I shipped what's real and skipped what isn't.
 
 But the one I actually cared about was **serving Markdown.** The idea: when an agent asks for a post with an `Accept: text/markdown` header, hand it clean Markdown instead of rendered HTML. Browsers still get the pretty page; machines get the source. This is the exact thing Ghost couldn't do, and the reason it'd been nagging at me for months.
 
-Funny enough, Cloudflare *does* have a native "Markdown for Agents" feature that does precisely this — flip a switch, done. Except it's gated behind their paid plans, and my little blog is very much on the free one. So the built-in path was out. Fine. I'd build it myself.
+Funny enough, Cloudflare *does* have a native "Markdown for Agents" feature that does precisely this: flip a switch, done. Except it's gated behind their paid plans, and my little blog is very much on the free one. So the built-in path was out. Fine. I'd build it myself.
 
-So how are we doing it? The first part is a generator that [emits a `.md` version of every post](https://github.com/OzTamir/posts/blob/main/src/pages/%5Bslug%5D.md.ts) straight from the source at build time ([resolving image and video URLs](https://github.com/OzTamir/posts/blob/main/src/utils/post-markdown.ts) to their real paths along the way). The second part is a tiny [Cloudflare Worker](https://github.com/OzTamir/posts/blob/main/worker/index.ts) — all of 2 KB — that sits in front of the static files, checks the `Accept` header, and serves the Markdown twin to anything that asks for it. Everyone else gets HTML, untouched. The whole interesting bit is about a dozen lines:
+So how are we doing it? The first part is a generator that [emits a `.md` version of every post](https://github.com/OzTamir/posts/blob/main/src/pages/%5Bslug%5D.md.ts) straight from the source at build time ([resolving image and video URLs](https://github.com/OzTamir/posts/blob/main/src/utils/post-markdown.ts) to their real paths along the way). The second part is a tiny [Cloudflare Worker](https://github.com/OzTamir/posts/blob/main/worker/index.ts) (all of 2 KB) that sits in front of the static files, checks the `Accept` header, and serves the Markdown twin to anything that asks for it. Everyone else gets HTML, untouched. The whole interesting bit is about a dozen lines:
 
 ```ts
 // Only HTML page routes reach this Worker. If the client prefers Markdown,
@@ -128,12 +128,12 @@ if (mdPath && prefersMarkdown(request.headers.get('Accept'))) {
       headers: { 'Content-Type': 'text/markdown; charset=utf-8', Vary: 'Accept' },
     });
   }
-  // No Markdown variant for this page — fall through to HTML.
+  // No Markdown variant for this page. Fall through to HTML.
 }
 return env.ASSETS.fetch(request);
 ```
 
-The whole thing weighs nothing, costs nothing, and does something my old CMS fundamentally couldn't. If you're an agent — or just curious — you can watch it work:
+The whole thing weighs nothing, costs nothing, and does something my old CMS fundamentally couldn't. If you're an agent (or just curious), you can watch it work:
 
 ```bash
 curl -H "Accept: text/markdown" https://posts.oztamir.com/shell-in-the-ghost-migrating-to-astro/
@@ -145,14 +145,12 @@ That's the kind of thing "total control" was supposed to buy me. Turns out it di
 
 ## So, was it worth it?
 
-A weekend of work to replace something that already worked fine. No new features my readers will notice. Same posts, same URLs, same font (okay — for the first time, *actually* the right font).
+A weekend of work to replace something that already worked fine. No new features my readers will notice. Same posts, same URLs, same font (okay, for the first time, *actually* the right font).
 
 But that was never the point.
 
-What I came away with is a blog with nothing to patch and no server for anyone to break into, that costs me nothing to run, and that I understand completely because I built every piece of it myself. Along the way I got to delete a live malware infection — not by scrubbing it, but by making that entire kind of attack impossible. And I got to teach the thing a trick my old CMS never could, purely because I finally own the whole stack.
+What I came away with is a blog with nothing to patch and no server for anyone to break into, that costs me nothing to run, and that I understand completely because I built every piece of it myself. Along the way I got to delete a live malware infection: not by scrubbing it, but by making that entire kind of attack impossible. And I got to teach the thing a trick my old CMS never could, purely because I finally own the whole stack.
 
-Hand-rolling your own corner of the internet is almost never the efficient call. There's always something off-the-shelf that'll get you most of the way for a fraction of the effort. But the last stretch — the part where it does exactly what you want, because you're the one who made it do that — is the part you can't buy off a shelf. That's the part that makes it *yours*.
+Hand-rolling your own corner of the internet is almost never the efficient call. There's always something off-the-shelf that'll get you most of the way for a fraction of the effort. But the last stretch (the part where it does exactly what you want, because you're the one who made it do that) is the part you can't buy off a shelf. That's the part that makes it *yours*.
 
-My blog used to be something I rented. Now it's something I own — and I can get back to the only part I actually cared about in the first place: writing.
-
-`FIN`
+My blog used to be something I rented. Now it's something I own, and I can get back to the only part I actually cared about in the first place: writing.
