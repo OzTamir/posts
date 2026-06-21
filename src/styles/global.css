@@ -411,6 +411,15 @@ html.theme-light:root {
 
   @media (max-width: 767px) {
     .post-body { font-size: 1.7rem; margin-top: 3.2rem; }
+    /* Shrink code blocks on mobile: at the 1.7rem body size, monospace lines
+       overflow the narrow column and force awkward horizontal scrolling. A
+       smaller size + tighter padding fits far more of each line on screen. */
+    .post-body pre,
+    .post-body pre.astro-code,
+    .post-body pre[class*="language-"] {
+      font-size: 1.4rem;
+      padding: 1.2rem 1.4rem;
+    }
   }
 
   /* ---------------------------------------------------------------------
