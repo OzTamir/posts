@@ -24,7 +24,11 @@ I needed somewhere to put the words. I picked [Ghost](https://ghost.org).
 
 It was, honestly, the path of least resistance. Ghost was the easy answer in 2020: spin up a VPS, install it, convert a theme into something I actually liked in an afternoon, and start typing. And for years, it delivered. It got out of my way. I wrote, it published, the thing just worked. I have zero complaints about Ghost as a writing experience. None.
 
-But over the past few months, something shifted. A string of nasty exploits started landing for Ghost. Serious ones, the kind that let a stranger [read your entire database](https://www.sentinelone.com/vulnerability-database/cve-2026-26980/) or [run their own code on your server](https://www.endorlabs.com/learn/rce-in-ghost-cms-ghsa-cgc2-rcrh-qr5x). And at some point I just stopped and asked myself the obvious question:
+But over the past few months, something shifted. A string of nasty exploits started landing for Ghost. Serious ones, the kind that let a stranger [read your entire database](https://www.sentinelone.com/vulnerability-database/cve-2026-26980/) or [run their own code on your server](https://www.endorlabs.com/learn/rce-in-ghost-cms-ghsa-cgc2-rcrh-qr5x).
+
+<Figure src="posts/shell-in-the-ghost-migrating-to-astro/updating-ghost.png" alt="A terminal mid Ghost update: sudo systemctl commands and ghost service status showing the blog service active and running." caption="My last-ever Ghost update." />
+
+And at some point, mid-update for the umpteenth time, I just stopped and asked myself the obvious question:
 
 *Why is my blog running on a CMS in this day and age?*
 
@@ -68,13 +72,13 @@ The result builds to a folder of static files that Cloudflare serves on every pu
 
 Partway through the migration, while Claude was going through my old Ghost export to port the posts over, it flagged something: every single one of my 41 posts had the same obfuscated `<script>` tucked into its footer, not in the post bodies but in Ghost's per-post "code injection" field, the kind of thing you'd never notice unless you went looking. It was base64-encoded. When I decoded it, it pointed at a domain I'd never seen, pulling a remote script onto my blog for anyone who visited. It was also built to be quiet (it fired only once per visitor), which is part of why I'd never caught it myself.
 
-<Figure src="posts/shell-in-the-ghost-migrating-to-astro/claude-malware-alert.png" alt="Claude's security finding: every one of the 41 posts has an identical obfuscated codeinjection_foot that decodes to malware, injecting a remote script on every page." caption="Not the way you want to find out. Claude flagged it mid-migration, while reading the old Ghost export." />
+<Figure src="posts/shell-in-the-ghost-migrating-to-astro/claude-malware-alert.png" alt="Claude's security finding: every one of the 41 posts has an identical obfuscated codeinjection_foot that decodes to malware, injecting a remote script on every page." caption="Not the way you want to find out." />
 
 My blog, the one I was in the middle of leaving *because* Ghost sites were under attack, had already been compromised. What are the odds, right?
 
 But once the irony wore off, it stopped being funny. This wasn't a defaced homepage or a cosmetic prank. Code I hadn't written was running in my readers' browsers.
 
-<Figure src="posts/shell-in-the-ghost-migrating-to-astro/malware-payload.png" alt="The stored malware: an obfuscated, self-executing script that base64-decodes a URL and injects it as a remote script, guarded by a localStorage flag so it runs once per visitor." caption="The actual thing, sitting in the footer of every post, obfuscated just enough that a glance at the page source wouldn't catch it." />
+<Figure src="posts/shell-in-the-ghost-migrating-to-astro/malware-payload.png" alt="The stored malware: an obfuscated, self-executing script that base64-decodes a URL and injects it as a remote script, guarded by a localStorage flag so it runs once per visitor." caption="Sitting in the footer of every single post." />
 
 So I sat down and did some research with Claude, and what I found made it worse, not better: this wasn't personal. My blog hadn't been singled out. It had been swept up in a [broad, automated campaign](https://blog.xlab.qianxin.com/ghost-cms-mass-compromised-via-cve-2026-26980-now-fueling-clickfix-attacks/) that hit hundreds of Ghost sites, Oxford and Harvard among them. The injected script was a loader for a [**ClickFix**](https://guard.io/labs/captchageddon-unmasking-the-viral-evolution-of-the-clickfix-browser-based-threat) attack: the kind that shows a visitor a fake "verify you're human" box and tricks them into pasting a command that quietly installs malware on their own machine.
 
@@ -92,7 +96,7 @@ Quick context. There's a growing push to make websites legible to AI agents: not
 
 I ran my freshly-migrated blog through it and, naturally, set out to turn every red X green.
 
-<Figure src="posts/shell-in-the-ghost-migrating-to-astro/agent-readiness-score.png" alt="Agent-readiness scan of posts.oztamir.com: overall score 50, Level 4 'Agent-Integrated', with Discoverability 75, Content 100, Bot Access Control 100, API/Auth/MCP/Skill Discovery 14, and Commerce not checked." caption="Where I landed after the pass: 'Agent-Integrated.' Commerce is greyed out because, well, I don't sell anything." />
+<Figure src="posts/shell-in-the-ghost-migrating-to-astro/agent-readiness-score.png" alt="Agent-readiness scan of posts.oztamir.com: overall score 50, Level 4 'Agent-Integrated', with Discoverability 75, Content 100, Bot Access Control 100, API/Auth/MCP/Skill Discovery 14, and Commerce not checked." caption="Where I landed: 'Agent-Integrated.'" />
 
 A few were easy, static wins:
 
