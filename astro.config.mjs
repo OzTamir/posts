@@ -35,7 +35,8 @@ export default defineConfig({
     // Official sitemap. Emits /sitemap-index.xml + /sitemap-0.xml, replacing
     // the hand-rolled sitemap*.xml.ts endpoints. It inherits the site's
     // trailingSlash:"always" from the top-level config, so URLs stay canonical.
-    sitemap(),
+    // Generated OG card PNGs (/og/*.png) are social-scraper assets, not pages.
+    sitemap({ filter: (page) => !page.includes('/og/') }),
     // Strip EXIF/XMP/IPTC from emitted raster images (privacy backstop; the
     // committed sources are also scrubbed with exiftool).
     stripImageMetadata(),
