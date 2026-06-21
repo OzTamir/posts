@@ -60,6 +60,11 @@ const feature = await optimizeFeatureImage(d.featureImage);
 const ogSocial = await socialImageUrl(SITE.url, d.ogImage ?? d.featureImage);
 const twSocial = await socialImageUrl(SITE.url, d.twitterImage ?? d.featureImage);
 
+// Posts with neither an explicit ogImage nor a featureImage fall back to a
+// build-time generated card at /og/<slug>.png (src/pages/og/[slug].png.ts).
+const generatedOg =
+  !d.ogImage && !d.featureImage ? `${SITE.url}/og/${post.id}.png` : undefined;
+
 // Body template class: "post-template tag-<primaryTag>".
 const bodyClass = `post-template ${primaryTag ? `tag-${primaryTag.slug}` : ''}`.trim();
 
@@ -72,10 +77,10 @@ const head = {
   twitterTitle: d.twitterTitle ?? d.title,
   twitterDescription: d.twitterDescription ?? description,
   canonical,
-  ogImage: ogSocial?.url,
-  twitterImage: twSocial?.url,
-  ogImageWidth: ogSocial?.width || undefined,
-  ogImageHeight: ogSocial?.height || undefined,
+  ogImage: ogSocial?.url ?? generatedOg,
+  twitterImage: twSocial?.url ?? generatedOg,
+  ogImageWidth: ogSocial?.width || (generatedOg ? 1200 : undefined),
+  ogImageHeight: ogSocial?.height || (generatedOg ? 630 : undefined),
   publishedTime: d.pubDate.toISOString(),
   modifiedTime: (d.updatedDate ?? d.pubDate).toISOString(),
   primaryTag: primaryTag?.name,
