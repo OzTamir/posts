@@ -130,6 +130,11 @@ const x: number = 42;
   choice wins; the footer toggle flips and persists the choice. No forced-dark default.
 - **SEO** lives in `src/components/Head.tsx` (canonical, OG, Twitter card, JSON-LD).
   Keep it intact when touching layouts.
+- **OG / Twitter image precedence** (per post): `ogImage`/`twitterImage` → `featureImage`
+  → a **generated card**. Posts with no explicit OG image and no `featureImage` fall back
+  to a 1200×630 card baked at build time by `src/pages/og/[slug].png.ts` (satori → sharp,
+  JetBrains Mono from `src/assets/fonts/`); the template lives in `src/utils/og-card.ts`.
+  Posts that have a feature image keep using it — nothing is generated for them.
 - **Sitemaps** are emitted by `@astrojs/sitemap` at `/sitemap-index.xml` and
   `/sitemap-0.xml`. `robots.txt` points at `/sitemap-index.xml`. There are no hand-rolled
   `sitemap*.xml.ts` endpoints.
