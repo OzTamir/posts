@@ -21,6 +21,9 @@ npm run preview    # http://localhost:4321
 - **[docs/deployment.md](./docs/deployment.md)** — Cloudflare Workers deploy via the
   GitHub integration, `wrangler.jsonc`, redirects/headers, CI, rollback.
 - **[AGENTS.md](./AGENTS.md)** — conventions for anyone (incl. AI agents) editing the repo.
+- **[.claude/skills/creating-blog-posts](./.claude/skills/creating-blog-posts/SKILL.md)** —
+  a skill that walks an agent through adding a post (layout, frontmatter, assets, verify);
+  for the prose itself it defers to the `oz-skills:blog-post-writer` skill.
 
 ## At a glance
 
@@ -29,7 +32,7 @@ npm run preview    # http://localhost:4321
 | Framework | Astro 6 (`output: "static"`) |
 | UI | React `.tsx` components (static HTML; hydrated as islands where interactive) |
 | Styling | Tailwind v4 (`@theme` tokens) + `@tailwindcss/typography` |
-| Content | MDX content collections (`src/content/posts/*.mdx`) |
-| Images | Astro asset pipeline (`src/assets/content/images/**` → WebP + srcset; GIFs preserved) |
+| Content | Markdown content collections (`src/content/posts/<slug>/index.md`), editable in Obsidian via VaultCMS |
+| Images | Co-located in each post folder → Astro asset pipeline (WebP + srcset; GIFs preserved); videos copied to `dist/<slug>/` at build |
 | Hosting | Cloudflare Workers Static Assets (`./dist`) |
 | Posts | Single author · trailing-slash URLs · Shiki `nord` code highlighting |

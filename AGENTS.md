@@ -46,6 +46,10 @@ Full docs: [`docs/building-and-content.md`](./docs/building-and-content.md),
 
 ## Adding content (the common task)
 
+> There's a project skill, **`creating-blog-posts`** (`.claude/skills/`), that walks an
+> agent through this end to end (layout, frontmatter, assets, verification). For the prose
+> itself, defer to the `oz-skills:blog-post-writer` skill. The steps below are the summary.
+
 1. Create a folder `src/content/posts/<slug>/` and put `index.md` inside it. The **folder
    name is the slug/URL** (`/<slug>/`, trailing slash).
 2. Frontmatter must satisfy `src/content.config.ts` (`title`, `date` required; everything
@@ -178,8 +182,12 @@ public/my-new-post/
 
 Posts under `src/content/posts/` form a plain-Markdown vault editable in Obsidian.
 Each post is a folder (`<slug>/index.md`) with its images co-located alongside it —
-the standard Obsidian "folder note" layout. The vault is configured for VaultCMS
-(`.obsidian/` config installed separately — see VaultCMS setup docs for details).
+the standard Obsidian "folder note" layout. The VaultCMS vault config lives in the repo
+at `src/content/.obsidian/` (plus the CMS home view in `src/content/_bases/`); per-user
+workspace files are gitignored. Open `src/content` as a vault and use VaultCMS's
+"new post" command to scaffold a post from the template. The bundled **`0xZ` Obsidian
+theme** (`src/content/.obsidian/themes/0xZ/`) mirrors the site's palette and fonts (gold
+accent, Mulish, IBM Plex Mono) so editing looks like the blog.
 When editing in Obsidian, image references (`![alt](file.png)`) and video embeds
 (`![[clip.mp4|...]]`) preview correctly. Raw HTML embed blocks (tweets, Instagram) are
 visible as raw HTML in Obsidian but render correctly on the site.

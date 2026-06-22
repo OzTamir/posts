@@ -83,7 +83,7 @@ Dark/light values live in `global.css` under `.theme-dark:root` and `.theme-ligh
   `--header-spacing: 60px` (`30px` on mobile via `@media (max-width: 767px)`).
 - Content width comes from the **named-grid system** (`.gh-canvas`):
   - `[main]` column — the standard prose width (720 px, responsive)
-  - `[wide]` column — wider bleed (`.content-wide`), used by `<Figure wide>`
+  - `[wide]` column — wider bleed (`.content-wide`), used by the `{wide}` image marker
   - `[full]` column — edge-to-edge (`.content-full`)
 - **Breakpoint:** primary cutoff is **768 px** = Tailwind's `md:`. Styling is mobile-first.
 
@@ -105,21 +105,26 @@ Dark/light values live in `global.css` under `.theme-dark:root` and `.theme-ligh
 | `RelatedPosts` | `src/components/RelatedPosts.tsx` | `{ related }` | "Hungry for more?" related-posts block under a post |
 | `icons/*.tsx` | `src/components/icons/` | — | Inline SVGs (Twitter, LinkedIn, RSS, Sun, Moon, Facebook) |
 
-## MDX component kit (post-body embeds)
+## Post-body content (Markdown + remark plugins)
 
-These Astro components live in `src/components/mdx/` and are imported at the top of each
-`.mdx` post that needs them.
+Post bodies are plain Markdown (`src/content/posts/<slug>/index.md`) — no JSX, no imports.
+Two remark plugins (`src/plugins/`) turn Obsidian-friendly Markdown into the same figure
+markup the old `<Figure>`/`<Video>` component kit produced, so the rendered look is
+unchanged — only the authoring syntax differs.
 
-| Component | Props | Behavior |
+| Syntax | Plugin | Renders |
 | --- | --- | --- |
-| `Figure` | `src` (required), `alt`, `caption`, `wide` | Local images → Astro `<Image>` (WebP + srcset + lazy); GIFs → plain `<img>` (animation preserved); remote URLs → plain lazy `<img>`. `wide` expands to the `.content-wide` grid column. |
-| `Video` | `src` (required), `poster`, `title` | Native `<video controls preload="metadata" playsinline>`. Both video and poster are resolved through the build asset pipeline. |
-| `Tweet` | `width` (optional); children = inner blockquote markup | Emits a `.twitter-tweet` blockquote; the page's inline embed-loader injects `widgets.js` only when this class is present. |
-| `Instagram` | `permalink` (required), `captioned`, `version`; children = inner attribution | Emits a `.instagram-media` blockquote; embed-loader injects `embed.js` only when present. |
+| `![alt](file.png)`, optionally an italic `*caption*` on the very next line; `{wide}` appended for the wide column | `remark-image-captions.mjs` | `figure.image-card` (`.has-caption` / `.content-wide` as applicable) wrapping an Astro-optimized `<img>` (WebP + srcset; GIFs preserved) |
+| `![[clip.mp4\|poster=thumb.jpg\|title=…\|autoplay]]` on its own line | `remark-video-embeds.mjs` | `figure.video-card` wrapping `<video controls preload="metadata" playsinline>` (or muted/looping when `autoplay`) |
+| Raw embed HTML pasted into the Markdown | — | `.twitter-tweet` / `.instagram-media` blockquotes; the page's inline embed-loader injects the third-party script only when the class is present |
+
+Images live beside the post and go through Astro's optimizer; videos and their posters are
+co-located too and copied to `dist/<slug>/` at build by the `copy-post-media` integration
+(Astro's pipeline doesn't handle raw video). Authoring details: [building-and-content.md](./building-and-content.md).
 
 ## Post body styling
 
-Rendered MDX is wrapped in `<div class="single-content gh-content gh-canvas">`.
+Rendered post Markdown is wrapped in `<div class="single-content gh-content gh-canvas">`.
 Styling inside `.gh-content` (in `@layer components` in `global.css`):
 
 - Headings (`h2`–`h4`), paragraphs, links (brand accent + underline), lists (disc/decimal
@@ -127,8 +132,9 @@ Styling inside `.gh-content` (in `@layer components` in `global.css`):
   `hr`, inline `code`, and `pre` code blocks.
 - Code blocks: IBM Plex Mono on a Nord background (`#2e3440`) — Shiki's `nord` theme
   supplies per-token colors via inline `<span style="color:…">`.
-- Image figures: `figure.image-card` (from `<Figure>`), `.content-wide` (from `wide`
-  prop). Consecutive captionless figures get tight spacing.
+- Image figures: `figure.image-card` (from `remark-image-captions`), `.content-wide`
+  (from the `{wide}` marker); video: `figure.video-card` (from `remark-video-embeds`).
+  Consecutive captionless figures get tight spacing.
 - Social embeds: `.twitter-tweet` and `.instagram-media` are centered before/while
   their third-party scripts upgrade them.
 

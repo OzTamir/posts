@@ -26,7 +26,7 @@ social-embed loaders).
 
 ```
 .
-├── astro.config.mjs         # static output, trailing-slash:always, Tailwind, Shiki(nord), sitemap, MDX (compat), React
+├── astro.config.mjs         # static output, trailing-slash:always, Tailwind, Shiki(nord), sitemap, React, remark plugins
 ├── wrangler.jsonc           # Cloudflare Workers Static Assets config (+ markdown Worker)
 ├── worker/index.ts          # thin Worker: Accept: text/markdown content negotiation
 ├── tsconfig.json            # extends astro/tsconfigs/strict
