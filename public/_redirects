@@ -12,3 +12,7 @@
 /page/1/  /  301
 /tag/:tag/page/1/  /tag/:tag/  301
 /author/:author/page/1/  /author/:author/  301
+
+# Tag slug redirects (VaultCMS migration)
+/tag/3d-printing-2/ /tag/3d-printing/ 301
+/tag/home-assistant-2/ /tag/home-assistant/ 301
