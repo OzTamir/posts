@@ -14,15 +14,15 @@ import { formatPostDate } from '../../utils/format';
 export const getStaticPaths = (async () => {
   const all = await getSortedPosts();
   return all
-    .filter(({ post }) => !post.data.ogImage && !post.data.featureImage)
+    .filter(({ post }) => !post.data.ogImage && !post.data.image)
     .map(({ post }) => ({ params: { slug: post.id }, props: { post } }));
 }) satisfies GetStaticPaths;
 
 export const GET: APIRoute = async ({ props }) => {
   const d = (props as { post: Awaited<ReturnType<typeof getSortedPosts>>[number]['post'] }).post
     .data;
-  const meta = formatPostDate(d.pubDate);
-  const png = await renderOgCard({ title: d.title, tagline: d.excerpt ?? '', meta });
+  const meta = formatPostDate(d.date);
+  const png = await renderOgCard({ title: d.title, tagline: d.description ?? '', meta });
 
   return new Response(new Uint8Array(png), {
     headers: {

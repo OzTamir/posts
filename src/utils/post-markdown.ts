@@ -87,10 +87,10 @@ export async function postToMarkdown(post: CollectionEntry<'posts'>): Promise<st
 
   // Header: title, a one-line provenance note, optional excerpt + cover image.
   const url = `${SITE.url}/${post.id}/`;
-  const date = d.pubDate.toISOString().slice(0, 10);
+  const date = d.date.toISOString().slice(0, 10);
   const parts = [`# ${d.title}`, `*${date} · [${url}](${url})*`];
-  if (d.excerpt) parts.push(`> ${d.excerpt}`);
-  if (d.featureImage) parts.push(`![${d.featureImageAlt ?? ''}](${await imageUrl(d.featureImage)})`);
+  if (d.description) parts.push(`> ${d.description}`);
+  if (d.image) parts.push(`![${d.imageAlt ?? ''}](${await imageUrl(d.image)})`);
   parts.push(body);
   return parts.join('\n\n') + '\n';
 }

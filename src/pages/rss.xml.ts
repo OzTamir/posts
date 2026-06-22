@@ -22,7 +22,7 @@ export async function GET(context: { site: URL }) {
 
   // Sort newest-first, take first RSS_LIMIT
   const posts = allPosts
-    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
     .slice(0, RSS_LIMIT);
 
   const siteUrl = SITE.url;
@@ -50,26 +50,26 @@ export async function GET(context: { site: URL }) {
         const postUrl = `${siteUrl}/${slug}/`;
 
         // Tag names for <category> elements.
-        const categories = post.data.tags.map((t) => t.name);
+        const categories = post.data.tags;
 
         // Per-item custom XML — feature image as an optimized absolute URL.
         const itemCustomData: string[] = [
           `<dc:creator><![CDATA[${author.name}]]></dc:creator>`,
         ];
-        const featured = await socialImageUrl(siteUrl, post.data.featureImage);
+        const featured = await socialImageUrl(siteUrl, post.data.image);
         if (featured) {
           itemCustomData.push(`<media:content url="${featured.url}" medium="image"/>`);
         }
 
         // Full post HTML from Astro's Content Layer pre-render.
         // (MDX bodies render to HTML with the optimized /_astro asset URLs.)
-        const htmlContent = post.rendered?.html ?? post.data.excerpt ?? '';
+        const htmlContent = post.rendered?.html ?? post.data.description ?? '';
 
         return {
           title: post.data.title,
-          description: post.data.excerpt ?? '',
+          description: post.data.description ?? '',
           link: postUrl,
-          pubDate: post.data.pubDate,
+          pubDate: post.data.date,
           // @astrojs/rss wraps this in <content:encoded><![CDATA[...]]>
           content: htmlContent,
           categories,

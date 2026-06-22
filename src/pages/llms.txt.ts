@@ -19,10 +19,10 @@ export async function GET() {
   const all = await getCollection('posts');
 
   const posts = all
-    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
     .map((post) => {
       const url = `${SITE.url}/${post.id}/`; // content layer: id = filename stem = slug
-      const excerpt = post.data.excerpt?.trim();
+      const excerpt = post.data.description?.trim();
       return `- [${post.data.title}](${url})${excerpt ? `: ${excerpt}` : ''}`;
     })
     .join('\n');

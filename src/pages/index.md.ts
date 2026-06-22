@@ -8,13 +8,13 @@ import { SITE } from '../config';
 
 export async function GET() {
   const all = (await getCollection('posts')).sort(
-    (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
+    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
   );
 
   const list = all
     .map((p) => {
       const url = `${SITE.url}/${p.id}/`;
-      return `- [${p.data.title}](${url})${p.data.excerpt ? `: ${p.data.excerpt}` : ''}`;
+      return `- [${p.data.title}](${url})${p.data.description ? `: ${p.data.description}` : ''}`;
     })
     .join('\n');
 
