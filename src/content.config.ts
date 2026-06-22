@@ -19,25 +19,13 @@ const posts = defineCollection({
   schema: z
     .object({
       title: z.string(),
-      // New + legacy date/description/image fields (both accepted).
-      date: z.coerce.date().optional(),
-      pubDate: z.coerce.date().optional(),
+      date: z.coerce.date(),
       updatedDate: z.coerce.date().optional(),
       description: z.string().nullable().optional(),
-      excerpt: z.string().nullable().optional(),
       image: z.string().nullable().optional(),
-      featureImage: z.string().nullable().optional(),
       imageAlt: z.string().nullable().optional(),
-      featureImageAlt: z.string().nullable().optional(),
       imageCaption: z.string().nullable().optional(),
-      featureImageCaption: z.string().nullable().optional(),
-      // Tags: string[] (new) OR [{slug,name}] (legacy).
-      tags: z
-        .union([
-          z.array(z.string()),
-          z.array(z.object({ slug: z.string(), name: z.string() })),
-        ])
-        .default([]),
+      tags: z.array(z.string()).default([]),
       author: z.string().default('oz'),
       featured: z.boolean().default(false),
       draft: z.boolean().default(false),
@@ -45,13 +33,9 @@ const posts = defineCollection({
     })
     .transform((d) => ({
       ...d,
-      date: d.date ?? d.pubDate ?? new Date(),
-      description: d.description ?? d.excerpt ?? undefined,
-      image: d.image ?? d.featureImage ?? null,
-      imageAlt: d.imageAlt ?? d.featureImageAlt ?? null,
-      imageCaption: d.imageCaption ?? d.featureImageCaption ?? null,
-      // Canonical tags = display-name strings.
-      tags: (d.tags ?? []).map((t) => (typeof t === 'string' ? t : t.name)),
+      image: d.image ?? null,
+      imageAlt: d.imageAlt ?? null,
+      imageCaption: d.imageCaption ?? null,
     })),
 });
 
