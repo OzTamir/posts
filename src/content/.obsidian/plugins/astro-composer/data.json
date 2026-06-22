@@ -6,14 +6,27 @@
   "copyHeadingLinkFormat": "astro",
   "addTrailingSlashToLinks": true,
   "enableOpenTerminalCommand": true,
-  "terminalProjectRootPath": "",
+  "terminalProjectRootPath": "../..",
   "terminalApplicationName": "",
   "enableTerminalDebugLogging": false,
   "enableTerminalRibbonIcon": true,
   "enableOpenConfigFileCommand": true,
-  "configFilePath": "",
-  "enableConfigRibbonIcon": false,
-  "contentTypes": [],
+  "configFilePath": "../../astro.config.mjs",
+  "enableConfigRibbonIcon": true,
+  "contentTypes": [
+    {
+      "id": "content-type-1782135867732-1vf7lhmyw",
+      "name": "Posts",
+      "folder": "posts",
+      "linkBasePath": "/",
+      "template": "---\ntitle: \"{{title}}\"\ndate: {{date}}\nauthor: \"oz\"\ndescription: \"\"\nimage: \"\"\ntags: []\nfeatured: false\nogDescription: \"\"\ntwitterDescription: \"\"\ndraft: true\nimageCaption: \"\"\ntwitterImage: \"\"\n---\n",
+      "enabled": true,
+      "creationMode": "folder",
+      "indexFileName": "index",
+      "ignoreSubfolders": false,
+      "enableUnderscorePrefix": false
+    }
+  ],
   "migrationCompleted": true,
   "helpButtonReplacement": {
     "enabled": true,
@@ -23,9 +36,11 @@
   "showMdxFilesInExplorer": false,
   "processBackgroundFileChanges": true,
   "syncDraftDate": false,
+  "draftDetectionMode": "property",
   "draftProperty": "",
   "draftLogic": "true-is-draft",
   "publishDateField": "",
+  "renameOnTitleClick": false,
   "updateModifiedDate": false,
   "modifiedDateField": ""
 }
