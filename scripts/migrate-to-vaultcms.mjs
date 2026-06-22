@@ -15,6 +15,9 @@
  *   - Post goes to:   src/content/posts/<slug>/index.md
  *   - Images go to:   src/content/posts/<slug>/<basename>   (git mv from src/assets/content/images/posts/<slug>/)
  *   - Videos go to:   public/<slug>/<basename>               (git mv from src/assets/content/media/posts/<slug>/)
+ *   - Posters go to:  public/<slug>/<basename>               (same dir as video — poster= is a plain HTML attr,
+ *                                                             NOT a markdown image node, so content-folder files
+ *                                                             would 404; public/ is the only path that resolves)
  */
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from 'node:fs';
@@ -138,7 +141,7 @@ function htmlCaptionToMarkdown(html) {
  *   - <Tweet>...</Tweet>   → raw inner HTML wrapped in figure.embed-card blockquote
  *   - <Instagram permalink="...">...</Instagram> → raw inner HTML wrapped in figure.embed-card blockquote
  */
-function transformBody(body, slug, videoFiles) {
+function transformBody(body, videoFiles) {
   let out = body;
 
   // 1. Strip import lines
@@ -146,14 +149,12 @@ function transformBody(body, slug, videoFiles) {
 
   // 2. Figure elements (self-closing, may be multi-line due to long attributes — but in practice all are single-line)
   // Match <Figure .../>  (self-closing)
-  out = out.replace(/<Figure\s+([\s\S]*?)\/>/g, (match, attrsRaw) => {
+  out = out.replace(/<Figure\s+([\s\S]*?)\/>/g, (_match, attrsRaw) => {
     const attrs = parseJSXAttrs(attrsRaw);
     const src = attrs.src || '';
     const alt = attrs.alt || '';
     const caption = attrs.caption;
     const wide = attrs.wide;
-    const format = attrs.format; // some Figure have format= (Twitter CDN url)
-    const name = attrs.name;   // some have name= (Twitter CDN url)
 
     // Reconstruct src if it had query params (Twitter CDN format)
     // e.g. src="https://pbs.twimg.com/...?format=jpg&name=large"
@@ -181,7 +182,7 @@ function transformBody(body, slug, videoFiles) {
   });
 
   // 3. Video elements
-  out = out.replace(/<Video\s+([\s\S]*?)\/>/g, (match, attrsRaw) => {
+  out = out.replace(/<Video\s+([\s\S]*?)\/>/g, (_match, attrsRaw) => {
     const attrs = parseJSXAttrs(attrsRaw);
     const src = attrs.src || '';
     const poster = attrs.poster;
@@ -203,7 +204,7 @@ function transformBody(body, slug, videoFiles) {
 
   // 4. Tweet embeds: <Tweet [width="..."]>...inner...</Tweet>
   //    → <figure class="embed-card flex w-full flex-col items-center"><blockquote class="twitter-tweet" [data-width="..."]>inner</blockquote></figure>
-  out = out.replace(/<Tweet([^>]*)>([\s\S]*?)<\/Tweet>/g, (match, tweetAttrs, inner) => {
+  out = out.replace(/<Tweet([^>]*)>([\s\S]*?)<\/Tweet>/g, (_match, tweetAttrs, inner) => {
     const widthM = tweetAttrs.match(/width="([^"]*)"/);
     const dataWidth = widthM ? ` data-width="${widthM[1]}"` : '';
     return `<figure class="embed-card flex w-full flex-col items-center">
@@ -215,7 +216,7 @@ function transformBody(body, slug, videoFiles) {
 
   // 5. Instagram embeds: <Instagram permalink="..." [captioned=...] [version="..."]>...inner...</Instagram>
   //    → raw blockquote HTML matching Instagram.astro output
-  out = out.replace(/<Instagram\s+([\s\S]*?)>([\s\S]*?)<\/Instagram>/g, (match, igAttrs, inner) => {
+  out = out.replace(/<Instagram\s+([\s\S]*?)>([\s\S]*?)<\/Instagram>/g, (_match, igAttrs, inner) => {
     const permalinkM = igAttrs.match(/permalink="([^"]*)"/);
     const captionedM = igAttrs.match(/captioned=\{?(true|false)\}?/);
     const versionM = igAttrs.match(/version="([^"]*)"/);
@@ -320,7 +321,7 @@ function migratePost(slug) {
 
   // Collect video asset info during body transform
   const videoFiles = [];
-  const newBody = transformBody(rawBody, slug, videoFiles);
+  const newBody = transformBody(rawBody, videoFiles);
 
   // Produce new index.md content
   const newContent = `---\n${yaml.dump(newFm, { lineWidth: -1 })}---\n${newBody}`;
@@ -329,24 +330,50 @@ function migratePost(slug) {
   const imgSrcDir = join(IMAGES_ASSETS, slug);
   const imgDestDir = destDir;
 
-  // Find images
-  let imagesToMove = [];
-  if (existsSync(imgSrcDir)) {
-    imagesToMove = readdirSync(imgSrcDir).map(f => ({
-      from: join(imgSrcDir, f),
-      to:   join(imgDestDir, f),
-    }));
-  }
+  // Collect poster basenames so we can route them to public/<slug>/ instead of
+  // src/content/posts/<slug>/. Poster files are referenced via plain HTML
+  // attributes (not markdown image nodes) so Astro/Vite won't serve them from
+  // the content folder — they must live in public/<slug>/ alongside the video.
+  const posterBasenames = new Set(
+    videoFiles
+      .filter(v => v.poster)
+      .map(v => bname(v.poster))
+  );
 
   // Videos: from src/assets/content/media/posts/<slug>/ → public/<slug>/
   const mediaSrcDir = join(MEDIA_ASSETS, slug);
   const mediaDestDir = join(PUBLIC_DIR, slug);
+
+  // Find images — route poster files to public/<slug>/ (same as video), all
+  // other images go to src/content/posts/<slug>/ (markdown image nodes).
+  let imagesToMove = [];
+  let postersToMove = [];
+  if (existsSync(imgSrcDir)) {
+    for (const f of readdirSync(imgSrcDir)) {
+      if (posterBasenames.has(f)) {
+        postersToMove.push({ from: join(imgSrcDir, f), to: join(mediaDestDir, f) });
+      } else {
+        imagesToMove.push({ from: join(imgSrcDir, f), to: join(imgDestDir, f) });
+      }
+    }
+  }
+  // Poster files may also live in the media tree — include any not already captured
+  if (existsSync(mediaSrcDir)) {
+    for (const f of readdirSync(mediaSrcDir)) {
+      if (posterBasenames.has(f) && !postersToMove.find(p => bname(p.from) === f)) {
+        postersToMove.push({ from: join(mediaSrcDir, f), to: join(mediaDestDir, f) });
+      }
+    }
+  }
+
   let videosToMove = [];
   if (existsSync(mediaSrcDir)) {
-    videosToMove = readdirSync(mediaSrcDir).map(f => ({
-      from: join(mediaSrcDir, f),
-      to:   join(mediaDestDir, f),
-    }));
+    videosToMove = readdirSync(mediaSrcDir)
+      .filter(f => !posterBasenames.has(f))
+      .map(f => ({
+        from: join(mediaSrcDir, f),
+        to:   join(mediaDestDir, f),
+      }));
   }
 
   // ─── Dry-run output ──────────────────────────────────────────────────────
@@ -357,11 +384,14 @@ function migratePost(slug) {
     console.log(`\n--- PROPOSED index.md ---\n`);
     console.log(newContent);
     console.log(`\n--- PLANNED ASSET MOVES ---`);
-    if (imagesToMove.length === 0) {
+    if (imagesToMove.length === 0 && postersToMove.length === 0) {
       console.log('  (no images found in src/assets/content/images/posts/' + slug + '/)');
     }
     for (const { from, to } of imagesToMove) {
       console.log(`  git mv ${from.replace(ROOT + '/', '')} ${to.replace(ROOT + '/', '')}`);
+    }
+    for (const { from, to } of postersToMove) {
+      console.log(`  git mv ${from.replace(ROOT + '/', '')} ${to.replace(ROOT + '/', '')}  [poster → public]`);
     }
     if (videosToMove.length === 0 && videoFiles.length > 0) {
       console.log('  WARNING: Video refs found in body but no files in media/posts/' + slug + '/');
@@ -380,15 +410,19 @@ function migratePost(slug) {
   // Create post folder
   mkdirSync(destDir, { recursive: true });
 
-  // Move images
+  // Move images (body images → content folder; poster images → public/<slug>/)
   for (const { from, to } of imagesToMove) {
     execSync(`git mv "${from}" "${to}"`, { cwd: ROOT });
     console.log(`  mv img: ${bname(from)}`);
   }
 
-  // Move videos to public/<slug>/
-  if (videosToMove.length > 0) {
+  // Move posters and videos to public/<slug>/
+  if (videosToMove.length > 0 || postersToMove.length > 0) {
     mkdirSync(mediaDestDir, { recursive: true });
+    for (const { from, to } of postersToMove) {
+      execSync(`git mv "${from}" "${to}"`, { cwd: ROOT });
+      console.log(`  mv poster: ${bname(from)} → public/${slug}/`);
+    }
     for (const { from, to } of videosToMove) {
       execSync(`git mv "${from}" "${to}"`, { cwd: ROOT });
       console.log(`  mv vid: ${bname(from)} → public/${slug}/`);
