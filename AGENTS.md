@@ -188,6 +188,21 @@ workspace files are gitignored. Open `src/content` as a vault and use VaultCMS's
 "new post" command to scaffold a post from the template. The bundled **`0xZ` Obsidian
 theme** (`src/content/.obsidian/themes/0xZ/`) mirrors the site's palette and fonts (gold
 accent, Mulish, IBM Plex Mono) so editing looks like the blog.
+
+**Fresh-clone setup (only if you want to edit in Obsidian).** The third-party Obsidian
+plugin *code* (`.obsidian/plugins/*/main.js`, `styles.css`) is intentionally NOT committed
+— only each plugin's `manifest.json` + `data.json` (which plugin + its configured
+settings) are. So a fresh clone has the vault config but not the plugin binaries. Before
+editing in Obsidian, restore them by re-running the VaultCMS installer from the repo root:
+
+```bash
+npx create-vaultcms        # target src/content; follow its prompts to restore the existing vault
+```
+
+It re-fetches the plugin bundles; the committed `manifest.json`/`data.json` keep your
+configured setup (content types, mappings, theme). This step is **not** needed to build,
+preview, or deploy the site — the build never touches the vault. It's purely for the
+Obsidian editing workflow.
 When editing in Obsidian, image references (`![alt](file.png)`) and video embeds
 (`![[clip.mp4|...]]`) preview correctly. Raw HTML embed blocks (tweets, Instagram) are
 visible as raw HTML in Obsidian but render correctly on the site.

@@ -261,8 +261,21 @@ const x: number = 42;
 
 Posts under `src/content/posts/` form a plain-Markdown vault editable in Obsidian. Each
 post is a folder (`<slug>/index.md`) with its images co-located — the standard Obsidian
-"folder note" layout. The vault is configured for VaultCMS (`.obsidian/` config installed
-separately — see VaultCMS setup docs for details).
+"folder note" layout. The VaultCMS vault config lives in the repo at
+`src/content/.obsidian/` (plus the CMS home view in `src/content/_bases/`); the `0xZ`
+theme (`.obsidian/themes/0xZ/`) makes the editor match the site.
+
+**Fresh-clone setup (Obsidian editing only).** The third-party plugin *code*
+(`.obsidian/plugins/*/main.js`, `styles.css`) isn't committed — only each plugin's
+`manifest.json` + `data.json` (which plugin + its settings). After a clone, restore the
+bundles before editing in Obsidian by re-running the installer from the repo root:
+
+```bash
+npx create-vaultcms        # target src/content; follow its prompts to restore the existing vault
+```
+
+The committed config keeps your configured setup. This is not needed to build, preview, or
+deploy — the site build never touches the vault.
 
 When editing in Obsidian:
 - Image references (`![alt](file.png)`) preview correctly.

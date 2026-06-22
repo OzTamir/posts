@@ -12,6 +12,12 @@ npm run build      # → ./dist
 npm run preview    # http://localhost:4321
 ```
 
+> **Editing posts in Obsidian?** The VaultCMS Obsidian plugin *code* isn't committed (only
+> its config), so after a fresh clone run `npx create-vaultcms` once to restore the plugin
+> bundles before opening `src/content` as a vault. This is only for the Obsidian editing
+> workflow — building, previewing, and deploying the site need none of it. See
+> [AGENTS.md → Editing in Obsidian / VaultCMS](./AGENTS.md).
+
 ## Docs
 
 - **[docs/building-and-content.md](./docs/building-and-content.md)** — stack, project
