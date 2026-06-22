@@ -7,12 +7,93 @@
  * resulting URL/srcset strings down as plain props — keeping the React tree
  * static while still shipping optimized /_astro assets (no /content links).
  *
- * Feature images are resolved through the same eager glob the MDX <Figure>
- * uses, so frontmatter keeps its existing "/content/images/..." string paths
- * (no per-post import churn).
+ * Feature images are resolved through eager globs over two pools:
+ *   1. Legacy images under src/assets/content/images/ (site/ logo/avatar/og;
+ *      previously also posts/ but those dirs are now empty after migration).
+ *   2. Co-located images under src/content/posts/<slug>/ (new folder-based posts).
+ *
+ * New folder-based posts use co-located basename paths ("featured.png").
+ * Use resolveFeatureImagePath() to normalize before calling optimizeFeatureImage
+ * or socialImageUrl.
  */
 import { getImage } from 'astro:assets';
-import { resolveImage, isGif } from '../components/mdx/images';
+import type { ImageMetadata } from 'astro';
+
+// Legacy images under src/assets/content/images/ (includes site/ sub-dir with
+// logo, avatar, og-default, icon — still actively used for site chrome).
+const legacyModules = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/content/images/**/*.{png,PNG,jpg,JPG,jpeg,JPEG,webp,WEBP,gif,GIF}',
+  { eager: true },
+);
+
+// Co-located images under src/content/posts/<slug>/
+const colocatedModules = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/content/posts/**/*.{png,PNG,jpg,JPG,jpeg,JPEG,webp,WEBP,gif,GIF}',
+  { eager: true },
+);
+
+// Unified map: tree-relative path → ImageMetadata
+const byRelPath = new Map<string, ImageMetadata>();
+for (const [key, mod] of Object.entries(legacyModules)) {
+  const rel = key.replace('/src/assets/content/images/', '');
+  byRelPath.set(rel, mod.default);
+}
+for (const [key, mod] of Object.entries(colocatedModules)) {
+  const rel = key.replace('/src/content/posts/', ''); // "my-slug/featured.png"
+  byRelPath.set(rel, mod.default);
+  byRelPath.set(`posts/${rel}`, mod.default);
+}
+
+function toRelPath(path: string): string {
+  return path
+    .replace(/^\/?content\/images\//, '')
+    .replace(/^\/?src\/assets\/content\/images\//, '')
+    .replace(/^\/?src\/content\/posts\//, '')
+    .replace(/^\//, '');
+}
+
+/**
+ * Resolve an image path to its optimized ImageMetadata.
+ * For co-located new-format posts, the frontmatter passes only the basename
+ * ("featured.png"). The page route is responsible for prefixing the slug to
+ * form "<slug>/featured.png" before calling this function.
+ *
+ * Throws at build time if the asset is missing.
+ */
+export function resolveImage(path: string): ImageMetadata {
+  const rel = toRelPath(path);
+  const found = byRelPath.get(rel);
+  if (!found) {
+    throw new Error(
+      `[utils/images] No optimized asset for "${path}" (looked up "${rel}"). ` +
+        `Make sure the file is in src/assets/content/images/ or co-located in src/content/posts/<slug>/.`,
+    );
+  }
+  return found;
+}
+
+/** Is this an animated GIF? (Imported but NOT re-encoded, to keep animation.) */
+export function isGif(img: ImageMetadata): boolean {
+  return img.format === 'gif';
+}
+
+/**
+ * Normalize the feature image path for a post. New folder-based posts use a
+ * co-located basename (e.g. "featured.png") — prefix with the post slug so
+ * resolveImage can find it via the co-located glob. Legacy posts use a full
+ * path already (contains "/" or "http").
+ */
+export function resolveFeatureImagePath(
+  slug: string,
+  imagePath: string | null | undefined,
+): string | null | undefined {
+  if (!imagePath) return imagePath;
+  // Co-located basename: no directory separator and not a URL.
+  if (!imagePath.includes('/') && !imagePath.startsWith('http')) {
+    return `${slug}/${imagePath}`;
+  }
+  return imagePath;
+}
 
 export interface OptimizedImage {
   /** Optimized (or, for GIFs, original) asset URL — a hashed /_astro path. */

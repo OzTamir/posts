@@ -1,0 +1,144 @@
+/* =============================================================================
+   0xZ — Obsidian theme for the oz-blog (posts.oztamir.com) content vault.
+
+   Mirrors the live blog's design language so writing posts in Obsidian feels
+   like the site: the gold/amber accent (#997700 light / #ffd102 dark) on a
+   near-white / near-black surface, Mulish for text and headings, IBM Plex Mono
+   for code. Palette and fonts are taken verbatim from src/styles/global.css —
+   light and dark blocks below match the blog's .theme-light / .theme-dark
+   tokens, so the editor follows your OS scheme exactly like the site does.
+
+   Author: Oz Tamir — https://posts.oztamir.com
+   ============================================================================= */
+
+/* Mulish (text + UI), IBM Plex Mono (code), Lora (the blog's serif, available). */
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Lora:ital,wght@0,400;0,700;1,400&family=Mulish:ital,wght@0,400;0,700;0,800;1,400&display=swap");
+
+body {
+  --font-text-theme: "Mulish", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-interface-theme: "Mulish", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-monospace-theme: "IBM Plex Mono", "SF Mono", Monaco, Inconsolata, "Roboto Mono", "Courier New", monospace;
+
+  /* The blog's headings are Mulish 800 (extra-bold). */
+  --h1-weight: 800;
+  --h2-weight: 800;
+  --h3-weight: 800;
+  --h4-weight: 800;
+  --h5-weight: 800;
+  --h6-weight: 800;
+  --bold-weight: 700;
+
+  --radius-s: 4px;
+  --radius-m: 6px;
+  --radius-l: 8px;
+}
+
+/* ----------------------------------------------------------------------------
+   LIGHT — blog light mode: #fff surface, #1a1a1a ink, #997700 gold accent.
+   ---------------------------------------------------------------------------- */
+.theme-light {
+  /* Drives Obsidian's accent-derived colors (links, toggles, the active gutter). */
+  --accent-h: 47;
+  --accent-s: 100%;
+  --accent-l: 30%;
+
+  --background-primary: #ffffff;
+  --background-primary-alt: #f8f8f8;
+  --background-secondary: #f8f8f8;
+  --background-secondary-alt: #e8e8e8;
+  --background-modifier-border: #e8e8e8;
+  --background-modifier-border-hover: #b3b3b3;
+  --background-modifier-border-focus: #997700;
+  --background-modifier-hover: rgba(26, 26, 26, 0.04);
+  --background-modifier-active-hover: rgba(153, 119, 0, 0.10);
+
+  --text-normal: #1a1a1a;
+  --text-muted: #666666;
+  --text-faint: #b3b3b3;
+  --text-on-accent: #ffffff;
+
+  --text-accent: #997700;
+  --text-accent-hover: #7a5f00;
+  --interactive-accent: #997700;
+  --interactive-accent-hover: #7a5f00;
+
+  --text-selection: rgba(153, 119, 0, 0.18);
+  --text-highlight-bg: rgba(255, 209, 2, 0.45);
+
+  --titlebar-background: #ffffff;
+  --titlebar-background-focused: #ffffff;
+}
+
+/* ----------------------------------------------------------------------------
+   DARK — blog dark mode: #1a1a1a surface, #e8e8e8 ink, #ffd102 gold accent.
+   ---------------------------------------------------------------------------- */
+.theme-dark {
+  --accent-h: 49;
+  --accent-s: 100%;
+  --accent-l: 50%;
+
+  --background-primary: #1a1a1a;
+  --background-primary-alt: #252525;
+  --background-secondary: #252525;
+  --background-secondary-alt: #333333;
+  --background-modifier-border: #333333;
+  --background-modifier-border-hover: #666666;
+  --background-modifier-border-focus: #ffd102;
+  --background-modifier-hover: rgba(255, 255, 255, 0.05);
+  --background-modifier-active-hover: rgba(255, 209, 2, 0.12);
+
+  --text-normal: #e8e8e8;
+  --text-muted: #a0a0a0;
+  --text-faint: #666666;
+  --text-on-accent: #1a1a1a;
+
+  --text-accent: #ffd102;
+  --text-accent-hover: #ffe34d;
+  --interactive-accent: #ffd102;
+  --interactive-accent-hover: #ffe34d;
+
+  --text-selection: rgba(255, 209, 2, 0.22);
+  --text-highlight-bg: rgba(255, 209, 2, 0.30);
+
+  --titlebar-background: #1a1a1a;
+  --titlebar-background-focused: #1a1a1a;
+}
+
+/* ----------------------------------------------------------------------------
+   Reinforcements — carry the gold + mono identity into links, code, and
+   headings the way the site does. Color values come from the variables above,
+   so these rules stay correct in both light and dark.
+   ---------------------------------------------------------------------------- */
+
+/* Links use the gold accent. The site renders body links gray and flips them to
+   gold on hover; in an editor, gold links read clearer, so we lead with gold. */
+.cm-s-obsidian .cm-hmd-internal-link,
+.cm-s-obsidian .cm-link,
+.cm-s-obsidian .cm-url,
+.markdown-rendered a {
+  color: var(--text-accent);
+}
+
+/* Code in IBM Plex Mono on the subtle gray surface. */
+.markdown-rendered code,
+.cm-s-obsidian .cm-inline-code,
+.HyperMD-codeblock {
+  font-family: var(--font-monospace-theme);
+}
+.markdown-rendered :not(pre) > code {
+  background-color: var(--background-secondary-alt);
+  color: var(--text-normal);
+  border-radius: var(--radius-s);
+}
+
+/* Headings: extra-bold Mulish, like the blog's punchy titles. */
+.markdown-rendered h1,
+.markdown-rendered h2,
+.markdown-rendered h3,
+.markdown-rendered h4,
+.markdown-rendered h5,
+.markdown-rendered h6,
+.HyperMD-header {
+  font-family: var(--font-text-theme);
+  font-weight: 800;
+}

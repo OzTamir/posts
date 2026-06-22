@@ -10,7 +10,7 @@
 
 import { getCollection } from 'astro:content';
 import { SITE } from '../config';
-import { socialImageUrl } from '../utils/images';
+import { socialImageUrl, resolveFeatureImagePath } from '../utils/images';
 
 // Feed limit — 10 most recent posts (homepage slices to the 3 it shows).
 const FEED_LIMIT = 10;
@@ -19,19 +19,19 @@ export async function GET() {
   const all = await getCollection('posts');
 
   const recent = all
-    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
     .slice(0, FEED_LIMIT);
 
   const posts = await Promise.all(
     recent.map(async (post) => {
       const slug = post.id; // content layer: id = filename stem = slug
-      const featured = await socialImageUrl(SITE.url, post.data.featureImage);
+      const featured = await socialImageUrl(SITE.url, resolveFeatureImagePath(slug, post.data.image));
       return {
         title: post.data.title,
         slug,
         url: `${SITE.url}/${slug}/`,
-        excerpt: post.data.excerpt ?? null,
-        pubDate: post.data.pubDate.toISOString(),
+        excerpt: post.data.description ?? null,
+        pubDate: post.data.date.toISOString(),
         featureImage: featured?.url ?? null,
       };
     }),

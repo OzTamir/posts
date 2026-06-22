@@ -26,3 +26,17 @@ scratchpad/
 
 # local planning/design docs (kept on disk, not committed)
 docs/superpowers/
+
+# Vault CMS / Obsidian — per-user state (the vault lives in src/content/.obsidian;
+# `**/` matches it wherever the vault is opened, unlike a root-anchored path).
+**/.obsidian/workspace.json
+**/.obsidian/workspace-mobile.json
+.ref/
+
+# Don't vendor third-party Obsidian plugin CODE (~6 MB of main.js/styles.css we
+# don't maintain). Keep only the small per-plugin config — manifest.json (which
+# plugin + version) and data.json (the VaultCMS wizard settings) — so the vault
+# is documented and re-installable (`npx create-vaultcms`) without the bloat.
+src/content/.obsidian/plugins/*/*
+!src/content/.obsidian/plugins/*/manifest.json
+!src/content/.obsidian/plugins/*/data.json

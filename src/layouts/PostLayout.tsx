@@ -27,6 +27,7 @@ import type { CollectionEntry } from 'astro:content';
 import RelatedPosts from '../components/RelatedPosts';
 import { AUTHORS, DEFAULT_AUTHOR } from '../data/authors';
 import { formatPostDate, dateAttr } from '../utils/format';
+import { slugify } from '../utils/slug';
 
 interface RelatedItem {
   post: CollectionEntry<'posts'>;
@@ -55,9 +56,9 @@ export default function PostLayout({ post, readingTime, related, feature, childr
   const primaryTag = d.tags?.[0];
 
   // Article class: "post tag-<slug> …" for each tag.
-  const tagClasses = (d.tags ?? []).map((t) => `tag-${t.slug}`).join(' ');
+  const tagClasses = (d.tags ?? []).map((t) => `tag-${slugify(t)}`).join(' ');
 
-  const featureAlt = d.featureImageAlt || d.title;
+  const featureAlt = d.imageAlt || d.title;
 
   // Author avatar — optimized asset URL from the author record.
   const authorAvatar = author.profileImage;
@@ -69,13 +70,13 @@ export default function PostLayout({ post, readingTime, related, feature, childr
           <header className="single-header content-grid">
             <div className="single-meta">
               <span className="single-meta-item single-meta-date">
-                <time dateTime={dateAttr(d.pubDate)}>{formatPostDate(d.pubDate)}</time>
+                <time dateTime={dateAttr(d.date)}>{formatPostDate(d.date)}</time>
               </span>
               <span className="single-meta-item single-meta-length">{readingTime} min read</span>
               {primaryTag && (
                 <span className="single-meta-item single-meta-tag">
-                  <a className={`post-tag post-tag-${primaryTag.slug}`} href={`/tag/${primaryTag.slug}/`}>
-                    {primaryTag.name}
+                  <a className={`post-tag post-tag-${slugify(primaryTag)}`} href={`/tag/${slugify(primaryTag)}/`}>
+                    {primaryTag}
                   </a>
                 </span>
               )}
@@ -83,7 +84,7 @@ export default function PostLayout({ post, readingTime, related, feature, childr
 
             <h1 className="single-title">{d.title}</h1>
 
-            {d.excerpt && <div className="single-excerpt">{d.excerpt}</div>}
+            {d.description && <div className="single-excerpt">{d.description}</div>}
 
             {feature && (
               <figure className="single-media content-wide">
@@ -100,8 +101,8 @@ export default function PostLayout({ post, readingTime, related, feature, childr
                     decoding="async"
                   />
                 </div>
-                {d.featureImageCaption && (
-                  <figcaption dangerouslySetInnerHTML={{ __html: d.featureImageCaption }} />
+                {d.imageCaption && (
+                  <figcaption dangerouslySetInnerHTML={{ __html: d.imageCaption }} />
                 )}
               </figure>
             )}

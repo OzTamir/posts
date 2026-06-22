@@ -16,8 +16,9 @@ social-embed loaders).
 | Language | TypeScript (strict) |
 | UI components | React `.tsx` — rendered to static HTML; interactive pieces hydrate as islands (`client:*`) |
 | Styling | Tailwind CSS v4 (CSS-first `@theme`) + `@tailwindcss/typography` |
-| Content | Astro MDX content collections (`src/content/posts/*.mdx`) |
-| Images | Astro asset pipeline — source in `src/assets/content/images/**`; output to hashed `/_astro/*` URLs as WebP + responsive `srcset` (GIFs preserved) |
+| Content | Astro content collections — plain Markdown (`src/content/posts/<slug>/index.md`) |
+| Images | Co-located in post folder; Astro asset pipeline optimizes to hashed `/_astro/*` URLs as WebP + responsive `srcset` (GIFs preserved) |
+| Videos | Co-located in post folder; the `copy-post-media` integration copies them (+ posters) to `dist/<slug>/` at build (served raw, not fingerprinted) |
 | Hosting | Cloudflare Workers Static Assets (see [deployment.md](./deployment.md)) |
 | Runtime | Node 22+ / npm |
 
@@ -25,7 +26,7 @@ social-embed loaders).
 
 ```
 .
-├── astro.config.mjs         # static output, trailing-slash:always, Tailwind, Shiki(nord), sitemap, MDX, React
+├── astro.config.mjs         # static output, trailing-slash:always, Tailwind, Shiki(nord), sitemap, React, remark plugins
 ├── wrangler.jsonc           # Cloudflare Workers Static Assets config (+ markdown Worker)
 ├── worker/index.ts          # thin Worker: Accept: text/markdown content negotiation
 ├── tsconfig.json            # extends astro/tsconfigs/strict
@@ -38,9 +39,14 @@ social-embed loaders).
 │   ├── data/
 │   │   ├── authors.ts       # author info (bio, avatar, social — derived from SITE.social)
 │   │   └── site-images.ts   # optimized site logo/icon assets
-│   ├── content/posts/*.mdx  # ONE MDX file per post (filename = URL slug)
-│   ├── assets/
-│   │   └── content/images/**  # source post images (optimized at build time → /_astro/*)
+│   ├── content/posts/       # ONE folder per post; folder name = URL slug
+│   │   └── <slug>/
+│   │       ├── index.md     # post body + frontmatter (plain Markdown)
+│   │       ├── featured.png # feature image (basename referenced in `image` frontmatter field)
+│   │       └── *.png/jpg/…  # other post images (referenced by basename in the body)
+│   ├── plugins/
+│   │   ├── remark-image-captions.mjs  # image + *caption* → <figure><figcaption>; {wide} marker
+│   │   └── remark-video-embeds.mjs    # ![[video.mp4|...]] → <figure><video>
 │   ├── pages/               # thin Astro shells: load content, pass props to React components
 │   │   ├── index.astro      # home (page 1)
 │   │   ├── [slug].astro     # single post
@@ -64,14 +70,7 @@ social-embed loaders).
 │   │   ├── Pagination.tsx   # plain "Load more" link (static /page/N/ fallback)
 │   │   ├── AuthorCard.tsx   # author archive header
 │   │   ├── RelatedPosts.tsx # related-posts block on single posts
-│   │   ├── icons/           # inline SVGs (Twitter, LinkedIn, RSS, Sun, Moon, Facebook)
-│   │   └── mdx/             # MDX component kit for post bodies
-│   │       ├── Figure.astro     # optimized image with optional caption
-│   │       ├── Video.astro      # native HTML5 video player
-│   │       ├── Tweet.astro      # Twitter/X embed
-│   │       ├── Instagram.astro  # Instagram embed
-│   │       ├── images.ts        # eager glob → resolveImage() used by Figure + routes
-│   │       └── media.ts         # video/poster asset resolution
+│   │   └── icons/           # inline SVGs (Twitter, LinkedIn, RSS, Sun, Moon, Facebook)
 │   ├── integrations/
 │   │   └── strip-image-metadata.mjs  # build integration: strip EXIF/XMP from images
 │   ├── styles/
@@ -80,11 +79,12 @@ social-embed loaders).
 │       ├── format.ts        # date formatting + reading-time helpers
 │       ├── posts.ts         # getSortedPosts, paginatePosts, pageCount, getRelated
 │       ├── images.ts        # optimizeFeatureImage + socialImageUrl (used by routes)
+│       ├── slug.ts          # slugify() — tag display names → URL slugs
 │       └── tags.ts          # tag helpers
 ├── public/
 │   ├── fonts/              # self-hosted Mulish + Lora woff2/woff
-│   ├── content/images/**   # legacy public images (referenced by featureImage paths in frontmatter)
-│   ├── content/media/**    # videos + posters (legacy paths)
+│   ├── <slug>/             # per-post video files + poster images (verbatim, not optimized)
+│   ├── content/images/**   # legacy public images (some old posts reference these paths)
 │   ├── _redirects          # Cloudflare redirects (/rss/ → /rss.xml, /page/1/ → /)
 │   └── _headers            # long-cache for /_astro/* and /fonts/*
 ```
@@ -104,75 +104,99 @@ The deployable artifact is **`./dist`** — a plain folder of static files.
 
 ## Content collection schema
 
-Defined in [`src/content.config.ts`](../src/content.config.ts). Each post is
-`src/content/posts/<slug>.mdx`; **the filename is the URL slug** (`post.id`), so
-`hello-world.mdx` is served at `/hello-world/`.
+Defined in [`src/content.config.ts`](../src/content.config.ts). Each post lives at
+`src/content/posts/<slug>/index.md`; **the folder name is the URL slug** (`post.id`), so
+a folder `hello-world/` is served at `/hello-world/`.
 
-Frontmatter fields (all but `title`/`pubDate` optional):
+Frontmatter fields (`title` and `date` required; everything else optional):
 
 | Field | Meaning |
 | --- | --- |
 | `title` | Post title |
-| `excerpt` | Short summary (cards + meta description fallback) |
-| `pubDate` | Publish date (ISO) |
+| `date` | Publish date (ISO) |
 | `updatedDate` | Last-updated date (not surfaced in the UI) |
-| `tags` | `[{ slug, name }]` in display order; `tags[0]` is the **primary tag** |
+| `description` | Short summary (cards + meta description fallback) |
+| `image` | Basename of the feature image in the post folder (e.g. `featured.png`) |
+| `imageAlt`, `imageCaption` | Optional alt text / caption for the feature image |
+| `tags` | Array of display-name strings (e.g. `["automation", "Home Assistant"]`); `tags[0]` is the **primary tag**. Tag URL slugs are derived via `slugify(name)`. |
 | `author` | Author key (`oz`) — looked up in `src/data/authors.ts` |
-| `featureImage` | Path, e.g. `/content/images/2022/10/cover.png` (or omit) |
-| `featureImageAlt`, `featureImageCaption` | Optional |
 | `featured` | Boolean |
+| `draft` | Boolean — excluded from all feeds/routes when `true` |
 | `metaTitle`, `metaDescription`, `ogTitle/Description/Image`, `twitterTitle/Description/Image`, `canonicalUrl` | Per-post SEO overrides |
 
 ## Adding or editing a post
 
-1. Create `src/content/posts/my-new-post.mdx`. The slug/URL = the filename stem.
+1. Create a folder `src/content/posts/my-new-post/` and add `index.md`. The folder name
+   is the slug/URL (`/my-new-post/`).
+
 2. Add frontmatter:
 
    ```yaml
    ---
    title: My New Post
-   excerpt: A one-line summary.
-   pubDate: 2026-07-01T09:00:00.000Z
+   description: A one-line summary.
+   date: 2026-07-01T09:00:00.000Z
    tags:
-     - { slug: ai, name: ai }
-     - { slug: projects, name: Projects }
+     - ai
+     - Projects
    author: oz
-   featureImage: /content/images/2026/07/cover.png
+   image: featured.png
+   imageAlt: "The tool in action"
    ---
    ```
 
-3. Import the MDX component kit at the top of the file body (after the frontmatter fence):
+3. Write the body in **plain Markdown** — no JSX, no imports. The post is editable
+   directly in Obsidian (see "Editing in Obsidian / VaultCMS" below).
 
-   ```mdx
-   import Figure from '../../components/mdx/Figure.astro';
-   import Video from '../../components/mdx/Video.astro';
-   import Tweet from '../../components/mdx/Tweet.astro';
-   import Instagram from '../../components/mdx/Instagram.astro';
+4. **Images**: drop files into the post folder. Reference by basename:
+
+   ```md
+   ![Screenshot of the tool](screenshot.png)
    ```
 
-4. Write the body in Markdown + MDX. Use the component kit for media:
+   To add a caption, put an `*emphasis*` line **immediately after** (no blank line):
 
-   ```mdx
-   Plain paragraph text.
+   ```md
+   ![Screenshot of the tool](screenshot.png)
+   *The tool running in production*
+   ```
 
-   <Figure
-     src="2026/07/screenshot.png"
-     alt="Screenshot of the tool"
-     caption="The tool running in production"
-   />
+   The `remark-image-captions` plugin wraps the pair in `<figure><figcaption>`. A caption
+   may contain a Markdown link `[text](url)`.
 
-   <Figure src="2026/07/diagram.png" alt="Architecture diagram" wide />
+   For a wide image (expands to the wider grid column), append `{wide}`:
 
-   <Video src="2026/07/demo.mp4" poster="2026/07/demo-thumb.png" title="Demo video" />
+   ```md
+   ![Architecture diagram](diagram.png){wide}
+   *Caption is still optional here*
+   ```
 
-   <Tweet>
+   The build converts non-GIFs to WebP with a responsive `srcset`; animated GIFs are
+   preserved as-is. Every output URL is a fingerprinted `/_astro/*` path (long-cached
+   by `_headers`).
+
+5. **Videos**: use Obsidian wiki-embed syntax as a lone paragraph:
+
+   ```md
+   ![[demo.mp4|poster=demo-thumb.png|title=Demo video]]
+   ```
+
+   Supported attributes: `poster=<filename>`, `title=<string>`, `autoplay` (implies
+   loop + muted). **Co-locate the video file and poster in the post folder** (e.g.
+   `src/content/posts/<slug>/clip.mp4`), referenced by basename. The `copy-post-media`
+   integration copies them to `dist/<slug>/` at build (Astro's asset pipeline doesn't
+   handle raw video). The `remark-video-embeds` plugin rewrites the embed to a
+   `<figure><video>` block.
+
+6. **Tweets / Instagram**: paste raw HTML embed blocks directly in the `.md`. They render
+   on the site; they won't preview in Obsidian. Example (Twitter/X):
+
+   ```html
+   <blockquote class="twitter-tweet">
      <p lang="en">Tweet text here.</p>
      &mdash; Author (@handle) <a href="https://twitter.com/handle/status/123">Date</a>
-   </Tweet>
-
-   <Instagram permalink="https://www.instagram.com/p/XXXX/?utm_source=ig_embed">
-     <a href="https://www.instagram.com/p/XXXX/" target="_blank" rel="noopener noreferrer">View this post on Instagram</a>
-   </Instagram>
+   </blockquote>
+   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
    ```
 
    Code blocks use fenced Markdown syntax with a language tag — Shiki (nord theme)
@@ -184,16 +208,80 @@ Frontmatter fields (all but `title`/`pubDate` optional):
    ```
    ````
 
-5. **Images:** drop the source file into `src/assets/content/images/<year>/<file>` (the
-   asset glob picks it up automatically). Reference it with the tree-relative path
-   (`"2026/07/x.png"`) in `<Figure src="…">`. The build converts non-GIFs to WebP with a
-   responsive `srcset`; animated GIFs are imported but not re-encoded. Every output URL is
-   a fingerprinted `/_astro/*` path (long-cached by `_headers`).
-
-6. Run `npm run build` to verify, `npm run preview` to eyeball.
+7. Run `npm run build` to verify, `npm run preview` to eyeball.
 
 Tags and the author archive are derived automatically from the posts at build time —
 there is nothing else to register.
+
+### Full example
+
+Post folder layout:
+
+```
+src/content/posts/my-new-post/
+├── index.md
+├── featured.png
+├── screenshot.png
+└── diagram.png
+
+public/my-new-post/
+└── screencast.mp4
+```
+
+`index.md`:
+
+```md
+---
+title: My New Post
+description: One-line summary shown on cards and in meta descriptions.
+date: 2026-07-01T09:00:00.000Z
+tags:
+  - ai
+  - Projects
+author: oz
+image: featured.png
+imageAlt: "A screenshot showing the tool in action"
+---
+
+Introductory paragraph in plain Markdown.
+
+![The demo running](screenshot.png)
+*The tool in action*
+
+![Architecture diagram](diagram.png){wide}
+
+![[screencast.mp4|poster=screencast-thumb.png|title=Demo screencast]]
+
+```ts
+const x: number = 42;
+```
+```
+
+## Editing in Obsidian / VaultCMS
+
+Posts under `src/content/posts/` form a plain-Markdown vault editable in Obsidian. Each
+post is a folder (`<slug>/index.md`) with its images co-located — the standard Obsidian
+"folder note" layout. The VaultCMS vault config lives in the repo at
+`src/content/.obsidian/` (plus the CMS home view in `src/content/_bases/`); the `0xZ`
+theme (`.obsidian/themes/0xZ/`) makes the editor match the site.
+
+**Fresh-clone setup (Obsidian editing only).** The third-party plugin *code*
+(`.obsidian/plugins/*/main.js`, `styles.css`) isn't committed — only each plugin's
+`manifest.json` + `data.json` (which plugin + its settings). After a clone, restore the
+bundles before editing in Obsidian by re-running the installer from the repo root:
+
+```bash
+npx create-vaultcms        # target src/content; follow its prompts to restore the existing vault
+```
+
+The committed config keeps your configured setup. This is not needed to build, preview, or
+deploy — the site build never touches the vault.
+
+When editing in Obsidian:
+- Image references (`![alt](file.png)`) preview correctly.
+- Video wiki-embeds (`![[clip.mp4|...]]`) preview correctly.
+- Raw HTML embed blocks (tweets, Instagram) appear as raw HTML in Obsidian but render
+  correctly on the site.
 
 ## Routes
 

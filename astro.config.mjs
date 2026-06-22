@@ -1,10 +1,13 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
-import mdx from '@astrojs/mdx';
 import stripImageMetadata from './src/integrations/strip-image-metadata.mjs';
+import copyPostMedia from './src/integrations/copy-post-media.mjs';
+import remarkImageCaptions from './src/plugins/remark-image-captions.mjs';
+import remarkVideoEmbeds from './src/plugins/remark-video-embeds.mjs';
 
 // Fully static output served from Cloudflare Workers Static Assets.
 export default defineConfig({
@@ -29,20 +32,26 @@ export default defineConfig({
   // loaders are tiny inline scripts.
   integrations: [
     react(),
-    // MDX so posts can use the semantic <Figure>/<Video>/<Tweet>/<Instagram>
-    // component kit (optimized images, no kg-* markup) instead of raw HTML.
-    mdx(),
     // Official sitemap. Emits /sitemap-index.xml + /sitemap-0.xml, replacing
     // the hand-rolled sitemap*.xml.ts endpoints. It inherits the site's
     // trailingSlash:"always" from the top-level config, so URLs stay canonical.
     // Generated OG card PNGs (/og/*.png) are social-scraper assets, not pages.
     sitemap({ filter: (page) => !page.includes('/og/') }),
+    // Copy co-located post videos + posters into dist/<slug>/ (one source of
+    // truth per post; Astro's pipeline can't optimize/serve raw video files).
+    // Runs before strip-image-metadata so copied posters are EXIF-scrubbed too.
+    copyPostMedia(),
     // Strip EXIF/XMP/IPTC from emitted raster images (privacy backstop; the
     // committed sources are also scrubbed with exiftool).
     stripImageMetadata(),
   ],
   // Code blocks highlighted by Shiki with the Nord theme.
+  // remark plugins via processor API (markdown.remarkPlugins is deprecated in Astro 6.4+).
+  // shikiConfig stays at top-level markdown (unified() does not forward it to Shiki).
   markdown: {
+    processor: unified({
+      remarkPlugins: [remarkVideoEmbeds, remarkImageCaptions],
+    }),
     shikiConfig: {
       theme: 'nord',
     },

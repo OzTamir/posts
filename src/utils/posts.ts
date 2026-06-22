@@ -6,6 +6,7 @@
  */
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { readingTimeMinutes, formatFeedDate } from './format';
+import { slugify } from './slug';
 
 export interface PostWithMeta {
   post: CollectionEntry<'posts'>;
@@ -35,10 +36,10 @@ export function toPostCardData({ post, readingTime }: PostWithMeta): PostCardDat
   return {
     url: `/${post.id}/`,
     title: post.data.title,
-    excerpt: post.data.excerpt ?? '',
-    date: formatFeedDate(post.data.pubDate),
+    excerpt: post.data.description ?? '',
+    date: formatFeedDate(post.data.date),
     readingTime,
-    tagSlugs: (post.data.tags ?? []).map((t) => t.slug),
+    tagSlugs: (post.data.tags ?? []).map((t) => slugify(t)),
   };
 }
 
@@ -46,7 +47,7 @@ export function toPostCardData({ post, readingTime }: PostWithMeta): PostCardDat
 export async function getSortedPosts(): Promise<PostWithMeta[]> {
   const posts = await getCollection('posts');
   return posts
-    .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
     .map((post) => ({
       post,
       readingTime: readingTimeMinutes(post.body ?? ''),
@@ -55,7 +56,7 @@ export async function getSortedPosts(): Promise<PostWithMeta[]> {
 
 /** Posts that include the given tag slug (in pubDate-desc order). */
 export function filterByTag(all: PostWithMeta[], tagSlug: string): PostWithMeta[] {
-  return all.filter(({ post }) => (post.data.tags ?? []).some((t) => t.slug === tagSlug));
+  return all.filter(({ post }) => (post.data.tags ?? []).some((t) => slugify(t) === tagSlug));
 }
 
 /** Posts by the given author slug (in pubDate-desc order). */
@@ -115,10 +116,10 @@ export function getRelated(
   current: CollectionEntry<'posts'>,
   limit = 5,
 ): PostWithMeta[] {
-  const tagSlugs = new Set((current.data.tags ?? []).map((t) => t.slug));
+  const tagSlugs = new Set((current.data.tags ?? []).map((t) => slugify(t)));
   if (tagSlugs.size === 0) return [];
   return all
     .filter(({ post }) => post.id !== current.id)
-    .filter(({ post }) => (post.data.tags ?? []).some((t) => tagSlugs.has(t.slug)))
+    .filter(({ post }) => (post.data.tags ?? []).some((t) => tagSlugs.has(slugify(t))))
     .slice(0, limit);
 }

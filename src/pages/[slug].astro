@@ -16,8 +16,8 @@
  *   title        = metaTitle  ?? title
  *   description  = metaDescription ?? excerpt
  *   og:title     = ogTitle    ?? title
- *   og:image     = ogImage    ?? featureImage   (absolute path)
- *   twitter:img  = twitterImage ?? featureImage  (absolute path)
+ *   og:image     = ogImage    ?? image   (absolute path)
+ *   twitter:img  = twitterImage ?? image  (absolute path)
  *   canonical    = canonicalUrl ?? <site>/<slug>/
  */
 import type { GetStaticPaths } from 'astro';
@@ -25,9 +25,10 @@ import { render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostLayout from '../layouts/PostLayout';
 import { getSortedPosts, getRelated } from '../utils/posts';
-import { optimizeFeatureImage, socialImageUrl } from '../utils/images';
+import { optimizeFeatureImage, socialImageUrl, resolveFeatureImagePath } from '../utils/images';
 import { AUTHORS, DEFAULT_AUTHOR } from '../data/authors';
 import { SITE } from '../config';
+import { slugify } from '../utils/slug';
 
 export const getStaticPaths = (async () => {
   const all = await getSortedPosts();
@@ -50,23 +51,25 @@ const primaryTag = d.tags?.[0];
 
 const canonical = d.canonicalUrl ?? `${SITE.url}/${post.id}/`;
 
-const description = d.metaDescription ?? d.excerpt ?? undefined;
+const description = d.metaDescription ?? d.description ?? undefined;
+
+const featureImagePath = resolveFeatureImagePath(post.id, d.image);
 
 // In-page feature image → optimized (WebP + srcset; GIF preserved). Passed to
 // the React PostLayout as plain attributes so the tree stays static.
-const feature = await optimizeFeatureImage(d.featureImage);
+const feature = await optimizeFeatureImage(featureImagePath);
 
 // og:image / twitter:image — single optimized absolute URL for scrapers.
-const ogSocial = await socialImageUrl(SITE.url, d.ogImage ?? d.featureImage);
-const twSocial = await socialImageUrl(SITE.url, d.twitterImage ?? d.featureImage);
+const ogSocial = await socialImageUrl(SITE.url, d.ogImage ?? featureImagePath);
+const twSocial = await socialImageUrl(SITE.url, d.twitterImage ?? featureImagePath);
 
-// Posts with neither an explicit ogImage nor a featureImage fall back to a
+// Posts with neither an explicit ogImage nor an image fall back to a
 // build-time generated card at /og/<slug>.png (src/pages/og/[slug].png.ts).
 const generatedOg =
-  !d.ogImage && !d.featureImage ? `${SITE.url}/og/${post.id}.png` : undefined;
+  !d.ogImage && !d.image ? `${SITE.url}/og/${post.id}.png` : undefined;
 
 // Body template class: "post-template tag-<primaryTag>".
-const bodyClass = `post-template ${primaryTag ? `tag-${primaryTag.slug}` : ''}`.trim();
+const bodyClass = `post-template ${primaryTag ? `tag-${slugify(primaryTag)}` : ''}`.trim();
 
 const head = {
   type: 'post',
@@ -81,9 +84,9 @@ const head = {
   twitterImage: twSocial?.url ?? generatedOg,
   ogImageWidth: ogSocial?.width || (generatedOg ? 1200 : undefined),
   ogImageHeight: ogSocial?.height || (generatedOg ? 630 : undefined),
-  publishedTime: d.pubDate.toISOString(),
-  modifiedTime: (d.updatedDate ?? d.pubDate).toISOString(),
-  primaryTag: primaryTag?.name,
+  publishedTime: d.date.toISOString(),
+  modifiedTime: (d.updatedDate ?? d.date).toISOString(),
+  primaryTag: primaryTag,
   authorName: author.name,
   authorSlug: author.slug,
 };
