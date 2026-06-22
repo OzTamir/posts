@@ -5,6 +5,8 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import mdx from '@astrojs/mdx';
 import stripImageMetadata from './src/integrations/strip-image-metadata.mjs';
+import remarkImageCaptions from './src/plugins/remark-image-captions.mjs';
+import remarkVideoEmbeds from './src/plugins/remark-video-embeds.mjs';
 
 // Fully static output served from Cloudflare Workers Static Assets.
 export default defineConfig({
@@ -43,6 +45,7 @@ export default defineConfig({
   ],
   // Code blocks highlighted by Shiki with the Nord theme.
   markdown: {
+    remarkPlugins: [remarkVideoEmbeds, remarkImageCaptions],
     shikiConfig: {
       theme: 'nord',
     },
