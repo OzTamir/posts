@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { unified } from '@astrojs/markdown-remark';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
@@ -44,8 +45,12 @@ export default defineConfig({
     stripImageMetadata(),
   ],
   // Code blocks highlighted by Shiki with the Nord theme.
+  // remark plugins via processor API (markdown.remarkPlugins is deprecated in Astro 6.4+).
+  // shikiConfig stays at top-level markdown (unified() does not forward it to Shiki).
   markdown: {
-    remarkPlugins: [remarkVideoEmbeds, remarkImageCaptions],
+    processor: unified({
+      remarkPlugins: [remarkVideoEmbeds, remarkImageCaptions],
+    }),
     shikiConfig: {
       theme: 'nord',
     },
