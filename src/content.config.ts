@@ -15,7 +15,7 @@ const seo = {
 };
 
 const posts = defineCollection({
-  loader: glob({ base: './src/content/posts', pattern: '**/*.{md,mdx}' }),
+  loader: glob({ base: './src/content/posts', pattern: '**/*.md' }),
   schema: z
     .object({
       title: z.string(),

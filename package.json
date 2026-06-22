@@ -13,7 +13,6 @@
     "lhci": "lhci autorun"
   },
   "dependencies": {
-    "@astrojs/mdx": "^6.0.3",
     "@astrojs/react": "^5.0.7",
     "@astrojs/rss": "^4.0.0",
     "@astrojs/sitemap": "^3.7.3",

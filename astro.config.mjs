@@ -4,7 +4,6 @@ import { unified } from '@astrojs/markdown-remark';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
-import mdx from '@astrojs/mdx';
 import stripImageMetadata from './src/integrations/strip-image-metadata.mjs';
 import remarkImageCaptions from './src/plugins/remark-image-captions.mjs';
 import remarkVideoEmbeds from './src/plugins/remark-video-embeds.mjs';
@@ -32,9 +31,6 @@ export default defineConfig({
   // loaders are tiny inline scripts.
   integrations: [
     react(),
-    // MDX so posts can use the semantic <Figure>/<Video>/<Tweet>/<Instagram>
-    // component kit (optimized images, no kg-* markup) instead of raw HTML.
-    mdx(),
     // Official sitemap. Emits /sitemap-index.xml + /sitemap-0.xml, replacing
     // the hand-rolled sitemap*.xml.ts endpoints. It inherits the site's
     // trailingSlash:"always" from the top-level config, so URLs stay canonical.
