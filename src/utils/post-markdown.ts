@@ -12,6 +12,7 @@ import { getImage } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import { resolveImage, isGif } from '../components/mdx/images';
 import { resolveVideo } from '../components/mdx/media';
+import { resolveFeatureImagePath } from './images';
 import { SITE } from '../config';
 
 /** Pull `key="value"` string attributes out of a JSX-ish tag's attribute text. */
@@ -90,7 +91,8 @@ export async function postToMarkdown(post: CollectionEntry<'posts'>): Promise<st
   const date = d.date.toISOString().slice(0, 10);
   const parts = [`# ${d.title}`, `*${date} · [${url}](${url})*`];
   if (d.description) parts.push(`> ${d.description}`);
-  if (d.image) parts.push(`![${d.imageAlt ?? ''}](${await imageUrl(d.image)})`);
+  const featureImgPath = resolveFeatureImagePath(post.id, d.image);
+  if (featureImgPath) parts.push(`![${d.imageAlt ?? ''}](${await imageUrl(featureImgPath)})`);
   parts.push(body);
   return parts.join('\n\n') + '\n';
 }

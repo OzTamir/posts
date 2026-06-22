@@ -10,9 +10,31 @@
  * Feature images are resolved through the same eager glob the MDX <Figure>
  * uses, so frontmatter keeps its existing "/content/images/..." string paths
  * (no per-post import churn).
+ *
+ * New folder-based posts use co-located basename paths ("featured.png").
+ * Use resolveFeatureImagePath() to normalize before calling optimizeFeatureImage
+ * or socialImageUrl.
  */
 import { getImage } from 'astro:assets';
 import { resolveImage, isGif } from '../components/mdx/images';
+
+/**
+ * Normalize the feature image path for a post. New folder-based posts use a
+ * co-located basename (e.g. "featured.png") — prefix with the post slug so
+ * resolveImage can find it via the co-located glob. Legacy posts use a full
+ * path already (contains "/" or "http").
+ */
+export function resolveFeatureImagePath(
+  slug: string,
+  imagePath: string | null | undefined,
+): string | null | undefined {
+  if (!imagePath) return imagePath;
+  // Co-located basename: no directory separator and not a URL.
+  if (!imagePath.includes('/') && !imagePath.startsWith('http')) {
+    return `${slug}/${imagePath}`;
+  }
+  return imagePath;
+}
 
 export interface OptimizedImage {
   /** Optimized (or, for GIFs, original) asset URL — a hashed /_astro path. */

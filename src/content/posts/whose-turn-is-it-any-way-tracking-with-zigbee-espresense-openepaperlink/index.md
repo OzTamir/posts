@@ -1,32 +1,21 @@
 ---
 title: Whose turn is it anyway
-pubDate: "2024-02-02T12:53:30.000Z"
-updatedDate: "2026-06-18T23:45:58.000Z"
+date: 2024-02-02T12:53:30.000Z
+updatedDate: 2026-06-18T23:45:58.000Z
+description: Tracking household chores with Zigbee, ESPresense, and OpenEPaperLink
+image: featured.png
 tags:
-  - slug: automation
-    name: automation
-  - slug: home-assistant
-    name: home-assistant
-  - slug: home-automation
-    name: home-automation
-  - slug: smart-home
-    name: smart-home
-  - slug: epaper
-    name: epaper
-  - slug: openepaperlink
-    name: openepaperlink
-  - slug: espresense
-    name: espresense
-  - slug: cat
-    name: cat
+  - automation
+  - Home Assistant
+  - home-automation
+  - smart-home
+  - epaper
+  - openepaperlink
+  - espresense
+  - cat
 author: oz
 featured: false
-excerpt: Tracking household chores with Zigbee, ESPresense, and OpenEPaperLink
-featureImage: /content/images/posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/featured.png
 ---
-
-import Figure from '../../components/mdx/Figure.astro';
-import Video from '../../components/mdx/Video.astro';
 
 A few months ago, I made a dream come true and moved in with my girlfriend, Tali. It was a long process; apartment hunting was the worst, but after a few months of searching, we finally had our dream house.
 
@@ -34,13 +23,13 @@ Once the initial phase of settling into our new routine, I realized that one of 
 
 While I was living with roommates in my previous apartment, most of these projects were contained to my room and to my lifestyle - but now that I was living with my partner, I had the whole apartment as a playground, and I quickly found joy in tweaking and enhancing our daily routines through small smart home automations - from turning on the AC when one of us is heading home to making sure everything is off when both of us are away.
 
-Another change to my life with this move was that I was suddenly living with Lychee - Tali’s (and now mine’s) cat, a fluffy and energetic little thing. Living with a cat brought with it the usual cat owner responsibilities, not least of which was maintaining the litter box.
+Another change to my life with this move was that I was suddenly living with Lychee - Tali's (and now mine's) cat, a fluffy and energetic little thing. Living with a cat brought with it the usual cat owner responsibilities, not least of which was maintaining the litter box.
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/cat-by-litter-box.jpeg" alt="" />
+![](cat-by-litter-box.jpeg)
 
-We quickly agreed that a daily chore schedule would work for us - one day, I would clean the litter box, and the next day, Tali would take over. However, as straightforward as it might sound, there were hiccups - often, one of us would need the other to cover for them (for example, if one of us went out with friends and didn’t want to deal with it when we came back). This led to a couple of cases where we each thought it was the other's turn, and in the end, no one cleaned it.
+We quickly agreed that a daily chore schedule would work for us - one day, I would clean the litter box, and the next day, Tali would take over. However, as straightforward as it might sound, there were hiccups - often, one of us would need the other to cover for them (for example, if one of us went out with friends and didn't want to deal with it when we came back). This led to a couple of cases where we each thought it was the other's turn, and in the end, no one cleaned it.
 
-After a few of these cases, I realized that this is silly - it’s a clear case where a bit of code and electronics would solve the problem. I cracked my knuckles - And a new project was born.
+After a few of these cases, I realized that this is silly - it's a clear case where a bit of code and electronics would solve the problem. I cracked my knuckles - And a new project was born.
 
 ## Step 1: Tracking cleanouts with Zigbee
 
@@ -48,32 +37,33 @@ The first thing I knew I could solve with automation was the mere tracking and a
 
 I started by thinking about ways to implement this. The first idea that came to mind was a camera-based solution - but I quickly ruled it out because it felt like overkill (funny that I should say this, knowing what I ended up doing instead…) and raised privacy concerns. I needed something simple, effective, and minimally invasive. Another problem was electricity - the place where the litter box is located has no access to an outlet, so any solution that would not be battery-powered would be a problem.
 
-While trying to come up with solutions, I remembered that I bought a couple of Zigbee-powered Window/Door sensors a while ago - and I immediately realized that those were the perfect solution. For those who don’t know, Zigbee is a communication protocol (like WiFi or Bluetooth) suited for creating low-power, wireless networks designed to efficiently carry small amounts of data over a short distance, making it an ideal solution for IoT solutions.
+While trying to come up with solutions, I remembered that I bought a couple of Zigbee-powered Window/Door sensors a while ago - and I immediately realized that those were the perfect solution. For those who don't know, Zigbee is a communication protocol (like WiFi or Bluetooth) suited for creating low-power, wireless networks designed to efficiently carry small amounts of data over a short distance, making it an ideal solution for IoT solutions.
 
 Among the broad range of Zigbee technology devices, window/door sensors are particularly noteworthy for their simplicity and versatility. These sensors are designed to detect the opening and closing of doors or windows, sending a signal to the central system whenever that happens - essentially functioning as reed-switches, using a magnet to open and close a circuit:
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/reed-switch-diagram.png" alt="Image credit: esp32io.com - https://esp32io.com/tutorials/esp32-door-sensor" caption={"Image credit: esp32io.com - <a href=\"https://esp32io.com/tutorials/esp32-door-sensor\">https://esp32io.com/tutorials/esp32-door-sensor</a>"} />
+![Image credit: esp32io.com - https://esp32io.com/tutorials/esp32-door-sensor](reed-switch-diagram.png)
+*Image credit: esp32io.com - https://esp32io.com/tutorials/esp32-door-sensor*
 
 These sensors are typically used to monitor the open/close status of windows or doors in a smart home setup, alerting you if something's amiss while you're away or in bed. But who says you can't teach an old sensor new tricks? I decided to repurpose one of these sensors for something a bit less conventional: monitoring the litter box's lid to track cleaning activities.
 
 As part of the cleaning process, we need to open and close the litter box lid - which means that using a door sensor would be a great fit! I could locate the magnet on the base of the litter box, and the reed switch on the top (or the other way around), and when I close the litter box it would trigger an event, allowing me to know that the litter box has been cleaned!
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/sensor-mounted-on-box.jpg" alt="" />
+![](sensor-mounted-on-box.jpg)
 
 In addition, by using a Zigbee sensor, I gained a couple of additional benefits:
 
--   **Long Battery Life**: Battery powered Zigbee devices like these are optimized for low power consumption, meaning I wouldn’t have to worry about frequent battery replacements. This was crucial for a set-and-forget solution.
+-   **Long Battery Life**: Battery powered Zigbee devices like these are optimized for low power consumption, meaning I wouldn't have to worry about frequent battery replacements. This was crucial for a set-and-forget solution.
 -   **Discreteness**: These sensors are small, unobtrusive, and do exactly what I need—detect open/close events. Their simplicity meant I could deploy them without disrupting the aesthetic or functionality of our living space.
 
 ### How It works
 
 The setup was straightforward but effective. I attached a Zigbee sensor to the litter box lid, ensuring it would trigger whenever it opened or closed. This action was logged as an event in our Home Assistant setup, which I've been using to centralize all our smart home activities. The idea was simple: every open-close cycle would indicate a cleaning session.
 
-<Video src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/litter-box-sensor-demo.mp4" autoplay title="Litter box sensor logging an event" caption="Note the red light blink - indicating that an event was logged" />
+![[litter-box-sensor-demo.mp4|title=Litter box sensor logging an event]]
 
 Writing the automation was also very easy:
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/ha-automation-sandbox-trigger.png" alt="" />
+![](ha-automation-sandbox-trigger.png)
 
 ```yaml
 description: Set the time when the sandbox was last cleaned
@@ -105,9 +95,9 @@ multiline_secondary: false
 fill_container: false
 ```
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/ha-sandbox-timer-notification.png" alt="" />
+![](ha-sandbox-timer-notification.png)
 
-And that’s it! I was now tracking cleanouts, and I could set an alert to inform us if too much time has passed since it was last cleaned. I was done!
+And that's it! I was now tracking cleanouts, and I could set an alert to inform us if too much time has passed since it was last cleaned. I was done!
 
 …Or was I?
 
@@ -117,31 +107,33 @@ After successfully implementing the monitoring of cleanouts, it was time to addr
 
 Up until this point, Tali and I had been using a simple but somewhat archaic system—a 3D-printed wheel that we would manually turn to indicate who was responsible for the next cleanout.
 
-<Video src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/espresense-tracking-demo.mp4" autoplay title="ESPresense tracking a phone between rooms" />
+![[espresense-tracking-demo.mp4|title=ESPresense tracking a phone between rooms]]
 
 While this method had its charm, it was prone to human error and forgetfulness. I realized that we could leverage technology to track when the litter box was cleaned and by whom.
 
 This is where [ESPresense](https://espresense.com/), a smart solution for tracking presence within a home, came into play. ESPresense is an open-source project that utilizes Bluetooth signals from smartphones, smartwatches, or any Bluetooth-enabled device to determine who is present in a specific room.
 
-By deploying ESP32 devices around the house, one can create a network that accurately monitors the location of individuals based on the strength of their device's Bluetooth signal. For me, the killer feature of this solution was that it didn’t require anyone to change their habits or carry an additional device - the only thing needed was the phones that are with us all the time anyway.
+By deploying ESP32 devices around the house, one can create a network that accurately monitors the location of individuals based on the strength of their device's Bluetooth signal. For me, the killer feature of this solution was that it didn't require anyone to change their habits or carry an additional device - the only thing needed was the phones that are with us all the time anyway.
 
-I wanted to implement this system for a while but didn’t find a use case - until now. By placing an ESP32 device in the room with Lychee's litter box, I could use ESPresense to detect which one of us was nearby when the litter box was cleaned. This data, combined with the open/close signal from the Zigbee sensor, would allow us to automatically update who had completed the chore - helping us to keep track of whose turn it was the next day.
+I wanted to implement this system for a while but didn't find a use case - until now. By placing an ESP32 device in the room with Lychee's litter box, I could use ESPresense to detect which one of us was nearby when the litter box was cleaned. This data, combined with the open/close signal from the Zigbee sensor, would allow us to automatically update who had completed the chore - helping us to keep track of whose turn it was the next day.
 
 ### Putting it all together
 
 The first order of business was acquiring the necessary hardware - since I wanted to track presence around multiple rooms, I needed multiple base stations. I turned to AliExpress and ordered a bunch of ESP32 boards.
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/esp32-aliexpress-order.png" alt="" />
+![](esp32-aliexpress-order.png)
 
 Once they arrived, I set about flashing them with the ESPresense firmware. This process is done via the browser using ESP Web Tools, and is as easy as connecting the board via USB and following the [UI wizard](https://espresense.com/firmware):
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/espresense-firmware-installer.png" alt="" />
+![](espresense-firmware-installer.png)
 
-After installing the firmware, I strategically placed a few of these boards around the house, including one in the room where Lychee’s litter box resided. This placement was key to ensuring that we could accurately detect the presence of either Tali or me in the vicinity of the litter box at the time of cleaning.
+After installing the firmware, I strategically placed a few of these boards around the house, including one in the room where Lychee's litter box resided. This placement was key to ensuring that we could accurately detect the presence of either Tali or me in the vicinity of the litter box at the time of cleaning.
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/esp32-node-shelf-mounted.jpg" alt="ESPresense base station at my office" caption="ESPresense base station at my office" />
+![ESPresense base station at my office](esp32-node-shelf-mounted.jpg)
+*ESPresense base station at my office*
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/esp32-node-wall-outlet.jpg" alt="ESPresense base station at the room with Lychee’s sandbox" caption="ESPresense base station at the room with Lychee’s litter box" />
+![ESPresense base station at the room with Lychee's sandbox](esp32-node-wall-outlet.jpg)
+*ESPresense base station at the room with Lychee's litter box*
 
 ### Integrating Home Assistant and ESPresense via MQTT
 
@@ -151,17 +143,19 @@ To bridge the gap between the ESPresense system and Home Assistant, I needed to 
 
 #### Setting Up the MQTT Broker
 
-The process of setting up an MQTT broker in Home Assistant is straightforward, thanks to the [Mosquitto](https://mosquitto.org/) broker add-on available in the Home Assistant Add-on Store. Here’s an overview of the steps involved:
+The process of setting up an MQTT broker in Home Assistant is straightforward, thanks to the [Mosquitto](https://mosquitto.org/) broker add-on available in the Home Assistant Add-on Store. Here's an overview of the steps involved:
 
 1.  Install the Mosquitto broker Add-on: This can be done directly from the Home Assistant Add-on Store. The Mosquitto broker is a popular choice due to its reliability and ease of integration with Home Assistant.
 2.  Configure the Broker: Basic configuration is required, such as setting up a username and password for secure device communication after installation.
 3.  Connect ESPresence to the Broker: The ESP32 boards running ESPresence must be configured to send their presence data to the MQTT broker. This involves setting the MQTT server address (the IP address of your Home Assistant instance), port (usually 1883), and the credentials you established during the broker setup.
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/espresense-mqtt-config.png" alt="Setting the MQTT information in the base station configuration screen" caption="Setting the MQTT information in the base station configuration screen" />
+![Setting the MQTT information in the base station configuration screen](espresense-mqtt-config.png)
+*Setting the MQTT information in the base station configuration screen*
 
 The final step is to ensure that Home Assistant listens to the right topics on the MQTT broker to receive the presence data. This step is a bit tricky because the interface is not that well-defined - I had to fidget with it quite a lot to get it right. To make this process easier, I recommend using tools that allow you to connect to the MQTT server and inspect the messages it receives (I was quite happy with [MQTT Explorer](https://mqtt-explorer.com/), but any similar software will do the trick).
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/espresense-room-mqtt-data.png" alt="Example - My phone data in the MQTT broker" caption="Example - My phone data in the MQTT broker" />
+![Example - My phone data in the MQTT broker](espresense-room-mqtt-data.png)
+*Example - My phone data in the MQTT broker*
 
 After some back and forth, I was able to define the presence status of my phone in `configuration.yaml` like this:
 
@@ -176,7 +170,7 @@ After some back and forth, I was able to define the presence status of my phone 
 
 Which exposed this entity:
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/ha-iphone-room-state.png" alt="" />
+![](ha-iphone-room-state.png)
 
 And with this implemented, I could finally re-write the tracking automation - whenever the litter box was being cleaned, the automation checked if I was in the room, and based on that would assign the state of a helper state named `last_person_to_clean_box`:
 
@@ -227,7 +221,7 @@ multiline_secondary: false
 fill_container: false
 ```
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/ha-chore-attributed-notification.png" alt="" />
+![](ha-chore-attributed-notification.png)
 
 Now there was only one problem left - this dashboard is not always visible, and as you probably understand, one of the goals in this project was to make this solution as low friction as possible - which meant another final piece was needed.
 
@@ -237,7 +231,8 @@ With the tracking and integration challenges successfully navigated, the final p
 
 At first, I tried to create this solution on my own - I knew that an ePaper screen was the way to go here, as it is low-powered. I started working on a solution using [ESPHome](https://esphome.io/index.html) and [ESPNow](https://www.espressif.com/en/solutions/low-power-solutions/esp-now), but after a bit of trial and error, I came to the conclusion that it would require replacing batteries too often, even if I optimize it for low energy usage.
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/esp32-prototype-on-desk.png" alt="" caption="Sad prototype is sad :(" />
+![](esp32-prototype-on-desk.png)
+*Sad prototype is sad :(*
 
 I needed something else. I went online and looked for a solution, and this is where I came across this Hack-a-Day article about [ePaper price tag hacking](https://hackaday.com/2019/02/25/e-ink-price-tags-fall-off-store-shelves-onto-your-workbench/). It turns out that in some parts of the world, using ePaper screens to display price tags in stores for a while was popular.
 
@@ -251,13 +246,13 @@ I immediately knew that this was the solution to my needs. The first step was to
 
 After reading through the docs, I realized that I have neither the electronics hardware nor the knowledge required to build this myself - not to mention how hard it is to get these displays, especially in Israel - and I decided to opt for a [kit that included everything needed](https://www.tindie.com/products/electronics-by-nic/openepaperlink-mini-ap-v3-zigbee-wifi-gateway/) for a straightforward setup. This decision saved me from the intricacies of flashing firmware and dealing with the nitty-gritty of wireless communication protocols. About a month of shipping later, it arrived and I was ready to go.
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/epaper-tags-unboxed.jpeg" alt="" />
+![](epaper-tags-unboxed.jpeg)
 
 ### Integration with Home Assistant
 
-To integrate with Home Assistant, I’ve used the [wonderful integration](https://github.com/jonasniesner/open_epaper_link_homeassistant) by Jonas Niesner, available via HACS. This integration works by creating a local image and then having the ePaper screen pull it from Home Assistant and display it.
+To integrate with Home Assistant, I've used the [wonderful integration](https://github.com/jonasniesner/open_epaper_link_homeassistant) by Jonas Niesner, available via HACS. This integration works by creating a local image and then having the ePaper screen pull it from Home Assistant and display it.
 
-After reading the docs, I’ve used ChatGPT to help me write the `drawcustom` logic required to draw an image with the details I needed - a text stating who’s turn it is to clean next, along with the time since it was last cleaned. The automation would run every hour, updating the screen with the time that has passed, and will also run when the box is cleaned - which would replace the text saying who’s next. Here’s the hourly automation:
+After reading the docs, I've used ChatGPT to help me write the `drawcustom` logic required to draw an image with the details I needed - a text stating who's turn it is to clean next, along with the time since it was last cleaned. The automation would run every hour, updating the screen with the time that has passed, and will also run when the box is cleaned - which would replace the text saying who's next. Here's the hourly automation:
 
 ```yaml
 alias: Set Sandbox Screen Every Hour
@@ -320,21 +315,21 @@ mode: single
 
 Which created this image:
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/epaper-chore-display.png" alt="" />
+![](epaper-chore-display.png)
 
 To test it, I forced an update via the OpenEPaperLink interface:
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/openepaperlink-access-point-ui.png" alt="" />
+![](openepaperlink-access-point-ui.png)
 
 And, like magic - everything came together and I got this result:
 
-<Figure src="posts/whose-turn-is-it-any-way-tracking-with-zigbee-espresense-openepaperlink/hand-holding-epaper-tag.jpeg" alt="" />
+![](hand-holding-epaper-tag.jpeg)
 
 Now, I was done. No longer do Tali and I need to wonder or debate whose turn it is to clean Lychee's litter box; the answer is always just a glance away as we leave or enter our home.
 
 # Conclusion
 
-This project, for me, was another example of how much fun smart home projects are. Even though the problem I was solving wasn’t real, I had a ton of fun solving it and learned a lot along the way - It required me to find new solutions and integrate new technologies into my smart home stack, and I can’t wait to see how these solutions will allow me to improve more aspects of our home.
+This project, for me, was another example of how much fun smart home projects are. Even though the problem I was solving wasn't real, I had a ton of fun solving it and learned a lot along the way - It required me to find new solutions and integrate new technologies into my smart home stack, and I can't wait to see how these solutions will allow me to improve more aspects of our home.
 
 This time it was the litter box, but I feel like this solution is ready to be adopted for many other tasks, and I hope that by sharing it here it will inspire other people to come up with ideas for what those tasks could be.
 

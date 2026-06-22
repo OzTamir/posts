@@ -12,7 +12,7 @@ import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { SITE } from '../config';
 import { AUTHORS } from '../data/authors';
-import { socialImageUrl } from '../utils/images';
+import { socialImageUrl, resolveFeatureImagePath } from '../utils/images';
 
 // Feed limit — 15 most recent posts.
 const RSS_LIMIT = 15;
@@ -56,7 +56,7 @@ export async function GET(context: { site: URL }) {
         const itemCustomData: string[] = [
           `<dc:creator><![CDATA[${author.name}]]></dc:creator>`,
         ];
-        const featured = await socialImageUrl(siteUrl, post.data.image);
+        const featured = await socialImageUrl(siteUrl, resolveFeatureImagePath(slug, post.data.image));
         if (featured) {
           itemCustomData.push(`<media:content url="${featured.url}" medium="image"/>`);
         }
