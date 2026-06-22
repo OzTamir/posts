@@ -32,3 +32,11 @@ docs/superpowers/
 **/.obsidian/workspace.json
 **/.obsidian/workspace-mobile.json
 .ref/
+
+# Don't vendor third-party Obsidian plugin CODE (~6 MB of main.js/styles.css we
+# don't maintain). Keep only the small per-plugin config — manifest.json (which
+# plugin + version) and data.json (the VaultCMS wizard settings) — so the vault
+# is documented and re-installable (`npx create-vaultcms`) without the bloat.
+src/content/.obsidian/plugins/*/*
+!src/content/.obsidian/plugins/*/manifest.json
+!src/content/.obsidian/plugins/*/data.json
