@@ -63,7 +63,7 @@ const feature = await optimizeFeatureImage(featureImagePath);
 const ogSocial = await socialImageUrl(SITE.url, d.ogImage ?? featureImagePath);
 const twSocial = await socialImageUrl(SITE.url, d.twitterImage ?? featureImagePath);
 
-// Posts with neither an explicit ogImage nor a image fall back to a
+// Posts with neither an explicit ogImage nor an image fall back to a
 // build-time generated card at /og/<slug>.png (src/pages/og/[slug].png.ts).
 const generatedOg =
   !d.ogImage && !d.image ? `${SITE.url}/og/${post.id}.png` : undefined;
