@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import stripImageMetadata from './src/integrations/strip-image-metadata.mjs';
+import copyPostMedia from './src/integrations/copy-post-media.mjs';
 import remarkImageCaptions from './src/plugins/remark-image-captions.mjs';
 import remarkVideoEmbeds from './src/plugins/remark-video-embeds.mjs';
 
@@ -36,6 +37,10 @@ export default defineConfig({
     // trailingSlash:"always" from the top-level config, so URLs stay canonical.
     // Generated OG card PNGs (/og/*.png) are social-scraper assets, not pages.
     sitemap({ filter: (page) => !page.includes('/og/') }),
+    // Copy co-located post videos + posters into dist/<slug>/ (one source of
+    // truth per post; Astro's pipeline can't optimize/serve raw video files).
+    // Runs before strip-image-metadata so copied posters are EXIF-scrubbed too.
+    copyPostMedia(),
     // Strip EXIF/XMP/IPTC from emitted raster images (privacy backstop; the
     // committed sources are also scrubbed with exiftool).
     stripImageMetadata(),

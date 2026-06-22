@@ -29,7 +29,7 @@ Full docs: [`docs/building-and-content.md`](./docs/building-and-content.md),
 | --- | --- |
 | Add/edit a post | `src/content/posts/<slug>/index.md` (folder name = URL slug) |
 | Add images to a post | co-locate in the post folder (e.g. `src/content/posts/<slug>/photo.png`) |
-| Add video to a post | `public/<slug>/video.mp4` (+ poster if needed) |
+| Add video to a post | co-locate in the post folder (`src/content/posts/<slug>/video.mp4` + poster); the `copy-post-media` integration emits it to `dist/<slug>/` |
 | Change the schema | `src/content.config.ts` |
 | Change site title/domain/social/analytics | `src/config.ts` (`SITE`) |
 | Edit author bio/avatar/social | `src/data/authors.ts` |
@@ -72,9 +72,12 @@ Full docs: [`docs/building-and-content.md`](./docs/building-and-content.md),
    `![alt](photo.png){wide}` — expands to the wider grid column.
 7. **Videos**: use Obsidian wiki-embed syntax in a lone paragraph:
    `![[clip.mp4|poster=thumb.png|title=Caption]]`
-   Video files and poster images live in **`public/<slug>/`** (not the content folder) and
-   are served verbatim. `autoplay` is also a supported attribute (implies loop + muted).
-   The `remark-video-embeds` plugin rewrites the embed to a `<figure><video>` block.
+   Video files and poster images are **co-located in the post folder** (e.g.
+   `src/content/posts/<slug>/clip.mp4`), referenced by basename. They aren't handled by
+   Astro's asset pipeline, so the `copy-post-media` integration copies them into
+   `dist/<slug>/` at build (served at `/<slug>/clip.mp4`). `autoplay` is also a supported
+   attribute (implies loop + muted). The `remark-video-embeds` plugin rewrites the embed to
+   a `<figure><video>` block.
 8. **Tweets / Instagram**: paste raw HTML embed blocks directly in the `.md`. They render
    on the site; they won't preview in Obsidian (a full auto-embed plugin is a future
    follow-up).
@@ -216,7 +219,9 @@ CI does **not** deploy; Cloudflare's Git integration deploys on push to `main`.
 - `updatedDate` in frontmatter is intentionally not shown in the UI; ordering and dates use `date`.
 - Post images live in their post folder (`src/content/posts/<slug>/`) and are optimized at
   build time to hashed `/_astro/*` URLs. The `_headers` file long-caches `/_astro/*` and
-  `/fonts/*`. Video files and poster images live in `public/<slug>/`.
+  `/fonts/*`. Video files and poster images are co-located in the post folder too and
+  copied to `dist/<slug>/` at build by the `copy-post-media` integration (served raw, not
+  fingerprinted).
 - `SITE.social` is the single source of truth for twitter/facebook/linkedin/rss links;
   `src/data/authors.ts` derives social fields from it.
 - `SiteHeader` renders `SITE.navigation`; the default empty array means no nav links show.

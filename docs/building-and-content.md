@@ -18,7 +18,7 @@ social-embed loaders).
 | Styling | Tailwind CSS v4 (CSS-first `@theme`) + `@tailwindcss/typography` |
 | Content | Astro content collections — plain Markdown (`src/content/posts/<slug>/index.md`) |
 | Images | Co-located in post folder; Astro asset pipeline optimizes to hashed `/_astro/*` URLs as WebP + responsive `srcset` (GIFs preserved) |
-| Videos | `public/<slug>/` — served verbatim as static assets |
+| Videos | Co-located in post folder; the `copy-post-media` integration copies them (+ posters) to `dist/<slug>/` at build (served raw, not fingerprinted) |
 | Hosting | Cloudflare Workers Static Assets (see [deployment.md](./deployment.md)) |
 | Runtime | Node 22+ / npm |
 
@@ -182,9 +182,11 @@ Frontmatter fields (`title` and `date` required; everything else optional):
    ```
 
    Supported attributes: `poster=<filename>`, `title=<string>`, `autoplay` (implies
-   loop + muted). Drop video files and poster images in **`public/<slug>/`** (not the
-   content folder). The `remark-video-embeds` plugin rewrites the embed to a
-   `<figure><video>` block at build time.
+   loop + muted). **Co-locate the video file and poster in the post folder** (e.g.
+   `src/content/posts/<slug>/clip.mp4`), referenced by basename. The `copy-post-media`
+   integration copies them to `dist/<slug>/` at build (Astro's asset pipeline doesn't
+   handle raw video). The `remark-video-embeds` plugin rewrites the embed to a
+   `<figure><video>` block.
 
 6. **Tweets / Instagram**: paste raw HTML embed blocks directly in the `.md`. They render
    on the site; they won't preview in Obsidian. Example (Twitter/X):
