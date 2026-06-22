@@ -26,3 +26,9 @@ scratchpad/
 
 # local planning/design docs (kept on disk, not committed)
 docs/superpowers/
+
+# Vault CMS / Obsidian — per-user state (the vault lives in src/content/.obsidian;
+# `**/` matches it wherever the vault is opened, unlike a root-anchored path).
+**/.obsidian/workspace.json
+**/.obsidian/workspace-mobile.json
+.ref/
