@@ -1,0 +1,36 @@
+/* =============================================================================
+   claude-sidebar-button.css — VaultCMS snippet for the oz-blog content vault.
+
+   VaultCMS hides Obsidian's left ribbon (appearance.json "showRibbon": false)
+   for a clean CMS look, which also hides the Claude Sidebar plugin's
+   "New Claude Tab" button. This snippet shows a MINIMAL ribbon containing only
+   the home-base and Claude buttons — so "New Claude Tab" sits right next to
+   "Open home base" without bringing back the rest of the ribbon icons.
+
+   Ribbon buttons are matched by their aria-label (the title passed to
+   addRibbonIcon): home-base → "Open home base", claude-sidebar → "New Claude Tab".
+   If a future Obsidian version renames these classes and the buttons stop
+   appearing, fall back to a hotkey (Settings → Hotkeys → "Claude") or set
+   "showRibbon": true.
+   ============================================================================= */
+
+/* Re-show the left ribbon strip even though "Show ribbon" is off. */
+.workspace-ribbon.side-dock-ribbon.mod-left {
+  display: flex !important;
+}
+
+/* Hide every ribbon plugin icon by default… */
+.workspace-ribbon.side-dock-ribbon.mod-left .side-dock-ribbon-action {
+  display: none !important;
+}
+
+/* …then reveal only the two we want (they render in ribbon order). */
+.workspace-ribbon.side-dock-ribbon.mod-left .side-dock-ribbon-action[aria-label="Open home base"],
+.workspace-ribbon.side-dock-ribbon.mod-left .side-dock-ribbon-action[aria-label="New Claude Tab"] {
+  display: flex !important;
+}
+
+/* Drop the ribbon's collapse chevron so the strip stays clean. */
+.workspace-ribbon.side-dock-ribbon.mod-left .workspace-ribbon-collapse-btn {
+  display: none !important;
+}
