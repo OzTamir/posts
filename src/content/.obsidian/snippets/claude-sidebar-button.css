@@ -1,11 +1,11 @@
 /* =============================================================================
    claude-sidebar-button.css — VaultCMS snippet for the oz-blog content vault.
 
-   VaultCMS hides Obsidian's left ribbon (appearance.json "showRibbon": false)
-   for a clean CMS look, which also hides the Claude Sidebar plugin's
-   "New Claude Tab" button. This snippet shows a MINIMAL ribbon containing only
-   the home-base and Claude buttons — so "New Claude Tab" sits right next to
-   "Open home base" without bringing back the rest of the ribbon icons.
+   The ribbon is enabled (appearance.json "showRibbon": true) so the Claude
+   Sidebar plugin's "New Claude Tab" button has somewhere to render. This snippet
+   then TRIMS the ribbon to just the home-base and Claude buttons — so the result
+   is a slim two-icon strip (Claude next to "Open home base") rather than the full
+   ribbon. (A reload of Obsidian is needed after changing the snippet.)
 
    Ribbon buttons are matched by their aria-label (the title passed to
    addRibbonIcon): home-base → "Open home base", claude-sidebar → "New Claude Tab".
