@@ -1,9 +1,10 @@
 {
   "cssTheme": "0xZ",
   "showViewHeader": true,
-  "showRibbon": false,
+  "showRibbon": true,
   "enabledCssSnippets": [
-    "astro-modular-styling"
+    "astro-modular-styling",
+    "claude-sidebar-button"
   ],
   "theme": "system",
   "accentColor": ""
