@@ -40,3 +40,6 @@ docs/superpowers/
 src/content/.obsidian/plugins/*/*
 !src/content/.obsidian/plugins/*/manifest.json
 !src/content/.obsidian/plugins/*/data.json
+# …except claude-sidebar's data.json — it only holds machine-specific state
+# (lastCwd, an absolute path), so it's per-user noise, not shared config.
+src/content/.obsidian/plugins/claude-sidebar/data.json
