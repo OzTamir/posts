@@ -15,6 +15,10 @@ export default defineConfig({
   output: 'static',
   // Trailing slashes on every URL (enforced globally).
   trailingSlash: 'always',
+  // Astro 7 changed the default from `true` to `'jsx'` (collapses whitespace
+  // between inline elements using JSX rules). Pin to `true` to keep the exact
+  // v6 HTML/whitespace behavior — this blog preserves its established look.
+  compressHTML: true,
   build: {
     // Emit /slug/index.html so URLs are /slug/.
     format: 'directory',
@@ -46,7 +50,10 @@ export default defineConfig({
     stripImageMetadata(),
   ],
   // Code blocks highlighted by Shiki with the Nord theme.
-  // remark plugins via processor API (markdown.remarkPlugins is deprecated in Astro 6.4+).
+  // Astro 7's default Markdown processor is Sätteri (Rust); we opt back into the
+  // unified (remark/rehype) pipeline via `processor: unified()` from the
+  // explicitly-installed @astrojs/markdown-remark, since our remark plugins
+  // (video embeds, image captions) are unified plugins.
   // shikiConfig stays at top-level markdown (unified() does not forward it to Shiki).
   markdown: {
     processor: unified({
