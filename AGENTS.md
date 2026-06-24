@@ -230,6 +230,22 @@ visual changes, check at both mobile and desktop widths.
 
 CI does **not** deploy; Cloudflare's Git integration deploys on push to `main`.
 
+## Commits & PRs
+
+- **Conventional Commits.** Every commit message follows the
+  [Conventional Commits](https://www.conventionalcommits.org/) spec:
+  `type(scope): summary` (e.g. `feat(feed): …`, `fix(og): …`,
+  `build(deps): …`, `docs: …`, `chore(config): …`). Use the same convention
+  for branch names.
+- **Small, meaningful commits.** Split a change into focused commits that each
+  do one coherent thing (e.g. dependency bumps, config change, and docs as
+  separate commits) rather than one large catch-all. Each commit should build
+  and make sense on its own.
+- **Verify before committing.** Run the [Build & verify](#build--verify) steps;
+  don't commit work that fails `check` or `build`.
+- **Branch off `main`** for new work, open a PR, and let CI run. Cloudflare
+  deploys from `main` on merge — don't push directly to `main`.
+
 ## Do NOT touch (unless that's explicitly the task)
 
 - `astro.config.mjs`, `tsconfig.json`, `wrangler.jsonc` — infra; change deliberately.
