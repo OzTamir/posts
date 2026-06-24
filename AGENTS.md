@@ -5,7 +5,7 @@ blog. This file is the source of truth for conventions; read it before making ch
 
 ## What this is
 
-- **Astro 6**, `output: "static"` — prerendered HTML. Deployed to **Cloudflare Workers
+- **Astro 7**, `output: "static"` — prerendered HTML. Deployed to **Cloudflare Workers
   Static Assets** (`./dist`). A thin Worker (`worker/index.ts`) sits in front purely for
   `Accept: text/markdown` content negotiation; everything else is static. Fingerprinted
   assets are still served directly (see `run_worker_first` in `wrangler.jsonc`).
@@ -254,6 +254,10 @@ CI does **not** deploy; Cloudflare's Git integration deploys on push to `main`.
   island (`client:visible`), which is handed the whole feed and reveals more posts in
   place. "Load more" is a real link to `/…/page/N/`, so without JS it just navigates
   there — those static `/page/N/` routes are the no-JS / crawler fallback, so keep them.
-- Remark plugins are registered in `astro.config.mjs` via
-  `markdown.processor: unified({ remarkPlugins: [...] })` (NOT the deprecated
-  `markdown.remarkPlugins`); `shikiConfig` stays at the top-level `markdown` key.
+- Astro 7's default Markdown processor is **Sätteri** (Rust). This blog opts back
+  into the **unified (remark/rehype)** pipeline because its remark plugins are
+  unified plugins: `markdown.processor: unified({ remarkPlugins: [...] })` in
+  `astro.config.mjs`, with `unified` imported from the explicitly-installed
+  **`@astrojs/markdown-remark`** dependency (Astro 7 no longer bundles it).
+  `shikiConfig` stays at the top-level `markdown` key. `compressHTML: true` is
+  pinned to keep v6 whitespace behavior (Astro 7's default is `'jsx'`).
