@@ -11,7 +11,7 @@ tags:
   - Technical
 author: "oz"
 featured: false
-draft: true
+draft: false
 ---
 
 I built a tiny tool called [MCPlexer](https://github.com/OzTamir/mcplexer), and it does exactly one thing: it lets you run more than one instance of the same MCP server at once, without their tools colliding.
